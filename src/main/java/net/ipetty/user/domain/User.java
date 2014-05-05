@@ -6,6 +6,9 @@ import java.util.List;
 
 import net.ipetty.core.domain.AbstractEntity;
 import net.ipetty.pet.domain.Pet;
+import net.ipetty.vo.UserVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 用户
@@ -41,6 +44,15 @@ public class User extends AbstractEntity {
 	private List<Pet> pets = new ArrayList<Pet>(); // 宠物
 
 	private List<Role> roles = new ArrayList<Role>(); // 拥有的角色
+
+	public UserVO toUserVO() {
+		UserVO vo = new UserVO();
+		BeanUtils.copyProperties(this, vo);
+		if (profile != null) {
+			BeanUtils.copyProperties(profile, vo);
+		}
+		return vo;
+	}
 
 	public void prePersist() {
 		this.setCreatedOn(new Date());

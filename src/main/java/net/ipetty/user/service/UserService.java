@@ -26,6 +26,23 @@ public class UserService {
 	private UserDao userDao;
 
 	/**
+	 * 登录验证
+	 */
+	public User login(String username, String password) {
+		if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+			throw new BusinessException("用户名、密码不能为空");
+		}
+
+		User user = this.getByLoginName(username);
+		if (user == null) {
+			throw new BusinessException("用户名不存在");
+		}
+
+		String encodedPassword = SaltEncoder.encode(password, user.getSalt());
+		return StringUtils.equals(user.getEncodedPassword(), encodedPassword) ? user : null;
+	}
+
+	/**
 	 * 注册帐号
 	 */
 	public void register(User user) {
