@@ -73,6 +73,12 @@
 
 	<!-- 依赖项定义 -->
 	<dependencies>
+		<dependency>
+			<groupId>net.ipetty</groupId>
+			<artifactId>ipetty-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	
 		<!-- SPRINGSIDE <dependency> <groupId>org.springside</groupId> <artifactId>springside-core</artifactId> <version>${springside.version}</version> 
 			</dependency> -->
 		<!-- AOP begin -->
@@ -380,6 +386,12 @@
 			<artifactId>dbunit</artifactId>
 			<version>2.4.9</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<version>3.2</version>
 		</dependency>
 	</dependencies>
 

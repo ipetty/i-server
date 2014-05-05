@@ -16,6 +16,10 @@ public abstract class AuditableIdEntity<T extends Object> extends IdEntity<T> {
 	private Integer lastModifiedBy;
 	private Date lastModifiedOn;
 
+	public void preUpdate() {
+		this.setLastModifiedOn(new Date());
+	}
+
 	public Integer getLastModifiedBy() {
 		return lastModifiedBy;
 	}

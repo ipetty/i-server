@@ -1,9 +1,10 @@
 package net.ipetty.user.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import net.ipetty.core.domain.IntegerIdEntity;
+import net.ipetty.core.domain.AbstractEntity;
 import net.ipetty.pet.domain.Pet;
 
 /**
@@ -12,10 +13,13 @@ import net.ipetty.pet.domain.Pet;
  * @author luocanfeng
  * @date 2014年4月29日
  */
-public class User extends IntegerIdEntity {
+public class User extends AbstractEntity {
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 5372132560605135165L;
+
+	private Integer id;
+	private Date createdOn; // 创建/注册时间
 
 	private int uid; // uid，用户不可见，在用户未设置爱宠号时有用
 	private String account; // 爱宠号，用户在爱宠的唯一标识，一经设定不能更改，可作登录帐号
@@ -26,6 +30,7 @@ public class User extends IntegerIdEntity {
 	private String weiboAccount; // 新浪微博帐号，通过第三方帐号登录后自动绑定，可作登录帐号
 	private String weiboUid; // 通过新浪微博（第三方帐号）登录的用户的uid
 	private String password; // 密码
+	private String encodedPassword; // 加密后的密码
 	private String salt; // 密码盐值
 
 	private UserProfile profile; // 个人资料
@@ -36,6 +41,26 @@ public class User extends IntegerIdEntity {
 	private List<Pet> pets = new ArrayList<Pet>(); // 宠物
 
 	private List<Role> roles = new ArrayList<Role>(); // 拥有的角色
+
+	public void prePersist() {
+		this.setCreatedOn(new Date());
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
 
 	public int getUid() {
 		return uid;
@@ -109,6 +134,14 @@ public class User extends IntegerIdEntity {
 		this.password = password;
 	}
 
+	public String getEncodedPassword() {
+		return encodedPassword;
+	}
+
+	public void setEncodedPassword(String encodedPassword) {
+		this.encodedPassword = encodedPassword;
+	}
+
 	public String getSalt() {
 		return salt;
 	}
@@ -149,11 +182,11 @@ public class User extends IntegerIdEntity {
 		this.statistics = statistics;
 	}
 
-	public List<Pet> getPet() {
+	public List<Pet> getPets() {
 		return pets;
 	}
 
-	public void setPet(List<Pet> pets) {
+	public void setPets(List<Pet> pets) {
 		this.pets = pets;
 	}
 

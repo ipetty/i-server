@@ -17,6 +17,10 @@ public abstract class IdEntity<T extends Object> extends AbstractEntity {
 	private Integer createdBy;
 	private Date createdOn;
 
+	public void prePersist() {
+		this.setCreatedOn(new Date());
+	}
+
 	public T getId() {
 		return id;
 	}
