@@ -1,6 +1,4 @@
-package net.ipetty.user.vo;
-
-import net.ipetty.user.domain.User;
+package net.ipetty.user.domain;
 
 /**
  * 匿名用户

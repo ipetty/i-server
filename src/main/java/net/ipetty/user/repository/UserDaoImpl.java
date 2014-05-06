@@ -65,7 +65,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getById(Integer id) {
-		return super.getJdbcTemplate().queryForObject(GET_BY_ID_SQL, USER_ROW_MAPPER, id);
+		return super.queryUniqueEntity(GET_BY_ID_SQL, USER_ROW_MAPPER, id);
 	}
 
 	private static final String GET_BY_UID_SQL = "select * from users where uid=?";
@@ -75,7 +75,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByUid(int uid) {
-		return super.getJdbcTemplate().queryForObject(GET_BY_UID_SQL, USER_ROW_MAPPER, uid);
+		return super.queryUniqueEntity(GET_BY_UID_SQL, USER_ROW_MAPPER, uid);
 	}
 
 	private static final String GET_BY_ACCOUNT_SQL = "select * from users where account=?";
@@ -85,7 +85,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByAccount(String account) {
-		return super.getJdbcTemplate().queryForObject(GET_BY_ACCOUNT_SQL, USER_ROW_MAPPER, account);
+		return super.queryUniqueEntity(GET_BY_ACCOUNT_SQL, USER_ROW_MAPPER, account);
 	}
 
 	private static final String GET_BY_LOGIN_NAME_SQL = "select * from users where account=? or phone_number=? or email=? or qzone_uid=? or weibo_uid=?";
@@ -95,8 +95,8 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByLoginName(String loginName) {
-		return super.getJdbcTemplate().queryForObject(GET_BY_LOGIN_NAME_SQL, USER_ROW_MAPPER, loginName, loginName,
-				loginName, loginName, loginName);
+		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, USER_ROW_MAPPER, loginName, loginName, loginName, loginName,
+				loginName);
 	}
 
 }

@@ -8,7 +8,6 @@ import net.ipetty.user.domain.User;
 import net.ipetty.user.repository.UserDao;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class UserService {
 	/**
 	 * 登录验证
 	 */
-	public User login(String username, String password) {
+	public User login(String username, String password) throws BusinessException {
 		if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
 			throw new BusinessException("用户名、密码不能为空");
 		}
@@ -45,7 +44,7 @@ public class UserService {
 	/**
 	 * 注册帐号
 	 */
-	public void register(User user) {
+	public void register(User user) throws BusinessException {
 		// verify accounts feilds
 		if (StringUtils.isBlank(user.getAccount()) && StringUtils.isBlank(user.getPhoneNumber())
 				&& StringUtils.isBlank(user.getEmail()) && StringUtils.isBlank(user.getQzoneUid())
@@ -86,15 +85,11 @@ public class UserService {
 		user.setId(result.getId());
 	}
 
-	private void checkUnique(String fieldValue, String fieldLabel) {
+	private void checkUnique(String fieldValue, String fieldLabel) throws BusinessException {
 		if (StringUtils.isNotBlank(fieldValue)) {
-			try {
-				User orignal = userDao.getByLoginName(fieldValue);
-				if (orignal != null) {
-					throw new BusinessException(fieldLabel + " already exist.");
-				}
-			} catch (EmptyResultDataAccessException e) {
-				// empty is ok.
+			User orignal = userDao.getByLoginName(fieldValue);
+			if (orignal != null) {
+				throw new BusinessException(fieldLabel + " already exist.");
 			}
 		}
 	}

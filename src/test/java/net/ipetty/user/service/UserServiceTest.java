@@ -23,7 +23,7 @@ public class UserServiceTest extends BaseTestWithDBUnit {
 	@Test
 	public void testRegister() {
 		User user = new User();
-		String email = "test@ipetty.net";
+		String email = "registerWithServiceTest@ipetty.net";
 		user.setEmail(email);
 		user.setPassword("password");
 		userService.register(user);

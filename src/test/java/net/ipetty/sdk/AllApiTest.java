@@ -1,6 +1,7 @@
-package net.ipetty.core.test;
+package net.ipetty.sdk;
 
-import net.ipetty.user.service.UserServiceTest;
+import net.ipetty.core.test.BaseTestWithDBUnit;
+import net.ipetty.core.test.JettyServer;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -8,22 +9,24 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
- * AllServiceTest
+ * AllApiTest
  * 
  * @author luocanfeng
- * @date 2014年5月5日
+ * @date 2014年5月6日
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ UserServiceTest.class })
-public class AllServiceTest extends BaseTestWithDBUnit {
+@Suite.SuiteClasses({ UserApiTest.class })
+public class AllApiTest extends BaseTestWithDBUnit {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		BaseTestWithDBUnit.setUpBeforeClass();
+		JettyServer.start();
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		JettyServer.stop();
 	}
 
 }
