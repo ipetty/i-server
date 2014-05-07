@@ -6,6 +6,7 @@ import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.repository.UserDao;
+import net.ipetty.user.repository.UserProfileDao;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,12 @@ public class UserService {
 
 	@Resource
 	private UserDao userDao;
+
+	@Resource
+	private UserProfileDao userProfileDao;
+
+	@Resource
+	private UidService uidService;
 
 	/**
 	 * 登录验证
@@ -45,44 +52,53 @@ public class UserService {
 	 * 注册帐号
 	 */
 	public void register(User user) throws BusinessException {
-		// verify accounts feilds
-		if (StringUtils.isBlank(user.getAccount()) && StringUtils.isBlank(user.getPhoneNumber())
-				&& StringUtils.isBlank(user.getEmail()) && StringUtils.isBlank(user.getQzoneUid())
-				&& StringUtils.isBlank(user.getWeiboUid())) {
-			// No account field been setted
-			throw new BusinessException("Excepted at least one account field been setted.");
+		synchronized (uidService) {
+			// verify accounts feilds
+			if (StringUtils.isBlank(user.getAccount()) && StringUtils.isBlank(user.getPhoneNumber())
+					&& StringUtils.isBlank(user.getEmail()) && StringUtils.isBlank(user.getQzoneUid())
+					&& StringUtils.isBlank(user.getWeiboUid())) {
+				// No account field been setted
+				throw new BusinessException("Excepted at least one account field been setted.");
+			}
+
+			// verify password
+			if (StringUtils.isBlank(user.getPassword())) {
+				throw new BusinessException("Password must not be empty.");
+			}
+
+			// check unique
+			this.checkUnique(user.getAccount(), "Account");
+			this.checkUnique(user.getPhoneNumber(), "Phone Number");
+			this.checkUnique(user.getEmail(), "Email");
+			this.checkUnique(user.getQzoneUid(), "Qzone Uid");
+			this.checkUnique(user.getWeiboUid(), "Weibo Uid");
+
+			// retreive an available uid
+			int uid = uidService.getUid();
+			user.setUid(uid);
+
+			// generate salt
+			String salt = SaltEncoder.generateSalt();
+			user.setSalt(salt);
+
+			// encode password
+			user.setEncodedPassword(SaltEncoder.encode(user.getPassword(), user.getSalt()));
+			user.setPassword(user.getEncodedPassword());
+
+			// persist user
+			userDao.save(user);
+
+			// mark the uid as used
+			uidService.markAsUsed(uid);
+
+			// find the id back
+			User result = userDao.getByUid(user.getUid());
+			user.setId(result.getId());
+
+			// persist user profile
+			user.getProfile().setUserId(user.getId());
+			userProfileDao.save(user.getProfile());
 		}
-
-		// verify password
-		if (StringUtils.isBlank(user.getPassword())) {
-			throw new BusinessException("Password must not be empty.");
-		}
-
-		// check unique
-		this.checkUnique(user.getAccount(), "Account");
-		this.checkUnique(user.getPhoneNumber(), "Phone Number");
-		this.checkUnique(user.getEmail(), "Email");
-		this.checkUnique(user.getQzoneUid(), "Qzone Uid");
-		this.checkUnique(user.getWeiboUid(), "Weibo Uid");
-
-		// generate uid
-		// TODO
-		user.setUid((int) Math.round(Integer.MAX_VALUE * Math.random()));
-
-		// generate salt
-		String salt = SaltEncoder.generateSalt();
-		user.setSalt(salt);
-
-		// encode password
-		user.setEncodedPassword(SaltEncoder.encode(user.getPassword(), user.getSalt()));
-		user.setPassword(user.getEncodedPassword());
-
-		// persist
-		userDao.save(user);
-
-		// find the id back
-		User result = userDao.getByUid(user.getUid());
-		user.setId(result.getId());
 	}
 
 	private void checkUnique(String fieldValue, String fieldLabel) throws BusinessException {

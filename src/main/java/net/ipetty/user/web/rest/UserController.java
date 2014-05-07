@@ -4,13 +4,17 @@ import javax.annotation.Resource;
 
 import net.ipetty.core.web.rest.BaseController;
 import net.ipetty.core.web.rest.exception.RestException;
+import net.ipetty.pet.domain.Pet;
 import net.ipetty.user.domain.User;
+import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.service.UserService;
+import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserVO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,21 +46,34 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 注册用户
+	 * 注册
 	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public UserVO register(String email, String password) {
-		logger.debug("register with email={}", email);
-		if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
+	public UserVO register(@RequestBody RegisterVO register) {
+		logger.debug("register {}", register);
+		if (StringUtils.isEmpty(register.getEmail()) || StringUtils.isEmpty(register.getPassword())) {
 			throw new RestException("邮箱、密码不能为空");
 		}
 
-		User registerUser = new User();
-		registerUser.setEmail(email);
-		registerUser.setPassword(password);
-		userService.register(registerUser);
-		return registerUser.toUserVO();
+		User user = new User();
+		user.setEmail(register.getEmail());
+		user.setPassword(register.getPassword());
+
+		UserProfile profile = new UserProfile();
+		profile.setNickname(register.getNickname());
+		profile.setGender(register.getGender());
+		user.setProfile(profile);
+
+		userService.register(user);
+
+		Pet pet = new Pet();
+		pet.setUserId(user.getId());
+		// TODO pet.setGender(register.getPetGender());
+		// TODO pet.setName(register.getPetName());
+		// TODO petService.save(pet);
+
+		return user.toUserVO();
 	}
 
 	/**

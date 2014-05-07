@@ -39,8 +39,8 @@ public class BaseTestWithDBUnit extends BaseTest {
 	private static final String DB_PASSWORD;
 	private static final String TEST_DATA_FILE; // classpath下的测试数据文件名
 
-	private static final FlatXmlDataSetBuilder DATASET_BUILDER = new FlatXmlDataSetBuilder();
-	private static final DefaultDataTypeFactory DATA_TYPE_FACTORY = new MySqlDataTypeFactory();
+	private static final FlatXmlDataSetBuilder DATASET_BUILDER;
+	private static final DefaultDataTypeFactory DATA_TYPE_FACTORY;
 
 	static {
 		Properties properties = new Properties();
@@ -69,6 +69,10 @@ public class BaseTestWithDBUnit extends BaseTest {
 		DB_USERNAME = properties.getProperty("username");
 		DB_PASSWORD = properties.getProperty("password");
 		TEST_DATA_FILE = properties.getProperty("testDataFile");
+
+		DATASET_BUILDER = new FlatXmlDataSetBuilder();
+		DATASET_BUILDER.setColumnSensing(true);
+		DATA_TYPE_FACTORY = new MySqlDataTypeFactory();
 	}
 
 	@BeforeClass

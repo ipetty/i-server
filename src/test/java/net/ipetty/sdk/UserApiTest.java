@@ -2,6 +2,8 @@ package net.ipetty.sdk;
 
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
+import net.ipetty.vo.HumanGender;
+import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserVO;
 
 import org.junit.Assert;
@@ -19,7 +21,9 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testRegister() {
-		UserVO user = userApi.register("registerWithApiTest@ipetty.net", "888888");
+		RegisterVO register = new RegisterVO("registerWithApiTest@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		logger.debug("register {}", register);
+		UserVO user = userApi.register(register);
 		Assert.assertNotNull(user);
 		logger.debug("register success {}", user);
 	}

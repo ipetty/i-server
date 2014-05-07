@@ -1,7 +1,6 @@
 package net.ipetty.user.domain;
 
 import net.ipetty.core.domain.AbstractEntity;
-import net.ipetty.user.category.Gender;
 
 /**
  * 用户个人信息
@@ -18,7 +17,7 @@ public class UserProfile extends AbstractEntity {
 	private String nickname; // 昵称
 	private String avatar; // 头像
 	private String background; // 背景图片
-	private Gender gender; // 性别
+	private String gender; // 性别
 	private String stateAndRegion; // 地区
 	private String signature; // 个性签名
 
@@ -54,11 +53,11 @@ public class UserProfile extends AbstractEntity {
 		this.background = background;
 	}
 
-	public Gender getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Repository;
 public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 
 	static final RowMapper<User> USER_ROW_MAPPER = new RowMapper<User>() {
-
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// id, created_on, uid, account, phone_number, email, qq, qzone_uid,
@@ -40,7 +39,6 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			user.setSalt(rs.getString("salt"));
 			return user;
 		}
-
 	};
 
 	private static final String CREATE_USER_SQL = "insert into users(uid, account, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt)"
@@ -95,8 +93,8 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByLoginName(String loginName) {
-		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, USER_ROW_MAPPER, loginName, loginName, loginName, loginName,
-				loginName);
+		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, USER_ROW_MAPPER, loginName, loginName, loginName,
+				loginName, loginName);
 	}
 
 }

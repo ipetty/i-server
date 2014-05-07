@@ -25,7 +25,7 @@ public class UserServiceTest extends BaseTestWithDBUnit {
 		User user = new User();
 		String email = "registerWithServiceTest@ipetty.net";
 		user.setEmail(email);
-		user.setPassword("password");
+		user.setPassword("888888");
 		userService.register(user);
 
 		User result = userService.getByLoginName(email);
