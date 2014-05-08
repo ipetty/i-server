@@ -19,6 +19,11 @@ public class UserApiTest extends BaseTest {
 
 	UserApi userApi = new UserApiImpl(ApiContext.getInstance("1", "1"));
 
+	private static final String TEST_ACCOUNT_EMAIL = "luocanfeng@ipetty.net";
+	private static final String TEST_ACCOUNT_PASSWORD = "888888";
+	private static final int TEST_ACCOUNT_UID = 3;
+	private static final String TEST_ACCOUNT_UNIQUE_NAME = "luocanfeng";
+
 	@Test
 	public void testRegister() {
 		RegisterVO register = new RegisterVO("registerWithApiTest@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
@@ -30,14 +35,14 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testLogin() {
-		UserVO user = userApi.login("luocanfeng@ipetty.net", "888888");
+		UserVO user = userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
 		Assert.assertNotNull(user);
 		logger.debug("login success {}", user);
 	}
 
 	@Test
 	public void testCheckEmailAvailable() {
-		String email = "luocanfeng@ipetty.net";
+		String email = TEST_ACCOUNT_EMAIL;
 		boolean result = userApi.checkEmailAvailable(email);
 		logger.debug("check email available for {}, result is {}", email, result);
 		Assert.assertFalse(result);
@@ -46,6 +51,45 @@ public class UserApiTest extends BaseTest {
 		result = userApi.checkEmailAvailable(email);
 		logger.debug("check email available for {}, result is {}", email, result);
 		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void testGetById() {
+		UserVO user = userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
+		user = userApi.getById(user.getId());
+		Assert.assertNotNull(user);
+		logger.debug("get by id '{}', result is {}", user.getId(), user);
+	}
+
+	@Test
+	public void testGetByUid() {
+		UserVO user = userApi.getByUid(TEST_ACCOUNT_UID);
+		Assert.assertNotNull(user);
+		logger.debug("get by uid '{}', result is {}", TEST_ACCOUNT_UID, user);
+	}
+
+	@Test
+	public void testGetByUniqueName() {
+		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		Assert.assertNotNull(user);
+		logger.debug("get by unique name '{}', result is {}", TEST_ACCOUNT_UNIQUE_NAME, user);
+	}
+
+	@Test
+	public void testUpdateUniqueName() {
+		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		try {
+			userApi.updateUniqueName(user.getId(), TEST_ACCOUNT_UNIQUE_NAME);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.assertTrue(true);
+		}
+		try {
+			userApi.updateUniqueName(user.getId(), "_testUpdateUniqueNameWithApi");
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.assertTrue(true);
+		}
 	}
 
 }

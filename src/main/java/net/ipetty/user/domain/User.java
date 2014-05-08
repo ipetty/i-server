@@ -25,7 +25,7 @@ public class User extends AbstractEntity {
 	private Date createdOn; // 创建/注册时间
 
 	private int uid; // uid，用户不可见，在用户未设置爱宠号时有用
-	private String account; // 爱宠号，用户在爱宠的唯一标识，一经设定不能更改，可作登录帐号
+	private String uniqueName; // 爱宠号，用户在爱宠的唯一标识，一经设定不能更改，可作登录帐号
 	private String phoneNumber; // 手机号，绑定手机号需短信验证，可作登录帐号
 	private String email; // 邮箱地址，绑定邮箱需邮件验证，可作登录帐号
 	private String qq; // QQ号，通过第三方帐号登录后自动绑定，可作登录帐号
@@ -82,12 +82,12 @@ public class User extends AbstractEntity {
 		this.uid = uid;
 	}
 
-	public String getAccount() {
-		return account;
+	public String getUniqueName() {
+		return uniqueName;
 	}
 
-	public void setAccount(String account) {
-		this.account = account;
+	public void setUniqueName(String uniqueName) {
+		this.uniqueName = uniqueName;
 	}
 
 	public String getPhoneNumber() {

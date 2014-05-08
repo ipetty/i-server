@@ -16,10 +16,13 @@
 	<!-- password=888888 -->
 	<users id="11" uid="1" email="admin@ipetty.net" password="9bd68c251be901430d6b3bd111ac8cba13b008ce" salt="7a2a9b7682d478ef" />
 	<users id="12" uid="2" email="user@ipetty.net" password="95f1d877c00ec440163c236e32f68da74c65e594" salt="b37e309c16febafc" />
-	<users id="13" uid="3" email="luocanfeng@ipetty.net" password="f62de3b1c5829bac32efae54551db05dbddf67f9" salt="40363981c8dac616" />
-	<users id="10000" uid="10000" account="admin" email="service@ipetty.net" password="be8d68e706c7067deb0a1c150965ad6cabf50610"
+	<users id="13" uid="3" unique_name="luocanfeng" email="luocanfeng@ipetty.net" password="f62de3b1c5829bac32efae54551db05dbddf67f9"
+		salt="40363981c8dac616" />
+	<users id="10000" uid="10000" unique_name="admin" email="service@ipetty.net" password="be8d68e706c7067deb0a1c150965ad6cabf50610"
 		salt="4f49f396ae6d9dc3" />
 
 	<user_profile />
+
+	<pet />
 
 </dataset>

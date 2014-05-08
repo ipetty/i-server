@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
+import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.repository.UserDao;
 import net.ipetty.user.repository.UserProfileDao;
 
@@ -54,24 +55,24 @@ public class UserService {
 	public void register(User user) throws BusinessException {
 		synchronized (uidService) {
 			// verify accounts feilds
-			if (StringUtils.isBlank(user.getAccount()) && StringUtils.isBlank(user.getPhoneNumber())
+			if (StringUtils.isBlank(user.getUniqueName()) && StringUtils.isBlank(user.getPhoneNumber())
 					&& StringUtils.isBlank(user.getEmail()) && StringUtils.isBlank(user.getQzoneUid())
 					&& StringUtils.isBlank(user.getWeiboUid())) {
 				// No account field been setted
-				throw new BusinessException("Excepted at least one account field been setted.");
+				throw new BusinessException("必须至少设置一个帐号字段");
 			}
 
 			// verify password
 			if (StringUtils.isBlank(user.getPassword())) {
-				throw new BusinessException("Password must not be empty.");
+				throw new BusinessException("密码不能为空");
 			}
 
 			// check unique
-			this.checkUnique(user.getAccount(), "Account");
-			this.checkUnique(user.getPhoneNumber(), "Phone Number");
-			this.checkUnique(user.getEmail(), "Email");
-			this.checkUnique(user.getQzoneUid(), "Qzone Uid");
-			this.checkUnique(user.getWeiboUid(), "Weibo Uid");
+			this.checkUnique(user.getUniqueName(), "爱宠号");
+			this.checkUnique(user.getPhoneNumber(), "手机号");
+			this.checkUnique(user.getEmail(), "邮箱");
+			this.checkUnique(user.getQzoneUid(), "QQ空间Uid");
+			this.checkUnique(user.getWeiboUid(), "新浪微博Uid");
 
 			// retreive an available uid
 			int uid = uidService.getUid();
@@ -96,8 +97,17 @@ public class UserService {
 			user.setId(result.getId());
 
 			// persist user profile
+			if (user.getProfile() == null) {
+				user.setProfile(new UserProfile());
+			}
 			user.getProfile().setUserId(user.getId());
 			userProfileDao.save(user.getProfile());
+
+			// TODO persist user zone
+			// TODO persist user preferences
+			// TODO persist user statistics
+
+			// TODO persist user roles
 		}
 	}
 
@@ -105,7 +115,7 @@ public class UserService {
 		if (StringUtils.isNotBlank(fieldValue)) {
 			User orignal = userDao.getByLoginName(fieldValue);
 			if (orignal != null) {
-				throw new BusinessException(fieldLabel + " already exist.");
+				throw new BusinessException(fieldLabel + "已存在");
 			}
 		}
 	}
@@ -125,10 +135,10 @@ public class UserService {
 	}
 
 	/**
-	 * 根据爱宠帐号获取用户帐号
+	 * 根据爱宠号获取用户帐号
 	 */
-	public User getByAccount(String account) {
-		return userDao.getByAccount(account);
+	public User getByUniqueName(String uniqueName) {
+		return userDao.getByUniqueName(uniqueName);
 	}
 
 	/**
@@ -136,6 +146,56 @@ public class UserService {
 	 */
 	public User getByLoginName(String loginName) {
 		return userDao.getByLoginName(loginName);
+	}
+
+	/**
+	 * 更新用户帐号信息
+	 */
+	public void update(User user) {
+		if (user == null || user.getId() == null) {
+			throw new BusinessException("用户不存在");
+		}
+		userDao.update(user);
+	}
+
+	/**
+	 * 更新爱宠号
+	 */
+	public void updateUniqueName(Integer id, String uniqueName) {
+		this.checkUnique(uniqueName, "Unique Name"); // 校验唯一性
+
+		User user = userDao.getById(id);
+		if (user == null) {
+			throw new BusinessException("指定ID（" + id + "）的用户不存在");
+		}
+
+		if (StringUtils.isNotBlank(user.getUniqueName())) { // 是否已设置；不允许重复设置
+			throw new BusinessException("爱宠号已设置，一经设置不能变更");
+		}
+
+		userDao.updateUniqueName(id, uniqueName);
+	}
+
+	/**
+	 * 修改密码
+	 */
+	public void changePassword(Integer id, String oldPassword, String newPassword) {
+		if (id == null || StringUtils.isBlank(oldPassword) || StringUtils.isBlank(newPassword)) {
+			throw new BusinessException("用户ID与密码不能为空");
+		}
+
+		User user = userDao.getById(id);
+		if (user == null) {
+			throw new BusinessException("指定ID（" + id + "）的用户不存在");
+		}
+
+		String oldEncodedPassword = SaltEncoder.encode(oldPassword, user.getSalt());
+		if (!StringUtils.equals(oldEncodedPassword, user.getEncodedPassword())) {
+			throw new BusinessException("原密码不匹配");
+		}
+
+		String newEncodedPassword = SaltEncoder.encode(newPassword, user.getSalt());
+		userDao.changePassword(id, newEncodedPassword);
 	}
 
 }

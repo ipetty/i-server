@@ -21,13 +21,14 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	static final RowMapper<User> USER_ROW_MAPPER = new RowMapper<User>() {
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_on, uid, account, phone_number, email, qq, qzone_uid,
+			// id, created_on, uid, unique_name, phone_number, email, qq,
+			// qzone_uid,
 			// weibo_account, weibo_uid, password, salt
 			User user = new User();
 			user.setId(rs.getInt("id"));
 			user.setCreatedOn(rs.getDate("created_on"));
 			user.setUid(rs.getInt("uid"));
-			user.setAccount(rs.getString("account"));
+			user.setUniqueName(rs.getString("unique_name"));
 			user.setPhoneNumber(rs.getString("phone_number"));
 			user.setEmail(rs.getString("email"));
 			user.setQq(rs.getString("qq"));
@@ -41,7 +42,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		}
 	};
 
-	private static final String CREATE_USER_SQL = "insert into users(uid, account, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt)"
+	private static final String CREATE_USER_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt)"
 			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
@@ -50,7 +51,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	@Override
 	public void save(User user) {
 		user.prePersist();
-		super.getJdbcTemplate().update(CREATE_USER_SQL, user.getUid(), user.getAccount(), user.getPhoneNumber(),
+		super.getJdbcTemplate().update(CREATE_USER_SQL, user.getUid(), user.getUniqueName(), user.getPhoneNumber(),
 				user.getEmail(), user.getQq(), user.getQzoneUid(), user.getWeiboAccount(), user.getWeiboUid(),
 				user.getEncodedPassword(), user.getSalt());
 		logger.debug("saved {}", user);
@@ -76,17 +77,17 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		return super.queryUniqueEntity(GET_BY_UID_SQL, USER_ROW_MAPPER, uid);
 	}
 
-	private static final String GET_BY_ACCOUNT_SQL = "select * from users where account=?";
+	private static final String GET_BY_UNIQUE_NAME_SQL = "select * from users where unique_name=?";
 
 	/**
-	 * 根据爱宠帐号获取用户帐号
+	 * 根据爱宠号获取用户帐号
 	 */
 	@Override
-	public User getByAccount(String account) {
-		return super.queryUniqueEntity(GET_BY_ACCOUNT_SQL, USER_ROW_MAPPER, account);
+	public User getByUniqueName(String uniqueName) {
+		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, USER_ROW_MAPPER, uniqueName);
 	}
 
-	private static final String GET_BY_LOGIN_NAME_SQL = "select * from users where account=? or phone_number=? or email=? or qzone_uid=? or weibo_uid=?";
+	private static final String GET_BY_LOGIN_NAME_SQL = "select * from users where unique_name=? or phone_number=? or email=? or qzone_uid=? or weibo_uid=?";
 
 	/**
 	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户帐号
@@ -95,6 +96,40 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	public User getByLoginName(String loginName) {
 		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, USER_ROW_MAPPER, loginName, loginName, loginName,
 				loginName, loginName);
+	}
+
+	private static final String UPDATE_USER_SQL = "update users set phone_number=?, email=?, qq=?, qzone_uid=?, weibo_account=?, weibo_uid=? where id=?";
+
+	/**
+	 * 更新用户帐号信息
+	 */
+	@Override
+	public void update(User user) {
+		super.getJdbcTemplate().update(UPDATE_USER_SQL, user.getPhoneNumber(), user.getEmail(), user.getQq(),
+				user.getQzoneUid(), user.getWeiboAccount(), user.getWeiboUid(), user.getId());
+		logger.debug("updated {}", user);
+	}
+
+	private static final String UPDATE_UNIQUE_NAME_SQL = "update users set unique_name=? where id=?";
+
+	/**
+	 * 更新爱宠号
+	 */
+	@Override
+	public void updateUniqueName(Integer id, String uniqueName) {
+		super.getJdbcTemplate().update(UPDATE_UNIQUE_NAME_SQL, uniqueName, id);
+		logger.debug("updated unique name for user({}), unique name is {}", id, uniqueName);
+	}
+
+	private static final String CHANGE_PASSWORD_SQL = "update users set password=? where id=?";
+
+	/**
+	 * 修改密码
+	 */
+	@Override
+	public void changePassword(Integer id, String newEncodedPassword) {
+		super.getJdbcTemplate().update(CHANGE_PASSWORD_SQL, newEncodedPassword, id);
+		logger.debug("changed password for user({})", id);
 	}
 
 }

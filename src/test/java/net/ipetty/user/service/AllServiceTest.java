@@ -14,7 +14,7 @@ import org.junit.runners.Suite;
  * @date 2014年5月5日
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ UserServiceTest.class })
+@Suite.SuiteClasses({ UserServiceTest.class, PetServiceTest.class })
 public class AllServiceTest extends BaseTestWithDBUnit {
 
 	@BeforeClass

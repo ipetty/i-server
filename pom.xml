@@ -16,6 +16,7 @@
 		<eclipse.jetty.version>8.1.15.v20140411</eclipse.jetty.version>
 
 		<spring.version>4.0.0.RELEASE</spring.version>
+		<spring.social.version>1.0.3.RELEASE</spring.social.version>
 		<mysql.connector.version>5.1.30</mysql.connector.version>
 		<commons.dbcp.version>1.4</commons.dbcp.version>
 		<commons.pool.version>1.6</commons.pool.version>
@@ -404,6 +405,19 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- spring-social -->
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-core</artifactId>
+			<version>${spring.social.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- jetty -->

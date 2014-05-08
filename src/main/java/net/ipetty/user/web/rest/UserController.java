@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import net.ipetty.core.web.rest.BaseController;
 import net.ipetty.core.web.rest.exception.RestException;
 import net.ipetty.pet.domain.Pet;
+import net.ipetty.pet.service.PetService;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.service.UserService;
@@ -14,6 +15,7 @@ import net.ipetty.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +32,9 @@ public class UserController extends BaseController {
 
 	@Resource
 	private UserService userService;
+
+	@Resource
+	private PetService petService;
 
 	/*
 	 * 用户登陆验证
@@ -67,11 +72,13 @@ public class UserController extends BaseController {
 
 		userService.register(user);
 
-		Pet pet = new Pet();
-		pet.setUserId(user.getId());
-		// TODO pet.setGender(register.getPetGender());
-		// TODO pet.setName(register.getPetName());
-		// TODO petService.save(pet);
+		if (StringUtils.isNotBlank(register.getPetName())) {
+			Pet pet = new Pet();
+			pet.setUserId(user.getId());
+			pet.setGender(register.getPetGender());
+			pet.setName(register.getPetName());
+			petService.save(pet);
+		}
 
 		return user.toUserVO();
 	}
@@ -89,5 +96,75 @@ public class UserController extends BaseController {
 		logger.debug("get by email {}, result is {}", email, user);
 		return user == null;
 	}
+
+	/**
+	 * 根据ID获取用户帐号
+	 */
+	@RequestMapping(value = "/user/id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO getById(@PathVariable("id") Integer id) {
+		if (id == null) {
+			throw new RestException("ID不能为空");
+		}
+		User user = userService.getById(id);
+		if (user == null) {
+			throw new RestException("用户不存在");
+		}
+		logger.debug("get by id {}, result is {}", id, user);
+		return user.toUserVO();
+	}
+
+	/**
+	 * 根据uid获取用户帐号
+	 */
+	@RequestMapping(value = "/user/uid/{uid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO getByUid(@PathVariable("uid") int uid) {
+		User user = userService.getByUid(uid);
+		if (user == null) {
+			throw new RestException("用户不存在");
+		}
+		logger.debug("get by uid {}, result is {}", uid, user);
+		return user.toUserVO();
+	}
+
+	/**
+	 * 根据爱宠号获取用户帐号
+	 */
+	@RequestMapping(value = "/user/{uniqueName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO getByUniqueName(@PathVariable("uniqueName") String uniqueName) {
+		if (StringUtils.isBlank(uniqueName)) {
+			throw new RestException("爱宠号不能为空");
+		}
+		User user = userService.getByUniqueName(uniqueName);
+		if (user == null) {
+			throw new RestException("用户不存在");
+		}
+		logger.debug("get by unique name {}, result is {}", uniqueName, user);
+		return user.toUserVO();
+	}
+
+	/**
+	 * 更新用户帐号信息
+	 */
+	// TODO
+
+	/**
+	 * 更新爱宠号
+	 */
+	@RequestMapping(value = "/user/uniqueName", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean updateUniqueName(Integer id, String uniqueName) {
+		if (id == null || StringUtils.isBlank(uniqueName)) {
+			throw new RestException("用户ID与爱宠号不能为空");
+		}
+		userService.updateUniqueName(id, uniqueName);
+		return true;
+	}
+
+	/**
+	 * 修改密码
+	 */
 
 }
