@@ -1,5 +1,8 @@
 package net.ipetty.feed.service;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import net.ipetty.feed.domain.Feed;
@@ -33,6 +36,27 @@ public class FeedService {
 	 */
 	public Feed getById(Long id) {
 		return feedDao.getById(id);
+	}
+
+	/**
+	 * 根据时间线分页获取消息（广场）
+	 */
+	public List<Feed> listByTimelineForSquare(Integer userId, Date timeline, int pageNumber, int pageSize) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * 根据时间线分页获取消息（我和我关注人的）
+	 */
+	public List<Feed> listByTimelineForHomePage(Integer userId, Date timeline, int pageNumber, int pageSize) {
+		// TODO
+		return null;
+	}
+
+	private List<Feed/* VO */> feeds2FeedVOs(List<Feed> feeds) {
+		// TODO
+		return null;
 	}
 
 }

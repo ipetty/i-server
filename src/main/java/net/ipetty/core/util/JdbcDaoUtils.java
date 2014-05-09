@@ -1,4 +1,4 @@
-package net.ipetty.core.repository;
+package net.ipetty.core.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

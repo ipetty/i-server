@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
-import net.ipetty.core.repository.JdbcDaoUtils;
+import net.ipetty.core.util.JdbcDaoUtils;
 import net.ipetty.feed.domain.Feed;
 
 import org.springframework.jdbc.core.RowMapper;
