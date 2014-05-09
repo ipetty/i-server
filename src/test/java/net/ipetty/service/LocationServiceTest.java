@@ -1,4 +1,4 @@
-package net.ipetty.user.service;
+package net.ipetty.service;
 
 import javax.annotation.Resource;
 

@@ -17,12 +17,12 @@ public class Feed extends LongIdEntity {
 	private static final long serialVersionUID = -4750939714532404430L;
 
 	private String text; // 文本内容
-	private Image image; // 图片
+	private Long imageId; // 图片ID
 
 	private List<Comment> comments = new ArrayList<Comment>(); // 评论列表
 	private List<FeedFavor> favors = new ArrayList<FeedFavor>(); // 赞列表
 	private FeedStatistics statistics; // 统计信息
-	private Location location; // 发表地点
+	private Long locationId; // 发表位置ID
 
 	public String getText() {
 		return text;
@@ -32,12 +32,12 @@ public class Feed extends LongIdEntity {
 		this.text = text;
 	}
 
-	public Image getImage() {
-		return image;
+	public Long getImageId() {
+		return imageId;
 	}
 
-	public void setImage(Image image) {
-		this.image = image;
+	public void setImageId(Long imageId) {
+		this.imageId = imageId;
 	}
 
 	public List<Comment> getComments() {
@@ -64,12 +64,12 @@ public class Feed extends LongIdEntity {
 		this.statistics = statistics;
 	}
 
-	public Location getLocation() {
-		return location;
+	public Long getLocationId() {
+		return locationId;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
 	}
 
 }

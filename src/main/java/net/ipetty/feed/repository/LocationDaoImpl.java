@@ -8,6 +8,7 @@ import java.sql.Statement;
 
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
+import net.ipetty.core.repository.JdbcDaoUtils;
 import net.ipetty.feed.domain.Location;
 
 import org.springframework.jdbc.core.RowMapper;
@@ -28,8 +29,8 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 			// id, longitude, latitude, geoHash, address
 			Location location = new Location();
 			location.setId(rs.getLong("id"));
-			location.setLongitude(rs.getLong("longitude"));
-			location.setLatitude(rs.getLong("latitude"));
+			location.setLongitude(JdbcDaoUtils.getLong(rs, "longitude"));
+			location.setLatitude(JdbcDaoUtils.getLong(rs, "latitude"));
 			location.setGeoHash(rs.getString("geoHash"));
 			location.setAddress(rs.getString("address"));
 			return location;
@@ -46,8 +47,12 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-			statement.setLong(1, location.getLongitude());
-			statement.setLong(2, location.getLatitude());
+			if (location.getLongitude() != null) {
+				statement.setLong(1, location.getLongitude());
+			}
+			if (location.getLatitude() != null) {
+				statement.setLong(2, location.getLatitude());
+			}
 			statement.setString(3, location.getGeoHash());
 			statement.setString(4, location.getAddress());
 			statement.execute();

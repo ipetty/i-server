@@ -1,4 +1,4 @@
-package net.ipetty.user.service;
+package net.ipetty.service;
 
 import net.ipetty.core.test.BaseTestWithDBUnit;
 
@@ -14,7 +14,8 @@ import org.junit.runners.Suite;
  * @date 2014年5月5日
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ UserServiceTest.class, PetServiceTest.class, LocationServiceTest.class, ImageServiceTest.class })
+@Suite.SuiteClasses({ UserServiceTest.class, PetServiceTest.class, LocationServiceTest.class, ImageServiceTest.class,
+		FeedServiceTest.class })
 public class AllServiceTest extends BaseTestWithDBUnit {
 
 	@BeforeClass

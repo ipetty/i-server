@@ -47,7 +47,9 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-			statement.setInt(1, image.getCreatedBy()); // 图片必须要有创建人，不然此处会报NullPointerException（null转int时报错）
+			if (image.getCreatedBy() != null) { // 图片必须要有创建人
+				statement.setInt(1, image.getCreatedBy());
+			}
 			statement.setString(2, image.getSmallURL());
 			statement.setString(3, image.getCutURL());
 			statement.setString(4, image.getOriginalURL());

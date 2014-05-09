@@ -1,10 +1,11 @@
-package net.ipetty.user.service;
+package net.ipetty.service;
 
 import javax.annotation.Resource;
 
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
+import net.ipetty.user.service.UserService;
 
 import org.junit.Assert;
 import org.junit.Test;

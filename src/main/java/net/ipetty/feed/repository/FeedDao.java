@@ -15,4 +15,9 @@ public interface FeedDao {
 	 */
 	public void save(Feed feed);
 
+	/**
+	 * 根据ID获取消息
+	 */
+	public Feed getById(Long id);
+
 }

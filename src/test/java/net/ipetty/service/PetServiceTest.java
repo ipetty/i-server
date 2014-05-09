@@ -1,4 +1,4 @@
-package net.ipetty.user.service;
+package net.ipetty.service;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.service.PetService;
+import net.ipetty.user.service.UserService;
 import net.ipetty.vo.AnimalGender;
 
 import org.apache.commons.collections.CollectionUtils;
