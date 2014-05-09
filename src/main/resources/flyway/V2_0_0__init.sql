@@ -63,3 +63,75 @@ create table pet (
 ) engine=innodb default charset=utf8;
 create index idx_unique_name on pet(unique_name);
 create index idx_gender on pet(gender);
+
+
+
+-- location
+create table location (
+	id bigint primary key auto_increment,
+	longitude bigint,
+	latitude bigint,
+	geoHash varchar(50),
+	address varchar(255)
+) engine=innodb default charset=utf8;
+create index idx_longitude on location(longitude);
+create index idx_latitude on location(latitude);
+create index idx_geoHash on location(geoHash);
+create index idx_address on location(address);
+
+-- image
+create table image (
+	id bigint primary key auto_increment,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	small_url varchar(255),
+	cut_url varchar(255),
+	original_url varchar(255),
+	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;
+create index idx_created_on on image(created_on desc);
+
+-- feed
+create table feed (
+	id bigint primary key auto_increment,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	image_id bigint,
+	text varchar(255),
+	location_id bigint,
+	foreign key(created_by) references users(id),
+	foreign key(image_id) references image(id),
+	foreign key(location_id) references location(id)
+) engine=innodb default charset=utf8;
+create index idx_created_on on feed(created_on desc);
+
+-- feed_comment
+create table feed_comment (
+	id bigint primary key auto_increment,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	feed_id bigint,
+	text varchar(255),
+	foreign key(created_by) references users(id),
+	foreign key(feed_id) references feed(id)
+) engine=innodb default charset=utf8;
+create index idx_created_on on feed_comment(created_on desc);
+
+-- feed_favor
+create table feed_favor (
+	id bigint primary key auto_increment,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	feed_id bigint,
+	foreign key(created_by) references users(id),
+	foreign key(feed_id) references feed(id)
+) engine=innodb default charset=utf8;
+create index idx_created_on on feed_favor(created_on desc);
+
+-- feed_statistics
+create table feed_statistics (
+	feed_id bigint primary key,
+	comment_count int,
+	favor_count int,
+	foreign key(feed_id) references feed(id)
+) engine=innodb default charset=utf8;

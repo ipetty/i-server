@@ -25,4 +25,16 @@
 
 	<pet />
 
+	<location />
+
+	<image />
+
+	<feed />
+
+	<feed_comment />
+
+	<feed_favor />
+
+	<feed_statistics />
+
 </dataset>

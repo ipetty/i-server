@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository("userProfileDao")
 public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfileDao {
 
-	static final RowMapper<UserProfile> USER_PROFILE_ROW_MAPPER = new RowMapper<UserProfile>() {
+	static final RowMapper<UserProfile> ROW_MAPPER = new RowMapper<UserProfile>() {
 		@Override
 		public UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// user_id, nickname, avatar, background, gender, state_and_region,
@@ -56,7 +56,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 */
 	@Override
 	public UserProfile getByUserId(Integer userId) {
-		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, USER_PROFILE_ROW_MAPPER, userId);
+		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
 
 	private static final String UPDATE_USER_PROFILE_SQL = "update user_profile set nickname=?, avatar=?, background=?, gender=?, state_and_region=?, signature=? where user_id=?";

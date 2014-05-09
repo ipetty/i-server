@@ -89,7 +89,7 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	private static final String URI_UPDATE_UNIQUE_NAME = "/user/uniqueName";
 
 	/**
-	 * 更新爱宠号
+	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
 	public boolean updateUniqueName(Integer id, String uniqueName) {
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();

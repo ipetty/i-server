@@ -1,8 +1,12 @@
 package net.ipetty.user.repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.User;
 
@@ -18,12 +22,11 @@ import org.springframework.stereotype.Repository;
 @Repository("userDao")
 public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 
-	static final RowMapper<User> USER_ROW_MAPPER = new RowMapper<User>() {
+	static final RowMapper<User> ROW_MAPPER = new RowMapper<User>() {
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// id, created_on, uid, unique_name, phone_number, email, qq,
-			// qzone_uid,
-			// weibo_account, weibo_uid, password, salt
+			// qzone_uid, weibo_account, weibo_uid, password, salt
 			User user = new User();
 			user.setId(rs.getInt("id"));
 			user.setCreatedOn(rs.getDate("created_on"));
@@ -50,11 +53,31 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public void save(User user) {
-		user.prePersist();
-		super.getJdbcTemplate().update(CREATE_USER_SQL, user.getUid(), user.getUniqueName(), user.getPhoneNumber(),
-				user.getEmail(), user.getQq(), user.getQzoneUid(), user.getWeiboAccount(), user.getWeiboUid(),
-				user.getEncodedPassword(), user.getSalt());
-		logger.debug("saved {}", user);
+		try {
+			Connection connection = super.getConnection();
+			PreparedStatement statement = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS);
+			statement.setInt(1, user.getUid());
+			statement.setString(2, user.getUniqueName());
+			statement.setString(3, user.getPhoneNumber());
+			statement.setString(4, user.getEmail());
+			statement.setString(5, user.getQq());
+			statement.setString(6, user.getQzoneUid());
+			statement.setString(7, user.getWeiboAccount());
+			statement.setString(8, user.getWeiboUid());
+			statement.setString(9, user.getEncodedPassword());
+			statement.setString(10, user.getSalt());
+
+			statement.execute();
+			ResultSet rs = statement.getGeneratedKeys();
+			while (rs.next()) {
+				user.setId(rs.getInt(1));
+			}
+			rs.close();
+			statement.close();
+			logger.debug("saved {}", user);
+		} catch (SQLException e) {
+			throw new BusinessException("Database exception", e);
+		}
 	}
 
 	private static final String GET_BY_ID_SQL = "select * from users where id=?";
@@ -64,7 +87,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getById(Integer id) {
-		return super.queryUniqueEntity(GET_BY_ID_SQL, USER_ROW_MAPPER, id);
+		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
 	private static final String GET_BY_UID_SQL = "select * from users where uid=?";
@@ -74,7 +97,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByUid(int uid) {
-		return super.queryUniqueEntity(GET_BY_UID_SQL, USER_ROW_MAPPER, uid);
+		return super.queryUniqueEntity(GET_BY_UID_SQL, ROW_MAPPER, uid);
 	}
 
 	private static final String GET_BY_UNIQUE_NAME_SQL = "select * from users where unique_name=?";
@@ -84,7 +107,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByUniqueName(String uniqueName) {
-		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, USER_ROW_MAPPER, uniqueName);
+		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, ROW_MAPPER, uniqueName);
 	}
 
 	private static final String GET_BY_LOGIN_NAME_SQL = "select * from users where unique_name=? or phone_number=? or email=? or qzone_uid=? or weibo_uid=?";
@@ -94,8 +117,8 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 */
 	@Override
 	public User getByLoginName(String loginName) {
-		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, USER_ROW_MAPPER, loginName, loginName, loginName,
-				loginName, loginName);
+		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, ROW_MAPPER, loginName, loginName, loginName, loginName,
+				loginName);
 	}
 
 	private static final String UPDATE_USER_SQL = "update users set phone_number=?, email=?, qq=?, qzone_uid=?, weibo_account=?, weibo_uid=? where id=?";

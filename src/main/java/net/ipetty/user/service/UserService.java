@@ -92,10 +92,6 @@ public class UserService {
 			// mark the uid as used
 			uidService.markAsUsed(uid);
 
-			// find the id back
-			User result = userDao.getByUid(user.getUid());
-			user.setId(result.getId());
-
 			// persist user profile
 			if (user.getProfile() == null) {
 				user.setProfile(new UserProfile());
@@ -159,7 +155,7 @@ public class UserService {
 	}
 
 	/**
-	 * 更新爱宠号
+	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
 	public void updateUniqueName(Integer id, String uniqueName) {
 		this.checkUnique(uniqueName, "Unique Name"); // 校验唯一性

@@ -151,7 +151,7 @@ public class UserController extends BaseController {
 	// TODO
 
 	/**
-	 * 更新爱宠号
+	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
 	@RequestMapping(value = "/user/uniqueName", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

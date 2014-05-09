@@ -13,7 +13,8 @@ public class Comment extends LongIdEntity {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1792004941600597440L;
 
-	private Long feedId;
+	private Long feedId; // 评论的对象
+	private String text; // 评论内容
 
 	public Long getFeedId() {
 		return feedId;
@@ -21,6 +22,14 @@ public class Comment extends LongIdEntity {
 
 	public void setFeedId(Long feedId) {
 		this.feedId = feedId;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 }

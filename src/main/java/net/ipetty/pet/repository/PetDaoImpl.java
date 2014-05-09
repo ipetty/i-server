@@ -1,9 +1,13 @@
 package net.ipetty.pet.repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
+import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.pet.domain.Pet;
 
@@ -19,7 +23,7 @@ import org.springframework.stereotype.Repository;
 @Repository("petDao")
 public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 
-	static final RowMapper<Pet> PET_ROW_MAPPER = new RowMapper<Pet>() {
+	static final RowMapper<Pet> ROW_MAPPER = new RowMapper<Pet>() {
 		@Override
 		public Pet mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// id, created_on, user_id, uid, unique_name, name, gender,
@@ -37,16 +41,33 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		}
 	};
 
-	private static final String CREATE_PET_SQL = "insert into pet(user_id, uid, unique_name, name, gender, sort_order) values(?, ?, ?,?, ?, ?)";
+	private static final String CREATE_PET_SQL = "insert into pet(user_id, uid, unique_name, name, gender, sort_order) values(?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存宠物信息
 	 */
 	@Override
 	public void save(Pet pet) {
-		super.getJdbcTemplate().update(CREATE_PET_SQL, pet.getUserId(), pet.getUid(), pet.getUniqueName(),
-				pet.getName(), pet.getGender(), pet.getSortOrder());
-		logger.debug("saved {}", pet);
+		try {
+			Connection connection = super.getConnection();
+			PreparedStatement statement = connection.prepareStatement(CREATE_PET_SQL, Statement.RETURN_GENERATED_KEYS);
+			statement.setInt(1, pet.getUserId()); // 宠物必须要有主人，不然此处会报NullPointerException（null转int时报错）
+			statement.setInt(2, pet.getUid());
+			statement.setString(3, pet.getUniqueName());
+			statement.setString(4, pet.getName());
+			statement.setString(5, pet.getGender());
+			statement.setInt(6, pet.getSortOrder()); // 必须设置排序，不然此处会报NullPointerException（null转int时报错）
+			statement.execute();
+			ResultSet rs = statement.getGeneratedKeys();
+			while (rs.next()) {
+				pet.setId(rs.getInt(1));
+			}
+			rs.close();
+			statement.close();
+			logger.debug("saved {}", pet);
+		} catch (SQLException e) {
+			throw new BusinessException("Database exception", e);
+		}
 	}
 
 	private static final String GET_BY_ID_SQL = "select * from pet where id=?";
@@ -56,7 +77,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 */
 	@Override
 	public Pet getById(Integer id) {
-		return super.queryUniqueEntity(GET_BY_ID_SQL, PET_ROW_MAPPER, id);
+		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
 	private static final String GET_BY_UID_SQL = "select * from pet where uid=?";
@@ -66,7 +87,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 */
 	@Override
 	public Pet getByUid(int uid) {
-		return super.queryUniqueEntity(GET_BY_UID_SQL, PET_ROW_MAPPER, uid);
+		return super.queryUniqueEntity(GET_BY_UID_SQL, ROW_MAPPER, uid);
 	}
 
 	private static final String GET_BY_UNIQUE_NAME_SQL = "select * from pet where unique_name=?";
@@ -76,7 +97,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 */
 	@Override
 	public Pet getByUniqueName(String uniqueName) {
-		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, PET_ROW_MAPPER, uniqueName);
+		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, ROW_MAPPER, uniqueName);
 	}
 
 	private static final String LIST_BY_USER_ID_SQL = "select * from pet where user_id=? order by sort_order asc";
@@ -86,7 +107,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 */
 	@Override
 	public List<Pet> listByUserId(Integer userId) {
-		return super.getJdbcTemplate().query(LIST_BY_USER_ID_SQL, PET_ROW_MAPPER, userId);
+		return super.getJdbcTemplate().query(LIST_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
 
 	private static final String UPDATE_PET_SQL = "update pet set name=?, gender=?, sort_order=? where id=?";

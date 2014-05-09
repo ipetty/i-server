@@ -64,10 +64,6 @@ public class PetService {
 
 			// mark the uid as used
 			uidService.markAsUsed(uid);
-
-			// find the id back
-			Pet result = petDao.getByUid(uid);
-			pet.setId(result.getId());
 		}
 	}
 
@@ -110,7 +106,7 @@ public class PetService {
 	}
 
 	/**
-	 * 更新爱宠唯一标识
+	 * 设置爱宠唯一标识，只能设置一次，一经设置不能变更
 	 */
 	public void updateUniqueName(Integer id, String uniqueName) {
 		if (id == null || StringUtils.isBlank(uniqueName)) {
