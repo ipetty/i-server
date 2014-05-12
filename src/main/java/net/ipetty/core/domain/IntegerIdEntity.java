@@ -11,4 +11,12 @@ public abstract class IntegerIdEntity extends IdEntity<Integer> {
 	/** serialVersionUID */
 	private static final long serialVersionUID = -5174261440707200483L;
 
+	public Integer getId() {
+		return super.getId();
+	}
+
+	public void setId(Integer id) {
+		super.setId(id);
+	}
+
 }

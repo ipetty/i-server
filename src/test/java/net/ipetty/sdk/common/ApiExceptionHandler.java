@@ -36,7 +36,7 @@ public class ApiExceptionHandler implements ResponseErrorHandler {
 		MediaType contentType = response.getHeaders().getContentType();
 		Charset charset = contentType != null ? contentType.getCharSet() : null;
 		byte[] body = getResponseBody(response);
-		String str = new String(body, charset);
+		String str = charset == null ? new String(body) : new String(body, charset);
 		/*
 		 * switch (statusCode.series()) { case CLIENT_ERROR: throw new
 		 * HttpClientErrorException(statusCode, response.getStatusText(), body,

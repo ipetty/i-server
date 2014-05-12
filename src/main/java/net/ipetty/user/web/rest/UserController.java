@@ -47,7 +47,7 @@ public class UserController extends BaseController {
 			throw new RestException("用户名、密码不能为空");
 		}
 		User user = userService.login(username, password);
-		return user.toUserVO();
+		return user.toVO();
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class UserController extends BaseController {
 			petService.save(pet);
 		}
 
-		return user.toUserVO();
+		return user.toVO();
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class UserController extends BaseController {
 			throw new RestException("用户不存在");
 		}
 		logger.debug("get by id {}, result is {}", id, user);
-		return user.toUserVO();
+		return user.toVO();
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class UserController extends BaseController {
 			throw new RestException("用户不存在");
 		}
 		logger.debug("get by uid {}, result is {}", uid, user);
-		return user.toUserVO();
+		return user.toVO();
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class UserController extends BaseController {
 			throw new RestException("用户不存在");
 		}
 		logger.debug("get by unique name {}, result is {}", uniqueName, user);
-		return user.toUserVO();
+		return user.toVO();
 	}
 
 	/**

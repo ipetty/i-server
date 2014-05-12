@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import net.ipetty.feed.domain.Feed;
 import net.ipetty.feed.repository.FeedDao;
+import net.ipetty.vo.FeedVO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,14 +35,14 @@ public class FeedService {
 	/**
 	 * 根据ID获取消息
 	 */
-	public Feed getById(Long id) {
-		return feedDao.getById(id);
+	public FeedVO getById(Long id) {
+		return feedDao.getById(id).toVO();
 	}
 
 	/**
 	 * 根据时间线分页获取消息（广场）
 	 */
-	public List<Feed> listByTimelineForSquare(Integer userId, Date timeline, int pageNumber, int pageSize) {
+	public List<FeedVO> listByTimelineForSquare(Integer userId, Date timeline, int pageNumber, int pageSize) {
 		// TODO
 		return null;
 	}
@@ -49,12 +50,12 @@ public class FeedService {
 	/**
 	 * 根据时间线分页获取消息（我和我关注人的）
 	 */
-	public List<Feed> listByTimelineForHomePage(Integer userId, Date timeline, int pageNumber, int pageSize) {
+	public List<FeedVO> listByTimelineForHomePage(Integer userId, Date timeline, int pageNumber, int pageSize) {
 		// TODO
 		return null;
 	}
 
-	private List<Feed/* VO */> feeds2FeedVOs(List<Feed> feeds) {
+	private List<FeedVO> feeds2FeedVOs(List<Feed> feeds) {
 		// TODO
 		return null;
 	}

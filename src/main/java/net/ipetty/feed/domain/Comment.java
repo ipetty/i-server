@@ -1,6 +1,9 @@
 package net.ipetty.feed.domain;
 
 import net.ipetty.core.domain.LongIdEntity;
+import net.ipetty.vo.CommentVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 评论
@@ -15,6 +18,22 @@ public class Comment extends LongIdEntity {
 
 	private Long feedId; // 评论的对象
 	private String text; // 评论内容
+
+	public Comment() {
+		super();
+	}
+
+	public Comment(Long feedId, String text) {
+		super();
+		this.feedId = feedId;
+		this.text = text;
+	}
+
+	public CommentVO toVO() {
+		CommentVO vo = new CommentVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
+	}
 
 	public Long getFeedId() {
 		return feedId;

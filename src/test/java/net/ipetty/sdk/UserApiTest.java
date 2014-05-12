@@ -81,13 +81,13 @@ public class UserApiTest extends BaseTest {
 		try {
 			userApi.updateUniqueName(user.getId(), TEST_ACCOUNT_UNIQUE_NAME);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			Assert.assertTrue(true);
 		}
 		try {
 			userApi.updateUniqueName(user.getId(), "_testUpdateUniqueNameWithApi");
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			Assert.assertTrue(true);
 		}
 	}

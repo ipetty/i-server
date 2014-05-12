@@ -4,6 +4,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * SpringContextHelper
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class SpringContextHelper implements ApplicationContextAware {
 
 	private static ApplicationContext applicationContext;
+	private static String webContextRealPath;
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getBean(String name) {
@@ -23,6 +26,16 @@ public class SpringContextHelper implements ApplicationContextAware {
 
 	public static <T> T getBean(Class<T> clazz) {
 		return getBean(clazz.getName());
+	}
+
+	/**
+	 * 获取Web应用上下文实际绝对地址
+	 */
+	public static String getWebContextRealPath() {
+		if (StringUtils.isEmpty(webContextRealPath)) {
+			webContextRealPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
+		}
+		return webContextRealPath;
 	}
 
 	@Override

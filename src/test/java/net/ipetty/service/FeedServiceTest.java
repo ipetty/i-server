@@ -11,6 +11,7 @@ import net.ipetty.feed.service.ImageService;
 import net.ipetty.feed.service.LocationService;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.service.UserService;
+import net.ipetty.vo.FeedVO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -78,8 +79,9 @@ public class FeedServiceTest extends BaseTest {
 		feedService.save(feed);
 		Assert.assertNotNull(feed.getId());
 
-		feed = feedService.getById(feed.getId());
-		Assert.assertNotNull(feed);
+		FeedVO feedVO = feedService.getById(feed.getId());
+		Assert.assertNotNull(feedVO);
+		Assert.assertNotNull(feedVO.getId());
 	}
 
 }

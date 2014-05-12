@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.ipetty.core.domain.LongIdEntity;
+import net.ipetty.vo.FeedVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 消息
@@ -23,6 +26,25 @@ public class Feed extends LongIdEntity {
 	private List<FeedFavor> favors = new ArrayList<FeedFavor>(); // 赞列表
 	private FeedStatistics statistics; // 统计信息
 	private Long locationId; // 发表位置ID
+
+	public Feed() {
+		super();
+	}
+
+	public FeedVO toVO() {
+		FeedVO vo = new FeedVO();
+		BeanUtils.copyProperties(this, vo);
+		for (Comment comment : this.comments) {
+			vo.getComments().add(comment.toVO());
+		}
+		for (FeedFavor favor : this.favors) {
+			vo.getFavors().add(favor.toVO());
+		}
+		if (this.statistics != null) {
+			BeanUtils.copyProperties(this.statistics, vo);
+		}
+		return vo;
+	}
 
 	public String getText() {
 		return text;

@@ -45,7 +45,7 @@ public class User extends AbstractEntity {
 
 	private List<Role> roles = new ArrayList<Role>(); // 拥有的角色
 
-	public UserVO toUserVO() {
+	public UserVO toVO() {
 		UserVO vo = new UserVO();
 		BeanUtils.copyProperties(this, vo);
 		if (profile != null) {

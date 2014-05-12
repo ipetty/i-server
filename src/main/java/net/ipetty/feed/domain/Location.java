@@ -1,6 +1,10 @@
 package net.ipetty.feed.domain;
 
 import net.ipetty.core.domain.AbstractEntity;
+import net.ipetty.vo.LocationFormVO;
+import net.ipetty.vo.LocationVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 位置
@@ -39,6 +43,18 @@ public class Location extends AbstractEntity {
 		this.latitude = latitude;
 		this.geoHash = geoHash;
 		this.address = address;
+	}
+
+	public LocationVO toVO() {
+		LocationVO vo = new LocationVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
+	}
+
+	public static Location fromVO(LocationFormVO vo) {
+		Location location = new Location();
+		BeanUtils.copyProperties(vo, location);
+		return location;
 	}
 
 	public Long getId() {

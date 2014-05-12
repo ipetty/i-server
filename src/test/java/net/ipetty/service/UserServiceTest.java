@@ -44,7 +44,7 @@ public class UserServiceTest extends BaseTest {
 		User user = userService.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
 		Assert.assertNotNull(user);
 		Assert.assertEquals(SaltEncoder.encode(TEST_ACCOUNT_PASSWORD, user.getSalt()), user.getEncodedPassword());
-		logger.debug("userVo is {}", user.toUserVO());
+		logger.debug("userVo is {}", user.toVO());
 	}
 
 	@Test

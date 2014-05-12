@@ -58,11 +58,12 @@ public class ImageUtils {
 		Image image = new Image();
 		image.setCreatedBy(author);
 		image.setOriginalURL(new StringBuilder(ROOT_FILE_RELATIVE_PATH).append(FILE_SEPARATOR).append(authorUid)
-				.append(FILE_SEPARATOR).append(ORGINAL_IMAGE_FILE_PREFIX).append(shortUuid).append(fileExtension)
-				.toString());
+				.append(FILE_SEPARATOR).append(ORGINAL_IMAGE_FILE_PREFIX).append(shortUuid).append(".")
+				.append(fileExtension).toString());
 		image.setSmallURL(new StringBuilder(ROOT_FILE_RELATIVE_PATH).append(FILE_SEPARATOR).append(authorUid)
-				.append(FILE_SEPARATOR).append(SMALL_IMAGE_FILE_PREFIX).append(shortUuid).append(fileExtension)
-				.toString());
+				.append(FILE_SEPARATOR).append(SMALL_IMAGE_FILE_PREFIX).append(shortUuid).append(".")
+				.append(fileExtension).toString());
+		image.setCutURL(image.getSmallURL()); // 据说客户端不需要裁剪的正方形图；有需要的话再截图。
 
 		File originalImageFile = new File(webContextRealPath + image.getOriginalURL());
 		ImageUtils.makeDirsIfNotExists(originalImageFile);
@@ -105,6 +106,7 @@ public class ImageUtils {
 	 */
 	private static void processImage(File originalImage, int destWidth, int destHeight, File destImage)
 			throws IOException {
+		// FIXME 如果图片够小，则不进行拉伸
 		Thumbnails.of(originalImage).size(destWidth, destHeight).toFile(destImage);
 	}
 

@@ -95,6 +95,7 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("id", id);
 		request.set("uniqueName", uniqueName);
+		// FIXME 不能传递Integer、Long类型参数
 		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE_UNIQUE_NAME), request, Boolean.class);
 	}
 

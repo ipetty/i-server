@@ -11,4 +11,12 @@ public abstract class AuditableLongIdEntity extends AuditableIdEntity<Long> {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 7073555892714947987L;
 
+	public Long getId() {
+		return super.getId();
+	}
+
+	public void setId(Long id) {
+		super.setId(id);
+	}
+
 }
