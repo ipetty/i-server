@@ -134,6 +134,7 @@ create table feed_favor (
 	created_on timestamp default current_timestamp,
 	feed_id bigint,
 	foreign key(created_by) references users(id),
+	constraint uc_favor unique (created_by, feed_id),
 	foreign key(feed_id) references feed(id)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on feed_favor(created_on desc);

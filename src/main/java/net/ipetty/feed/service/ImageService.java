@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.annotation.Resource;
 
 import net.ipetty.core.exception.BusinessException;
+import net.ipetty.core.service.BaseService;
 import net.ipetty.core.util.ImageUtils;
 import net.ipetty.feed.domain.Image;
 import net.ipetty.feed.repository.ImageDao;
@@ -21,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 @Transactional
-public class ImageService {
+public class ImageService extends BaseService {
 
 	@Resource
 	private ImageDao imageDao;

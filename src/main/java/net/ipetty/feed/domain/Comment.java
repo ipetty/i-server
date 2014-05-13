@@ -23,16 +23,23 @@ public class Comment extends LongIdEntity {
 		super();
 	}
 
-	public Comment(Long feedId, String text) {
+	public Comment(Long feedId, String text, Integer createdBy) {
 		super();
 		this.feedId = feedId;
 		this.text = text;
+		super.setCreatedBy(createdBy);
 	}
 
 	public CommentVO toVO() {
 		CommentVO vo = new CommentVO();
 		BeanUtils.copyProperties(this, vo);
 		return vo;
+	}
+
+	public static Comment fromVO(CommentVO vo) {
+		Comment comment = new Comment();
+		BeanUtils.copyProperties(vo, comment);
+		return comment;
 	}
 
 	public Long getFeedId() {

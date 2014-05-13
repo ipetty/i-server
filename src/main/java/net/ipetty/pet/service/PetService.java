@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import net.ipetty.core.exception.BusinessException;
+import net.ipetty.core.service.BaseService;
 import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.repository.PetDao;
 import net.ipetty.user.service.UidService;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class PetService {
+public class PetService extends BaseService {
 
 	@Resource
 	private PetDao petDao;

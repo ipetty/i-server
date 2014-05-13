@@ -33,16 +33,20 @@ public class Feed extends LongIdEntity {
 
 	public FeedVO toVO() {
 		FeedVO vo = new FeedVO();
-		BeanUtils.copyProperties(this, vo);
-		for (Comment comment : this.comments) {
+		BeanUtils.copyProperties(this, vo, "comments", "favors");
+
+		for (Comment comment : this.getComments()) {
 			vo.getComments().add(comment.toVO());
 		}
-		for (FeedFavor favor : this.favors) {
+
+		for (FeedFavor favor : this.getFavors()) {
 			vo.getFavors().add(favor.toVO());
 		}
-		if (this.statistics != null) {
-			BeanUtils.copyProperties(this.statistics, vo);
+
+		if (this.getStatistics() != null) {
+			BeanUtils.copyProperties(this.getStatistics(), vo);
 		}
+
 		return vo;
 	}
 

@@ -5,6 +5,8 @@ import java.util.List;
 
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
+import net.ipetty.vo.CommentVO;
+import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedFormVO;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.LocationFormVO;
@@ -34,7 +36,7 @@ public class FeedApiTest extends BaseTest {
 		context.setCurrUserId(user.getId());
 
 		FeedFormVO feedForm = new FeedFormVO();
-		feedForm.setText("test text");
+		feedForm.setText("test feed text");
 		feedForm.setImagePath(super.getTestPhotoPath());
 		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
 		FeedVO feed = feedApi.publish(feedForm);
@@ -50,7 +52,7 @@ public class FeedApiTest extends BaseTest {
 		context.setCurrUserId(user.getId());
 
 		FeedFormVO feedForm = new FeedFormVO();
-		feedForm.setText("test text");
+		feedForm.setText("test feed text");
 		FeedVO feed = feedApi.publish(feedForm);
 		Assert.assertNotNull(feed);
 		Assert.assertNotNull(feed.getId());
@@ -64,7 +66,7 @@ public class FeedApiTest extends BaseTest {
 		context.setCurrUserId(user.getId());
 
 		FeedFormVO feedForm = new FeedFormVO();
-		feedForm.setText("test text");
+		feedForm.setText("test feed text");
 		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
 		FeedVO feed = feedApi.publish(feedForm);
 		Assert.assertNotNull(feed);
@@ -95,7 +97,7 @@ public class FeedApiTest extends BaseTest {
 		context.setCurrUserId(user.getId());
 
 		FeedFormVO feedForm = new FeedFormVO();
-		feedForm.setText("test text");
+		feedForm.setText("test feed text");
 		FeedVO feed = feedApi.publish(feedForm);
 		Assert.assertNotNull(feed);
 		Assert.assertNotNull(feed.getId());
@@ -129,9 +131,7 @@ public class FeedApiTest extends BaseTest {
 		context.setCurrUserId(user.getId());
 
 		List<FeedVO> feeds = feedApi.listByTimelineForSquare(new Date(), 0, 5);
-		for (FeedVO feed : feeds) {
-			logger.debug("{}", feed);
-		}
+		logger.debug("--testListByTimelineForSquare {}", feeds);
 	}
 
 	@Test
@@ -142,9 +142,68 @@ public class FeedApiTest extends BaseTest {
 		context.setCurrUserId(user.getId());
 
 		List<FeedVO> feeds = feedApi.listByTimelineForHomePage(new Date(), 0, 5);
-		for (FeedVO feed : feeds) {
-			logger.debug("{}", feed);
-		}
+		logger.debug("--testListByTimelineForHomePage {}", feeds);
+	}
+
+	@Test
+	public void testComment() {
+		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		ApiContext context = ApiContext.getInstance("1", "1");
+		context.setAuthorized(true);
+		context.setCurrUserId(user.getId());
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		CommentVO comment = new CommentVO();
+		comment.setFeedId(feed.getId());
+		comment.setText("test comment text");
+		feed = feedApi.comment(comment);
+		Assert.assertEquals(1, feed.getComments().size());
+	}
+
+	@Test
+	public void testFavor() {
+		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		ApiContext context = ApiContext.getInstance("1", "1");
+		context.setAuthorized(true);
+		context.setCurrUserId(user.getId());
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		FeedFavorVO favor = new FeedFavorVO();
+		favor.setFeedId(feed.getId());
+		feed = feedApi.favor(favor);
+		Assert.assertEquals(1, feed.getFavors().size());
+	}
+
+	@Test
+	public void testUnfavor() {
+		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		ApiContext context = ApiContext.getInstance("1", "1");
+		context.setAuthorized(true);
+		context.setCurrUserId(user.getId());
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		FeedFavorVO favor = new FeedFavorVO();
+		favor.setFeedId(feed.getId());
+		feed = feedApi.favor(favor);
+		Assert.assertEquals(1, feed.getFavors().size());
+
+		feed = feedApi.unfavor(favor);
+		Assert.assertEquals(0, feed.getFavors().size());
 	}
 
 }

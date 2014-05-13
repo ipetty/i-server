@@ -3,6 +3,7 @@ package net.ipetty.user.service;
 import javax.annotation.Resource;
 
 import net.ipetty.core.exception.BusinessException;
+import net.ipetty.core.service.BaseService;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UserService {
+public class UserService extends BaseService {
 
 	@Resource
 	private UserDao userDao;

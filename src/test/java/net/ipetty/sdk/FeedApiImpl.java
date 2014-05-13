@@ -8,6 +8,8 @@ import java.util.List;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.util.DateUtils;
+import net.ipetty.vo.CommentVO;
+import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedFormVO;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.ImageVO;
@@ -105,6 +107,36 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 		request.add("pageSize", String.valueOf(pageSize));
 		URI uri = buildUri(URI_LIST_BY_TIMELINE_FOR_HOMEPAGE, request);
 		return Arrays.asList(context.getRestTemplate().getForObject(uri, FeedVO[].class));
+	}
+
+	private static final String URI_COMMENT = "/feed/comment";
+
+	/**
+	 * 评论
+	 */
+	@Override
+	public FeedVO comment(CommentVO comment) {
+		return context.getRestTemplate().postForObject(buildUri(URI_COMMENT), comment, FeedVO.class);
+	}
+
+	private static final String URI_FAVOR = "/feed/favor";
+
+	/**
+	 * 赞
+	 */
+	@Override
+	public FeedVO favor(FeedFavorVO favor) {
+		return context.getRestTemplate().postForObject(buildUri(URI_FAVOR), favor, FeedVO.class);
+	}
+
+	private static final String URI_UNFAVOR = "/feed/unfavor";
+
+	/**
+	 * 取消赞
+	 */
+	@Override
+	public FeedVO unfavor(FeedFavorVO favor) {
+		return context.getRestTemplate().postForObject(buildUri(URI_UNFAVOR), favor, FeedVO.class);
 	}
 
 }

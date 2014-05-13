@@ -47,7 +47,7 @@ public class User extends AbstractEntity {
 
 	public UserVO toVO() {
 		UserVO vo = new UserVO();
-		BeanUtils.copyProperties(this, vo);
+		BeanUtils.copyProperties(this, vo, "pets", "roles");
 		if (profile != null) {
 			BeanUtils.copyProperties(profile, vo);
 		}

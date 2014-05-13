@@ -1,4 +1,4 @@
-package net.ipetty.user.web.rest;
+package net.ipetty.feed.web.rest;
 
 import java.util.List;
 
@@ -9,7 +9,9 @@ import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.web.rest.BaseController;
 import net.ipetty.core.web.rest.exception.RestException;
+import net.ipetty.feed.domain.Comment;
 import net.ipetty.feed.domain.Feed;
+import net.ipetty.feed.domain.FeedFavor;
 import net.ipetty.feed.domain.Image;
 import net.ipetty.feed.domain.Location;
 import net.ipetty.feed.service.FeedService;
@@ -17,6 +19,8 @@ import net.ipetty.feed.service.ImageService;
 import net.ipetty.feed.service.LocationService;
 import net.ipetty.user.service.UserService;
 import net.ipetty.util.DateUtils;
+import net.ipetty.vo.CommentVO;
+import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.ImageVO;
 
@@ -24,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -152,6 +157,48 @@ public class FeedController extends BaseController {
 				timeline, pageNumber, pageSize);
 		return feedService.listByTimelineForHomePage(currentUserId, DateUtils.fromDatetimeString(timeline),
 				Integer.valueOf(pageNumber), Integer.valueOf(pageSize));
+	}
+
+	/**
+	 * 评论
+	 */
+	@RequestMapping(value = "/comment", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedVO comment(@RequestBody CommentVO comment) {
+		UserPrincipal currentUser = this.getCurrentUser();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+
+		comment.setCreatedBy(currentUserId);
+		Comment entity = Comment.fromVO(comment);
+		return feedService.comment(entity);
+	}
+
+	/**
+	 * 赞
+	 */
+	@RequestMapping(value = "/favor", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedVO favor(@RequestBody FeedFavorVO favor) {
+		UserPrincipal currentUser = this.getCurrentUser();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+
+		favor.setCreatedBy(currentUserId);
+		FeedFavor entity = FeedFavor.fromVO(favor);
+		return feedService.favor(entity);
+	}
+
+	/**
+	 * 取消赞
+	 */
+	@RequestMapping(value = "/unfavor", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedVO unfavor(@RequestBody FeedFavorVO favor) {
+		UserPrincipal currentUser = this.getCurrentUser();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+
+		favor.setCreatedBy(currentUserId);
+		FeedFavor entity = FeedFavor.fromVO(favor);
+		return feedService.unfavor(entity);
 	}
 
 }

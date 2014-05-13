@@ -68,9 +68,7 @@ public class PetServiceTest extends BaseTest {
 		savePet();
 		List<Pet> pets = petService.listByUserId(userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME).getId());
 		Assert.assertTrue(CollectionUtils.isNotEmpty(pets));
-		for (Pet pet : pets) {
-			logger.debug("pet list by user({}): {}", TEST_ACCOUNT_UNIQUE_NAME, pet);
-		}
+		logger.debug("pet list by user({}): {}", TEST_ACCOUNT_UNIQUE_NAME, pets);
 	}
 
 	@Test

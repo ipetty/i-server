@@ -22,15 +22,22 @@ public class FeedFavor extends LongIdEntity {
 		super();
 	}
 
-	public FeedFavor(Long feedId) {
+	public FeedFavor(Long feedId, Integer createdBy) {
 		super();
 		this.feedId = feedId;
+		super.setCreatedBy(createdBy);
 	}
 
 	public FeedFavorVO toVO() {
 		FeedFavorVO vo = new FeedFavorVO();
 		BeanUtils.copyProperties(this, vo);
 		return vo;
+	}
+
+	public static FeedFavor fromVO(FeedFavorVO vo) {
+		FeedFavor favor = new FeedFavor();
+		BeanUtils.copyProperties(vo, favor);
+		return favor;
 	}
 
 	public Long getFeedId() {
