@@ -23,6 +23,19 @@
 
 	<user_profile />
 
+	<user_relationship subject_id="10000" follower_id="11" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="10000" follower_id="12" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="10000" follower_id="13" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="11" follower_id="12" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="11" follower_id="13" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="11" follower_id="10000" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="12" follower_id="11" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="12" follower_id="13" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="12" follower_id="10000" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="13" follower_id="11" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="13" follower_id="12" followed_on="2014-05-13 11:07:52" />
+	<user_relationship subject_id="13" follower_id="10000" followed_on="2014-05-13 11:07:52" />
+
 	<pet />
 
 	<location />

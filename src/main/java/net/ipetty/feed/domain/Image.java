@@ -1,6 +1,9 @@
 package net.ipetty.feed.domain;
 
 import net.ipetty.core.domain.LongIdEntity;
+import net.ipetty.vo.ImageVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 图片
@@ -27,6 +30,12 @@ public class Image extends LongIdEntity {
 		this.smallURL = smallURL;
 		this.cutURL = cutURL;
 		this.originalURL = originalURL;
+	}
+
+	public ImageVO toVO() {
+		ImageVO vo = new ImageVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
 	}
 
 	public String getSmallURL() {

@@ -47,12 +47,8 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-			if (location.getLongitude() != null) {
-				statement.setLong(1, location.getLongitude());
-			}
-			if (location.getLatitude() != null) {
-				statement.setLong(2, location.getLatitude());
-			}
+			JdbcDaoUtils.setLong(statement, 1, location.getLongitude());
+			JdbcDaoUtils.setLong(statement, 2, location.getLatitude());
 			statement.setString(3, location.getGeoHash());
 			statement.setString(4, location.getAddress());
 			statement.execute();

@@ -8,6 +8,7 @@ import java.sql.Statement;
 
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
+import net.ipetty.core.util.JdbcDaoUtils;
 import net.ipetty.feed.domain.Image;
 
 import org.springframework.jdbc.core.RowMapper;
@@ -47,9 +48,8 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-			if (image.getCreatedBy() != null) { // 图片必须要有创建人
-				statement.setInt(1, image.getCreatedBy());
-			}
+			// 图片必须要有创建人
+			JdbcDaoUtils.setInteger(statement, 1, image.getCreatedBy());
 			statement.setString(2, image.getSmallURL());
 			statement.setString(3, image.getCutURL());
 			statement.setString(4, image.getOriginalURL());

@@ -1,5 +1,7 @@
 package net.ipetty.user.web.rest;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import net.ipetty.core.context.SpringContextHelper;
@@ -14,11 +16,14 @@ import net.ipetty.feed.service.FeedService;
 import net.ipetty.feed.service.ImageService;
 import net.ipetty.feed.service.LocationService;
 import net.ipetty.user.service.UserService;
+import net.ipetty.util.DateUtils;
 import net.ipetty.vo.FeedVO;
+import net.ipetty.vo.ImageVO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,17 +52,18 @@ public class FeedController extends BaseController {
 	private UserService userService;
 
 	/**
-	 * 发布消息
+	 * 单独发布图片
 	 */
-	@RequestMapping(value = "/publish", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/publishImage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public FeedVO publish(String text, MultipartFile imageFile, String longitude, String latitude, String address) {
-		logger.debug("publish {}", text);
-		if (StringUtils.isEmpty(text) && imageFile == null) {
-			throw new RestException("图片与内容不能为空");
-		}
+	public ImageVO publishImage(MultipartFile imageFile) {
+		UserPrincipal currentUser = this.getCurrentUser();
+		Image image = imageService.save(imageFile, SpringContextHelper.getWebContextRealPath(), currentUser.getId(),
+				currentUser.getUid());
+		return image.toVO();
+	}
 
-		// 当前用户
+	private UserPrincipal getCurrentUser() {
 		// FIXME
 		UserPrincipal currentUser = UserContext.getContext();
 		if (currentUser == null) {
@@ -68,19 +74,32 @@ public class FeedController extends BaseController {
 		if (currentUser == null || currentUser.getId() == null) {
 			throw new RestException("注册用户才能发布消息");
 		}
+		return currentUser;
+	}
+
+	/**
+	 * 发布消息
+	 */
+	@RequestMapping(value = "/publishText", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedVO publishText(String text, String imageId, String longitude, String latitude, String address) {
+		logger.debug("publish text={}, image.id={}", text, imageId);
+		if (StringUtils.isBlank(text) && StringUtils.isBlank(imageId)) {
+			throw new RestException("图片与内容不能为空");
+		}
+
+		// 当前用户
+		UserPrincipal currentUser = this.getCurrentUser();
 
 		// Feed
 		Feed feed = new Feed();
 		feed.setCreatedBy(currentUser.getId());
-		feed.setText(text);
-
-		// 图片
-		Image image = imageService.save(imageFile, SpringContextHelper.getWebContextRealPath(), currentUser.getId(),
-				currentUser.getUid());
-		feed.setImageId(image.getId());
+		feed.setText(StringUtils.isBlank(text) ? null : text);
+		feed.setImageId(StringUtils.isBlank(imageId) ? null : Long.valueOf(imageId));
 
 		// 位置
 		if (longitude != null && latitude != null && address != null) {
+			// TODO generate geohash
 			Location location = new Location(Long.valueOf(longitude), Long.valueOf(latitude), null, address);
 			locationService.save(location);
 			feed.setLocationId(location.getId());
@@ -89,6 +108,50 @@ public class FeedController extends BaseController {
 		// 消息
 		feedService.save(feed);
 		return feed.toVO();
+	}
+
+	/**
+	 * 根据ID获取消息
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedVO getById(@PathVariable("id") Long id) {
+		logger.debug("get by id {}", id);
+		return feedService.getById(id);
+	}
+
+	/**
+	 * 根据时间线分页获取消息（广场）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/square", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<FeedVO> listByTimelineForSquare(String timeline, String pageNumber, String pageSize) {
+		UserPrincipal currentUser = this.getCurrentUser();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+		logger.debug("list by timeline for square userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
+				timeline, pageNumber, pageSize);
+		return feedService.listByTimelineForSquare(currentUserId, DateUtils.fromDatetimeString(timeline),
+				Integer.valueOf(pageNumber), Integer.valueOf(pageSize));
+	}
+
+	/**
+	 * 根据时间线分页获取消息（我和我关注人的）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/home", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<FeedVO> listByTimelineForHomePage(String timeline, String pageNumber, String pageSize) {
+		UserPrincipal currentUser = this.getCurrentUser();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
+				timeline, pageNumber, pageSize);
+		return feedService.listByTimelineForHomePage(currentUserId, DateUtils.fromDatetimeString(timeline),
+				Integer.valueOf(pageNumber), Integer.valueOf(pageSize));
 	}
 
 }

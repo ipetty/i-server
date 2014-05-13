@@ -1,5 +1,8 @@
 package net.ipetty.service;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import net.ipetty.core.test.BaseTest;
@@ -82,6 +85,54 @@ public class FeedServiceTest extends BaseTest {
 		FeedVO feedVO = feedService.getById(feed.getId());
 		Assert.assertNotNull(feedVO);
 		Assert.assertNotNull(feedVO.getId());
+	}
+
+	@Test
+	public void testListByTimelineForSquare() throws InterruptedException {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		this.createFeeds(10, user.getId());
+		Date timeline = new Date();
+		List<FeedVO> feeds = feedService.listByTimelineForSquare(user.getId(), timeline, 0, 5);
+		Assert.assertEquals(5, feeds.size());
+		for (FeedVO feed : feeds) {
+			logger.debug("{}", feed);
+		}
+		feeds = feedService.listByTimelineForSquare(user.getId(), timeline, 1, 5);
+		Assert.assertEquals(5, feeds.size());
+		for (FeedVO feed : feeds) {
+			logger.debug("{}", feed);
+		}
+	}
+
+	@Test
+	public void testListByTimelineForHomePage() throws InterruptedException {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		this.createFeeds(10, user.getId());
+		Date timeline = new Date();
+		List<FeedVO> feeds = feedService.listByTimelineForHomePage(user.getId(), timeline, 0, 5);
+		Assert.assertEquals(5, feeds.size());
+		for (FeedVO feed : feeds) {
+			logger.debug("{}", feed);
+		}
+		feeds = feedService.listByTimelineForHomePage(user.getId(), timeline, 1, 5);
+		Assert.assertEquals(5, feeds.size());
+		for (FeedVO feed : feeds) {
+			logger.debug("{}", feed);
+		}
+	}
+
+	private void createFeeds(int num, Integer creator) throws InterruptedException {
+		for (int i = 0; i < num; i++) {
+			this.createFeed("test text " + i, creator);
+			Thread.sleep(1000);
+		}
+	}
+
+	private void createFeed(String text, Integer creator) {
+		Feed feed = new Feed();
+		feed.setCreatedBy(creator);
+		feed.setText(text);
+		feedService.save(feed);
 	}
 
 }

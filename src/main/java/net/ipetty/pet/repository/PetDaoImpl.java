@@ -51,9 +51,8 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(CREATE_PET_SQL, Statement.RETURN_GENERATED_KEYS);
-			if (pet.getUserId() != null) { // 宠物必须要有主人
-				statement.setInt(1, pet.getUserId());
-			}
+			// 宠物必须要有主人
+			statement.setInt(1, pet.getUserId());
 			statement.setInt(2, pet.getUid());
 			statement.setString(3, pet.getUniqueName());
 			statement.setString(4, pet.getName());
