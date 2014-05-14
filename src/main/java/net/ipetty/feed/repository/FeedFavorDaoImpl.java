@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.exception.BusinessException;
@@ -38,18 +40,20 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into feed_favor(created_by, feed_id) values(?, ?)";
+	private static final String INSERT_SQL = "insert into feed_favor(created_by, feed_id, created_on) values(?, ?, ?)";
 
 	/**
 	 * 保存赞
 	 */
 	@Override
 	public void save(FeedFavor feedFavor) {
+		feedFavor.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setInteger(statement, 1, feedFavor.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 2, feedFavor.getFeedId());
+			statement.setTimestamp(3, new Timestamp(feedFavor.getCreatedOn().getTime()));
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {

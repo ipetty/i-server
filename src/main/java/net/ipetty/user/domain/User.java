@@ -54,10 +54,6 @@ public class User extends AbstractEntity {
 		return vo;
 	}
 
-	public void prePersist() {
-		this.setCreatedOn(new Date());
-	}
-
 	public Integer getId() {
 		return id;
 	}

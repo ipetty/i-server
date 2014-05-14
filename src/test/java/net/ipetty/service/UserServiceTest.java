@@ -33,6 +33,7 @@ public class UserServiceTest extends BaseTest {
 		user.setEmail(email);
 		user.setPassword("888888");
 		userService.register(user);
+		Assert.assertNotNull(user.getCreatedOn());
 
 		User result = userService.getByLoginName(email);
 		Assert.assertNotNull(result);

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.feed.domain.Comment;
 import net.ipetty.feed.domain.Feed;
@@ -20,6 +21,7 @@ import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedVO;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,10 @@ public class FeedService extends BaseService {
 	 * 保存消息
 	 */
 	public FeedVO save(Feed feed) {
+		Assert.notNull(feed, "消息不能为空");
+		if (StringUtils.isBlank(feed.getText()) && feed.getImageId() == null) {
+			throw new BusinessException("图片与内容不能为空");
+		}
 		feedDao.save(feed);
 		return this.getById(feed.getId());
 	}
@@ -56,6 +62,7 @@ public class FeedService extends BaseService {
 	 * 根据ID获取消息
 	 */
 	public FeedVO getById(Long id) {
+		Assert.notNull(id, "ID不能为空");
 		Feed feed = feedDao.getById(id);
 		feed.setComments(commentDao.listByFeedId(id));
 		feed.setFavors(feedFavorDao.listByFeedId(id));

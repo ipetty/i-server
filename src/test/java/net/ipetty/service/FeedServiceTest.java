@@ -52,6 +52,7 @@ public class FeedServiceTest extends BaseTest {
 		Image image = new Image(user.getId(), "smallURL", "cutURL", "originalURL");
 		imageService.save(image);
 		Assert.assertNotNull(image.getId());
+		Assert.assertNotNull(image.getCreatedOn());
 
 		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
 		locationService.save(location);
@@ -64,6 +65,7 @@ public class FeedServiceTest extends BaseTest {
 		feed.setLocationId(location.getId());
 		feedService.save(feed);
 		Assert.assertNotNull(feed.getId());
+		Assert.assertNotNull(feed.getCreatedOn());
 	}
 
 	@Test
@@ -142,6 +144,7 @@ public class FeedServiceTest extends BaseTest {
 		Comment comment = new Comment(feed.getId(), "test comment text", user.getId());
 		feedService.comment(comment);
 		Assert.assertNotNull(comment.getId());
+		Assert.assertNotNull(comment.getCreatedOn());
 	}
 
 	@Test
@@ -191,6 +194,7 @@ public class FeedServiceTest extends BaseTest {
 		FeedFavor favor = new FeedFavor(feed.getId(), user.getId());
 		feedService.favor(favor);
 		Assert.assertNotNull(favor.getId());
+		Assert.assertNotNull(favor.getCreatedOn());
 
 		try {
 			feedService.favor(favor);

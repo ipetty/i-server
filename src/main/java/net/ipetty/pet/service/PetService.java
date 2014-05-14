@@ -13,6 +13,7 @@ import net.ipetty.user.service.UidService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 /**
  * PetService
@@ -35,20 +36,15 @@ public class PetService extends BaseService {
 	 */
 	public void save(Pet pet) {
 		synchronized (uidService) {
-			if (pet.getUserId() == null) {
-				throw new BusinessException("宠物主人不能为空");
-			}
-
-			// verify name
-			if (StringUtils.isBlank(pet.getName())) {
-				throw new BusinessException("宠物名称不能为空");
-			}
+			Assert.notNull(pet, "宠物不能为空");
+			Assert.notNull(pet.getUserId(), "宠物主人不能为空");
+			Assert.hasText(pet.getName(), "宠物名称不能为空");
 
 			// check unique
 			if (StringUtils.isNotBlank(pet.getUniqueName())) {
 				Pet orignal = petDao.getByUniqueName(pet.getUniqueName());
 				if (orignal != null) {
-					throw new BusinessException("宠物唯一标识已存在");
+					throw new BusinessException("爱宠唯一标识已存在");
 				}
 			}
 
@@ -72,6 +68,7 @@ public class PetService extends BaseService {
 	 * 根据ID获取宠物
 	 */
 	public Pet getById(Integer id) {
+		Assert.notNull(id, "ID不能为空");
 		return petDao.getById(id);
 	}
 
@@ -83,9 +80,10 @@ public class PetService extends BaseService {
 	}
 
 	/**
-	 * 根据爱宠号获取宠物
+	 * 根据爱宠唯一标识获取宠物
 	 */
 	public Pet getByUniqueName(String uniqueName) {
+		Assert.hasText(uniqueName, "爱宠唯一标识不能为空");
 		return petDao.getByUniqueName(uniqueName);
 	}
 
@@ -93,6 +91,7 @@ public class PetService extends BaseService {
 	 * 获取指定用户的所有宠物
 	 */
 	public List<Pet> listByUserId(Integer userId) {
+		Assert.notNull(userId, "用户ID不能为空");
 		return petDao.listByUserId(userId);
 	}
 
@@ -100,9 +99,10 @@ public class PetService extends BaseService {
 	 * 更新宠物信息
 	 */
 	public void update(Pet pet) {
-		if (pet == null || pet.getId() == null) {
-			throw new BusinessException("宠物不存在");
-		}
+		Assert.notNull(pet, "宠物不能为空");
+		Assert.notNull(pet.getId(), "宠物ID不能为空");
+		Assert.notNull(pet.getUserId(), "宠物主人不能为空");
+		Assert.hasText(pet.getName(), "宠物名称不能为空");
 		petDao.update(pet);
 	}
 
@@ -110,13 +110,12 @@ public class PetService extends BaseService {
 	 * 设置爱宠唯一标识，只能设置一次，一经设置不能变更
 	 */
 	public void updateUniqueName(Integer id, String uniqueName) {
-		if (id == null || StringUtils.isBlank(uniqueName)) {
-			throw new BusinessException("宠物ID与唯一标识不能为空");
-		}
+		Assert.notNull(id, "宠物ID不能为空");
+		Assert.hasText(uniqueName, "爱宠唯一标识不能为空");
 
 		Pet pet = petDao.getByUniqueName(uniqueName);
 		if (pet != null) {// 校验唯一性
-			throw new BusinessException("宠物唯一标识已存在");
+			throw new BusinessException("爱宠唯一标识已存在");
 		}
 
 		pet = petDao.getById(id);
@@ -125,7 +124,7 @@ public class PetService extends BaseService {
 		}
 
 		if (StringUtils.isNotBlank(pet.getUniqueName())) { // 是否已设置；不允许重复设置
-			throw new BusinessException("宠物唯一标识已设置，一经设置不能变更");
+			throw new BusinessException("爱宠唯一标识已设置，一经设置不能变更");
 		}
 
 		petDao.updateUniqueName(id, uniqueName);

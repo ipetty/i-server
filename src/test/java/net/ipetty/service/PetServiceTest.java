@@ -34,6 +34,7 @@ public class PetServiceTest extends BaseTest {
 	public void testSave() {
 		Pet pet = savePet();
 		Assert.assertNotNull(pet.getId());
+		Assert.assertNotNull(pet.getCreatedOn());
 		pet = petService.getById(pet.getId());
 		Assert.assertNotNull(pet);
 	}

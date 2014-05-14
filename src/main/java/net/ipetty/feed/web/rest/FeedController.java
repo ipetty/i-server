@@ -27,6 +27,7 @@ import net.ipetty.vo.ImageVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -122,6 +123,7 @@ public class FeedController extends BaseController {
 	@ResponseBody
 	public FeedVO getById(@PathVariable("id") Long id) {
 		logger.debug("get by id {}", id);
+		Assert.notNull(id, "ID不能为空");
 		return feedService.getById(id);
 	}
 
@@ -134,6 +136,9 @@ public class FeedController extends BaseController {
 	@RequestMapping(value = "/square", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<FeedVO> listByTimelineForSquare(String timeline, String pageNumber, String pageSize) {
+		Assert.hasText(timeline, "时间线不能为空");
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
 		UserPrincipal currentUser = this.getCurrentUser();
 		Integer currentUserId = currentUser == null ? null : currentUser.getId();
 		logger.debug("list by timeline for square userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
@@ -151,6 +156,9 @@ public class FeedController extends BaseController {
 	@RequestMapping(value = "/home", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<FeedVO> listByTimelineForHomePage(String timeline, String pageNumber, String pageSize) {
+		Assert.hasText(timeline, "时间线不能为空");
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
 		UserPrincipal currentUser = this.getCurrentUser();
 		Integer currentUserId = currentUser == null ? null : currentUser.getId();
 		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
@@ -165,6 +173,9 @@ public class FeedController extends BaseController {
 	@RequestMapping(value = "/comment", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public FeedVO comment(@RequestBody CommentVO comment) {
+		Assert.notNull(comment, "评论不能为空");
+		Assert.hasText(comment.getText(), "评论内容不能为空");
+		Assert.notNull(comment.getFeedId(), "评论的消息不能为空");
 		UserPrincipal currentUser = this.getCurrentUser();
 		Integer currentUserId = currentUser == null ? null : currentUser.getId();
 
@@ -179,6 +190,8 @@ public class FeedController extends BaseController {
 	@RequestMapping(value = "/favor", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public FeedVO favor(@RequestBody FeedFavorVO favor) {
+		Assert.notNull(favor, "赞不能为空");
+		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
 		UserPrincipal currentUser = this.getCurrentUser();
 		Integer currentUserId = currentUser == null ? null : currentUser.getId();
 
@@ -193,6 +206,8 @@ public class FeedController extends BaseController {
 	@RequestMapping(value = "/unfavor", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public FeedVO unfavor(@RequestBody FeedFavorVO favor) {
+		Assert.notNull(favor, "赞不能为空");
+		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
 		UserPrincipal currentUser = this.getCurrentUser();
 		Integer currentUserId = currentUser == null ? null : currentUser.getId();
 

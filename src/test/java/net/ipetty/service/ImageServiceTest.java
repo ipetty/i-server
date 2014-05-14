@@ -33,6 +33,7 @@ public class ImageServiceTest extends BaseTest {
 		Image image = new Image(user.getId(), "smallURL", "cutURL", "originalURL");
 		imageService.save(image);
 		Assert.assertNotNull(image.getId());
+		Assert.assertNotNull(image.getCreatedOn());
 	}
 
 	@Test

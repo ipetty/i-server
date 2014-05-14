@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into feed(created_by, image_id, text, location_id) values(?, ?, ?, ?)";
+	private static final String INSERT_SQL = "insert into feed(created_by, image_id, text, location_id, created_on) values(?, ?, ?, ?, ?)";
 	private static final String INSERT_STATISTICS_SQL = "insert into feed_statistics(feed_id, comment_count, favor_count) values(?, 0, 0)";
 
 	/**
@@ -68,6 +69,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 	 */
 	@Override
 	public void save(Feed feed) {
+		feed.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -75,6 +77,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 			JdbcDaoUtils.setLong(statement, 2, feed.getImageId());
 			statement.setString(3, feed.getText());
 			JdbcDaoUtils.setLong(statement, 4, feed.getLocationId());
+			statement.setTimestamp(5, new Timestamp(feed.getCreatedOn().getTime()));
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {

@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.exception.BusinessException;
@@ -41,13 +43,14 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		}
 	};
 
-	private static final String CREATE_PET_SQL = "insert into pet(user_id, uid, unique_name, name, gender, sort_order) values(?, ?, ?, ?, ?, ?)";
+	private static final String CREATE_PET_SQL = "insert into pet(user_id, uid, unique_name, name, gender, sort_order, created_on) values(?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存宠物信息
 	 */
 	@Override
 	public void save(Pet pet) {
+		pet.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(CREATE_PET_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -58,6 +61,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 			statement.setString(4, pet.getName());
 			statement.setString(5, pet.getGender());
 			statement.setInt(6, pet.getSortOrder()); // 必须设置排序，不然此处会报NullPointerException（null转int时报错）
+			statement.setTimestamp(7, new Timestamp(pet.getCreatedOn().getTime()));
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {

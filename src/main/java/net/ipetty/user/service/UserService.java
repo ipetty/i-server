@@ -13,6 +13,7 @@ import net.ipetty.user.repository.UserProfileDao;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 /**
  * UserService
@@ -37,9 +38,8 @@ public class UserService extends BaseService {
 	 * 登录验证
 	 */
 	public User login(String username, String password) throws BusinessException {
-		if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
-			throw new BusinessException("用户名、密码不能为空");
-		}
+		Assert.hasText(username, "用户名不能为空");
+		Assert.hasText(password, "密码不能为空");
 
 		User user = this.getByLoginName(username);
 		if (user == null) {
@@ -64,9 +64,7 @@ public class UserService extends BaseService {
 			}
 
 			// verify password
-			if (StringUtils.isBlank(user.getPassword())) {
-				throw new BusinessException("密码不能为空");
-			}
+			Assert.hasText(user.getPassword(), "密码不能为空");
 
 			// check unique
 			this.checkUnique(user.getUniqueName(), "爱宠号");
@@ -121,6 +119,7 @@ public class UserService extends BaseService {
 	 * 根据ID获取用户帐号
 	 */
 	public User getById(Integer id) {
+		Assert.notNull(id, "ID不能为空");
 		return userDao.getById(id);
 	}
 
@@ -135,6 +134,7 @@ public class UserService extends BaseService {
 	 * 根据爱宠号获取用户帐号
 	 */
 	public User getByUniqueName(String uniqueName) {
+		Assert.hasText(uniqueName, "爱宠号不能为空");
 		return userDao.getByUniqueName(uniqueName);
 	}
 
@@ -142,6 +142,7 @@ public class UserService extends BaseService {
 	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户帐号
 	 */
 	public User getByLoginName(String loginName) {
+		Assert.hasText(loginName, "帐号不能为空");
 		return userDao.getByLoginName(loginName);
 	}
 
@@ -149,9 +150,8 @@ public class UserService extends BaseService {
 	 * 更新用户帐号信息
 	 */
 	public void update(User user) {
-		if (user == null || user.getId() == null) {
-			throw new BusinessException("用户不存在");
-		}
+		Assert.notNull(user, "用户不能为空");
+		Assert.notNull(user.getId(), "用户ID不能为空");
 		userDao.update(user);
 	}
 
@@ -159,6 +159,8 @@ public class UserService extends BaseService {
 	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
 	public void updateUniqueName(Integer id, String uniqueName) {
+		Assert.notNull(id, "用户ID不能为空");
+		Assert.hasText(uniqueName, "爱宠号不能为空");
 		this.checkUnique(uniqueName, "Unique Name"); // 校验唯一性
 
 		User user = userDao.getById(id);
@@ -177,9 +179,9 @@ public class UserService extends BaseService {
 	 * 修改密码
 	 */
 	public void changePassword(Integer id, String oldPassword, String newPassword) {
-		if (id == null || StringUtils.isBlank(oldPassword) || StringUtils.isBlank(newPassword)) {
-			throw new BusinessException("用户ID与密码不能为空");
-		}
+		Assert.notNull(id, "用户ID不能为空");
+		Assert.hasText(oldPassword, "旧密码不能为空");
+		Assert.hasText(newPassword, "新密码不能为空");
 
 		User user = userDao.getById(id);
 		if (user == null) {

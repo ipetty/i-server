@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.exception.BusinessException;
@@ -39,19 +41,21 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into feed_comment(created_by, feed_id, text) values(?, ?, ?)";
+	private static final String INSERT_SQL = "insert into feed_comment(created_by, feed_id, text, created_on) values(?, ?, ?, ?)";
 
 	/**
 	 * 保存评论
 	 */
 	@Override
 	public void save(Comment comment) {
+		comment.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setInteger(statement, 1, comment.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 2, comment.getFeedId());
 			statement.setString(3, comment.getText());
+			statement.setTimestamp(4, new Timestamp(comment.getCreatedOn().getTime()));
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {

@@ -12,6 +12,7 @@ import net.ipetty.feed.repository.ImageDao;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -32,6 +33,8 @@ public class ImageService extends BaseService {
 	 */
 	public Image save(MultipartFile file, String webContextRealPath, Integer author, int authorUid) {
 		try {
+			Assert.notNull(file, "图片文件不能为空");
+			Assert.notNull(author, "发图人不能为空");
 			Image image = ImageUtils.saveImage(file, webContextRealPath, author, authorUid);
 			imageDao.save(image);
 			return image;
@@ -44,6 +47,8 @@ public class ImageService extends BaseService {
 	 * 保存图片信息
 	 */
 	public void save(Image image) {
+		Assert.notNull(image, "图片对象不能为空");
+		Assert.notNull(image.getCreatedBy(), "发图人不能为空");
 		imageDao.save(image);
 	}
 
@@ -51,6 +56,7 @@ public class ImageService extends BaseService {
 	 * 根据ID获取图片信息
 	 */
 	public Image getById(Long id) {
+		Assert.notNull(id, "ID不能为空");
 		return imageDao.getById(id);
 	}
 

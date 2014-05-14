@@ -15,6 +15,7 @@ import net.ipetty.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,9 +44,8 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public UserVO login(String username, String password) {
 		logger.debug("login with username={}", username);
-		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-			throw new RestException("用户名、密码不能为空");
-		}
+		Assert.hasText(username, "用户名不能为空");
+		Assert.hasText(password, "密码不能为空");
 		User user = userService.login(username, password);
 		return user.toVO();
 	}
@@ -57,9 +57,9 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public UserVO register(@RequestBody RegisterVO register) {
 		logger.debug("register {}", register);
-		if (StringUtils.isEmpty(register.getEmail()) || StringUtils.isEmpty(register.getPassword())) {
-			throw new RestException("邮箱、密码不能为空");
-		}
+		Assert.notNull(register, "注册信息不能为空");
+		Assert.hasText(register.getEmail(), "邮箱不能为空");
+		Assert.hasText(register.getPassword(), "密码不能为空");
 
 		User user = new User();
 		user.setEmail(register.getEmail());
@@ -89,9 +89,7 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/user/checkEmailAvailable", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public boolean checkEmailAvailable(String email) {
-		if (StringUtils.isEmpty(email)) {
-			throw new RestException("邮箱不能为空");
-		}
+		Assert.hasText(email, "邮箱不能为空");
 		User user = userService.getByLoginName(email);
 		logger.debug("get by email {}, result is {}", email, user);
 		return user == null;
@@ -103,9 +101,7 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/user/id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public UserVO getById(@PathVariable("id") Integer id) {
-		if (id == null) {
-			throw new RestException("ID不能为空");
-		}
+		Assert.notNull(id, "ID不能为空");
 		User user = userService.getById(id);
 		if (user == null) {
 			throw new RestException("用户不存在");
@@ -134,9 +130,7 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/user/{uniqueName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public UserVO getByUniqueName(@PathVariable("uniqueName") String uniqueName) {
-		if (StringUtils.isBlank(uniqueName)) {
-			throw new RestException("爱宠号不能为空");
-		}
+		Assert.hasText(uniqueName, "爱宠号不能为空");
 		User user = userService.getByUniqueName(uniqueName);
 		if (user == null) {
 			throw new RestException("用户不存在");
@@ -156,9 +150,8 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/user/uniqueName", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public boolean updateUniqueName(Integer id, String uniqueName) {
-		if (id == null || StringUtils.isBlank(uniqueName)) {
-			throw new RestException("用户ID与爱宠号不能为空");
-		}
+		Assert.notNull(id, "ID不能为空");
+		Assert.hasText(uniqueName, "爱宠号不能为空");
 		userService.updateUniqueName(id, uniqueName);
 		return true;
 	}

@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
@@ -45,14 +47,15 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		}
 	};
 
-	private static final String CREATE_USER_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt)"
-			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String CREATE_USER_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on)"
+			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存用户帐号
 	 */
 	@Override
 	public void save(User user) {
+		user.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -66,6 +69,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			statement.setString(8, user.getWeiboUid());
 			statement.setString(9, user.getEncodedPassword());
 			statement.setString(10, user.getSalt());
+			statement.setTimestamp(11, new Timestamp(user.getCreatedOn().getTime()));
 
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();

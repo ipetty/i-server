@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
@@ -38,13 +40,14 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into image(created_by, small_url, cut_url, original_url) values(?, ?, ?, ?)";
+	private static final String INSERT_SQL = "insert into image(created_by, small_url, cut_url, original_url, created_on) values(?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存图片信息
 	 */
 	@Override
 	public void save(Image image) {
+		image.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -53,6 +56,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 			statement.setString(2, image.getSmallURL());
 			statement.setString(3, image.getCutURL());
 			statement.setString(4, image.getOriginalURL());
+			statement.setTimestamp(5, new Timestamp(image.getCreatedOn().getTime()));
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {
