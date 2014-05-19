@@ -1,5 +1,7 @@
 package net.ipetty.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import net.ipetty.core.test.BaseTest;
@@ -98,6 +100,88 @@ public class UserServiceTest extends BaseTest {
 		userService.changePassword(user.getId(), "888888", "123456");
 		user = userService.getById(user.getId());
 		Assert.assertEquals(SaltEncoder.encode("123456", user.getSalt()), user.getEncodedPassword());
+	}
+
+	@Test
+	public void testFollowAndIsFollowAndUnfollow() {
+		User user1 = new User();
+		user1.setEmail("testFollowAndIsFollowAndUnfollow1@ipetty.net");
+		user1.setPassword("888888");
+		userService.register(user1);
+		User user2 = new User();
+		user2.setEmail("testFollowAndIsFollowAndUnfollow2@ipetty.net");
+		user2.setPassword("888888");
+		userService.register(user2);
+
+		userService.follow(user2.getId(), user1.getId());
+		Assert.assertTrue(userService.isFollow(user2.getId(), user1.getId()));
+
+		userService.follow(user1.getId(), user2.getId());
+		Assert.assertTrue(userService.isFollow(user1.getId(), user2.getId()));
+
+		userService.unfollow(user2.getId(), user1.getId());
+		Assert.assertFalse(userService.isFollow(user2.getId(), user1.getId()));
+		Assert.assertTrue(userService.isFollow(user1.getId(), user2.getId()));
+	}
+
+	@Test
+	public void testFollowSelf() {
+		try {
+			User user1 = new User();
+			user1.setEmail("testFollowSelf1@ipetty.net");
+			user1.setPassword("888888");
+			userService.register(user1);
+			userService.follow(user1.getId(), user1.getId());
+		} catch (Exception e) {
+			Assert.assertTrue(true);
+		}
+	}
+
+	@Test
+	public void testListFriendsAndFollowersAndBiFriends() {
+		User user1 = new User();
+		user1.setEmail("testListFriendsAndFollowersAndBi..1@ipetty.net");
+		user1.setPassword("888888");
+		userService.register(user1);
+		User user2 = new User();
+		user2.setEmail("testListFriendsAndFollowersAndBi..2@ipetty.net");
+		user2.setPassword("888888");
+		userService.register(user2);
+
+		userService.follow(user2.getId(), user1.getId());
+		Assert.assertTrue(userService.isFollow(user2.getId(), user1.getId()));
+		userService.follow(user1.getId(), user2.getId());
+		Assert.assertTrue(userService.isFollow(user1.getId(), user2.getId()));
+
+		List<User> users = userService.listFriends(user1.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listFriends(user2.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listFollowers(user1.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listFollowers(user2.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listBiFriends(user1.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listBiFriends(user2.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+
+		userService.unfollow(user2.getId(), user1.getId());
+		Assert.assertFalse(userService.isFollow(user2.getId(), user1.getId()));
+		Assert.assertTrue(userService.isFollow(user1.getId(), user2.getId()));
+
+		users = userService.listFriends(user1.getId(), 0, 20);
+		Assert.assertEquals(0, users.size());
+		users = userService.listFriends(user2.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listFollowers(user1.getId(), 0, 20);
+		Assert.assertEquals(1, users.size());
+		users = userService.listFollowers(user2.getId(), 0, 20);
+		Assert.assertEquals(0, users.size());
+		users = userService.listBiFriends(user1.getId(), 0, 20);
+		Assert.assertEquals(0, users.size());
+		users = userService.listBiFriends(user2.getId(), 0, 20);
+		Assert.assertEquals(0, users.size());
 	}
 
 }

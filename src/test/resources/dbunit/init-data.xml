@@ -23,18 +23,18 @@
 
 	<user_profile />
 
-	<user_relationship subject_id="10000" follower_id="11" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="10000" follower_id="12" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="10000" follower_id="13" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="11" follower_id="12" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="11" follower_id="13" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="11" follower_id="10000" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="12" follower_id="11" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="12" follower_id="13" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="12" follower_id="10000" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="13" follower_id="11" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="13" follower_id="12" followed_on="2014-05-13 11:07:52" />
-	<user_relationship subject_id="13" follower_id="10000" followed_on="2014-05-13 11:07:52" />
+	<user_relationship friend_id="10000" follower_id="11" followed_on="2014-05-13 11:07:31" />
+	<user_relationship friend_id="10000" follower_id="12" followed_on="2014-05-13 11:07:32" />
+	<user_relationship friend_id="10000" follower_id="13" followed_on="2014-05-13 11:07:33" />
+	<user_relationship friend_id="11" follower_id="12" followed_on="2014-05-13 11:07:34" />
+	<user_relationship friend_id="11" follower_id="13" followed_on="2014-05-13 11:07:35" />
+	<user_relationship friend_id="11" follower_id="10000" followed_on="2014-05-13 11:07:36" />
+	<user_relationship friend_id="12" follower_id="11" followed_on="2014-05-13 11:07:37" />
+	<user_relationship friend_id="12" follower_id="13" followed_on="2014-05-13 11:07:38" />
+	<user_relationship friend_id="12" follower_id="10000" followed_on="2014-05-13 11:07:39" />
+	<user_relationship friend_id="13" follower_id="11" followed_on="2014-05-13 11:07:40" />
+	<user_relationship friend_id="13" follower_id="12" followed_on="2014-05-13 11:07:41" />
+	<user_relationship friend_id="13" follower_id="10000" followed_on="2014-05-13 11:07:42" />
 
 	<pet />
 

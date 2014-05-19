@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 public class UserApiTest extends BaseTest {
 
-	UserApi userApi = new UserApiImpl(ApiContext.getInstance("1", "1"));
+	UserApi userApi = new UserApiImpl(ApiContext.getInstance());
 
 	private static final String TEST_ACCOUNT_EMAIL = "luocanfeng@ipetty.net";
 	private static final String TEST_ACCOUNT_PASSWORD = "888888";
@@ -26,7 +26,7 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testRegister() {
-		RegisterVO register = new RegisterVO("registerWithApiTest@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		RegisterVO register = new RegisterVO("testRegisterWithApi@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
 		logger.debug("register {}", register);
 		UserVO user = userApi.register(register);
 		Assert.assertNotNull(user);
@@ -77,19 +77,45 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testUpdateUniqueName() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		RegisterVO register = new RegisterVO("testUpdateUniqueNameWithApi@ipetty.net", "888888", "通过API注册用户",
+				HumanGender.MALE);
+		UserVO user = userApi.register(register);
+		Assert.assertNotNull(user);
+
 		try {
 			userApi.updateUniqueName(user.getId(), TEST_ACCOUNT_UNIQUE_NAME);
 		} catch (Exception e) {
-			// e.printStackTrace();
 			Assert.assertTrue(true);
 		}
-		try {
-			userApi.updateUniqueName(user.getId(), "_testUpdateUniqueNameWithApi");
-		} catch (Exception e) {
-			// e.printStackTrace();
-			Assert.assertTrue(true);
-		}
+
+		Assert.assertTrue(userApi.updateUniqueName(user.getId(), "_testUpdateUniqueName"));
+	}
+
+	@Test
+	public void testChangePassword() {
+		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		Assert.assertNotNull(user);
+		Assert.assertTrue(userApi.changePassword(user.getId(), TEST_ACCOUNT_PASSWORD, "888888"));
+	}
+
+	@Test
+	public void testFollowAndIsFollowAndUnfollow() {
+		RegisterVO register1 = new RegisterVO("testFollowWithApi1@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		UserVO user1 = userApi.register(register1);
+		Assert.assertNotNull(user1);
+		RegisterVO register2 = new RegisterVO("testFollowWithApi2@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		UserVO user2 = userApi.register(register2);
+		Assert.assertNotNull(user2);
+
+		userApi.follow(user2.getId(), user1.getId());
+		Assert.assertTrue(userApi.isFollow(user2.getId(), user1.getId()));
+
+		userApi.follow(user1.getId(), user2.getId());
+		Assert.assertTrue(userApi.isFollow(user1.getId(), user2.getId()));
+
+		userApi.unfollow(user2.getId(), user1.getId());
+		Assert.assertFalse(userApi.isFollow(user2.getId(), user1.getId()));
+		Assert.assertTrue(userApi.isFollow(user1.getId(), user2.getId()));
 	}
 
 }

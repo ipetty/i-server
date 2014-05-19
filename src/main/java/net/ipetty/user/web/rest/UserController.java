@@ -1,7 +1,14 @@
 package net.ipetty.user.web.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import net.ipetty.core.cache.BaseHazelcastCache;
+import net.ipetty.core.context.UserContext;
+import net.ipetty.core.context.UserPrincipal;
+import net.ipetty.core.util.UUIDUtils;
 import net.ipetty.core.web.rest.BaseController;
 import net.ipetty.core.web.rest.exception.RestException;
 import net.ipetty.pet.domain.Pet;
@@ -37,7 +44,7 @@ public class UserController extends BaseController {
 	@Resource
 	private PetService petService;
 
-	/*
+	/**
 	 * 用户登陆验证
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,6 +54,18 @@ public class UserController extends BaseController {
 		Assert.hasText(username, "用户名不能为空");
 		Assert.hasText(password, "密码不能为空");
 		User user = userService.login(username, password);
+
+		// 设置用户上下文
+		UserPrincipal principal = UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID());
+		UserContext.setContext(principal);
+		logger.debug("generate user token {}", principal.getToken());
+
+		// 将用户token写入缓存
+		BaseHazelcastCache.set(BaseHazelcastCache.MAP_NAME_USER_TOKEN_TO_USER_ID, principal.getToken(),
+				principal.getId());
+		logger.debug("all user token: {}", BaseHazelcastCache.getMap(BaseHazelcastCache.MAP_NAME_USER_TOKEN_TO_USER_ID)
+				.keySet());
+
 		return user.toVO();
 	}
 
@@ -149,15 +168,80 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/user/uniqueName", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public boolean updateUniqueName(Integer id, String uniqueName) {
-		Assert.notNull(id, "ID不能为空");
+	public boolean updateUniqueName(String id, String uniqueName) {
+		Assert.hasText(id, "ID不能为空");
 		Assert.hasText(uniqueName, "爱宠号不能为空");
-		userService.updateUniqueName(id, uniqueName);
+		userService.updateUniqueName(Integer.valueOf(id), uniqueName);
 		return true;
 	}
 
 	/**
 	 * 修改密码
 	 */
+	@RequestMapping(value = "/changePassword", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean changePassword(String id, String oldPassword, String newPassword) {
+		Assert.hasText(id, "ID不能为空");
+		Assert.hasText(oldPassword, "旧密码不能为空");
+		Assert.hasText(newPassword, "新密码不能为空");
+		userService.changePassword(Integer.valueOf(id), oldPassword, newPassword);
+		return true;
+	}
+
+	/**
+	 * 关注
+	 */
+	@RequestMapping(value = "/user/follow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean follow(String friendId, String followerId) {
+		Assert.hasText(friendId, "被关注人ID不能为空");
+		Assert.hasText(followerId, "关注人ID不能为空");
+		userService.follow(Integer.valueOf(friendId), Integer.valueOf(followerId));
+		return true;
+	}
+
+	/**
+	 * 是否已关注，true为已关注，false为未关注
+	 */
+	@RequestMapping(value = "/user/isfollow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean isFollow(String friendId, String followerId) {
+		Assert.hasText(friendId, "被关注人ID不能为空");
+		Assert.hasText(followerId, "关注人ID不能为空");
+		return userService.isFollow(Integer.valueOf(friendId), Integer.valueOf(followerId));
+	}
+
+	/**
+	 * 取消关注
+	 */
+	@RequestMapping(value = "/user/unfollow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean unfollow(String friendId, String followerId) {
+		Assert.hasText(friendId, "被关注人ID不能为空");
+		Assert.hasText(followerId, "关注人ID不能为空");
+		userService.unfollow(Integer.valueOf(friendId), Integer.valueOf(followerId));
+		return true;
+	}
+
+	/**
+	 * 分页获取关注列表
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<UserVO> listFriends(String userId, String pageNumber, String pageSize) {
+		Assert.hasText(userId, "用户ID不能为空");
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
+
+		// FIXME move to service, and fullfill isFollowed field
+		List<UserVO> vos = new ArrayList<UserVO>();
+		List<User> users = userService.listFriends(Integer.valueOf(userId), Integer.valueOf(pageNumber),
+				Integer.valueOf(pageSize));
+		for (User user : users) {
+			vos.add(user.toVO());
+		}
+		return vos;
+	}
 
 }

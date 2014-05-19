@@ -10,7 +10,6 @@ import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedFormVO;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.LocationFormVO;
-import net.ipetty.vo.UserVO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,17 +22,15 @@ import org.junit.Test;
  */
 public class FeedApiTest extends BaseTest {
 
-	FeedApi feedApi = new FeedApiImpl(ApiContext.getInstance("1", "1"));
-	UserApi userApi = new UserApiImpl(ApiContext.getInstance("1", "1"));
+	FeedApi feedApi = new FeedApiImpl(ApiContext.getInstance());
+	UserApi userApi = new UserApiImpl(ApiContext.getInstance());
 
 	private static final String TEST_ACCOUNT_UNIQUE_NAME = "luocanfeng";
+	private static final String TEST_ACCOUNT_PASSWORD = "888888";
 
 	@Test
 	public void testPublish() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
@@ -46,10 +43,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testPublishTextOnly() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
@@ -60,10 +54,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testPublishTextAndLocation() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
@@ -75,10 +66,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testPublishLocationOnly() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
@@ -91,10 +79,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testGetById() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
@@ -108,10 +93,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testPublishWithZhcn() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("中文内容");
@@ -125,10 +107,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testListByTimelineForSquare() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		List<FeedVO> feeds = feedApi.listByTimelineForSquare(new Date(), 0, 5);
 		logger.debug("--testListByTimelineForSquare {}", feeds);
@@ -136,10 +115,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testListByTimelineForHomePage() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		List<FeedVO> feeds = feedApi.listByTimelineForHomePage(new Date(), 0, 5);
 		logger.debug("--testListByTimelineForHomePage {}", feeds);
@@ -147,10 +123,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testComment() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
@@ -167,10 +140,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testFavor() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
@@ -186,10 +156,7 @@ public class FeedApiTest extends BaseTest {
 
 	@Test
 	public void testUnfavor() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		ApiContext context = ApiContext.getInstance("1", "1");
-		context.setAuthorized(true);
-		context.setCurrUserId(user.getId());
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");

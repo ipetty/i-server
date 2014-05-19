@@ -1,5 +1,8 @@
 package net.ipetty.user.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import net.ipetty.core.exception.BusinessException;
@@ -9,7 +12,9 @@ import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.repository.UserDao;
 import net.ipetty.user.repository.UserProfileDao;
+import net.ipetty.user.repository.UserRelationshipDao;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +35,9 @@ public class UserService extends BaseService {
 
 	@Resource
 	private UserProfileDao userProfileDao;
+
+	@Resource
+	private UserRelationshipDao relationshipDao;
 
 	@Resource
 	private UidService uidService;
@@ -118,7 +126,7 @@ public class UserService extends BaseService {
 	/**
 	 * 根据ID获取用户帐号
 	 */
-	public User getById(Integer id) {
+	public User getById(Integer id) { // TODO 缓存
 		Assert.notNull(id, "ID不能为空");
 		return userDao.getById(id);
 	}
@@ -126,14 +134,14 @@ public class UserService extends BaseService {
 	/**
 	 * 根据uid获取用户帐号
 	 */
-	public User getByUid(int uid) {
+	public User getByUid(int uid) { // TODO 缓存
 		return userDao.getByUid(uid);
 	}
 
 	/**
 	 * 根据爱宠号获取用户帐号
 	 */
-	public User getByUniqueName(String uniqueName) {
+	public User getByUniqueName(String uniqueName) { // TODO 缓存
 		Assert.hasText(uniqueName, "爱宠号不能为空");
 		return userDao.getByUniqueName(uniqueName);
 	}
@@ -141,7 +149,7 @@ public class UserService extends BaseService {
 	/**
 	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户帐号
 	 */
-	public User getByLoginName(String loginName) {
+	public User getByLoginName(String loginName) { // TODO 缓存
 		Assert.hasText(loginName, "帐号不能为空");
 		return userDao.getByLoginName(loginName);
 	}
@@ -195,6 +203,100 @@ public class UserService extends BaseService {
 
 		String newEncodedPassword = SaltEncoder.encode(newPassword, user.getSalt());
 		userDao.changePassword(id, newEncodedPassword);
+	}
+
+	/**
+	 * 关注
+	 */
+	public void follow(Integer friendId, Integer followerId) {
+		Assert.notNull(friendId, "被关注人ID不能为空");
+		Assert.notNull(followerId, "关注人ID不能为空");
+		Assert.isTrue(!friendId.equals(followerId), "不能关注自己");
+
+		if (relationshipDao.get(friendId, followerId) != null) {
+			throw new BusinessException("您已关注该用户");
+		}
+		relationshipDao.follow(friendId, followerId);
+	}
+
+	/**
+	 * 是否已关注，true为已关注，false为未关注
+	 */
+	public boolean isFollow(Integer friendId, Integer followerId) {
+		Assert.notNull(friendId, "被关注人ID不能为空");
+		Assert.notNull(followerId, "关注人ID不能为空");
+
+		return relationshipDao.get(friendId, followerId) != null;
+	}
+
+	/**
+	 * 取消关注
+	 */
+	public void unfollow(Integer friendId, Integer followerId) {
+		Assert.notNull(friendId, "被关注人ID不能为空");
+		Assert.notNull(followerId, "关注人ID不能为空");
+
+		if (relationshipDao.get(friendId, followerId) == null) {
+			throw new BusinessException("您尚未关注该用户");
+		}
+		relationshipDao.unfollow(friendId, followerId);
+	}
+
+	/**
+	 * 分页获取关注列表
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<User> listFriends(Integer userId, int pageNumber, int pageSize) {
+		Assert.notNull(userId, "用户ID不能为空");
+
+		List<User> users = new ArrayList<User>();
+		List<Integer> userIds = relationshipDao.listFriends(userId, pageNumber, pageSize);
+		if (CollectionUtils.isNotEmpty(userIds)) {
+			for (Integer id : userIds) {
+				users.add(this.getById(id));
+			}
+		}
+		return users;
+	}
+
+	/**
+	 * 获取粉丝列表
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<User> listFollowers(Integer userId, int pageNumber, int pageSize) {
+		Assert.notNull(userId, "用户ID不能为空");
+
+		List<User> users = new ArrayList<User>();
+		List<Integer> userIds = relationshipDao.listFollowers(userId, pageNumber, pageSize);
+		if (CollectionUtils.isNotEmpty(userIds)) {
+			for (Integer id : userIds) {
+				users.add(this.getById(id));
+			}
+		}
+		return users;
+	}
+
+	/**
+	 * 获取好友列表（双向关注）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<User> listBiFriends(Integer userId, int pageNumber, int pageSize) {
+		Assert.notNull(userId, "用户ID不能为空");
+
+		List<User> users = new ArrayList<User>();
+		List<Integer> userIds = relationshipDao.listBiFriends(userId, pageNumber, pageSize);
+		if (CollectionUtils.isNotEmpty(userIds)) {
+			for (Integer id : userIds) {
+				users.add(this.getById(id));
+			}
+		}
+		return users;
 	}
 
 }

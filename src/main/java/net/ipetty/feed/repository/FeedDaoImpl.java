@@ -119,7 +119,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 				pageNumber * pageSize, pageSize);
 	}
 
-	private static final String LIST_BY_USER_ID_AND_TIMELINE_WITH_PAGE_SQL = "select * from feed f where f.created_on<=? and (f.created_by=? or exists(select 1 from user_relationship ur where ur.follower_id=? and ur.subject_id=f.created_by)) order by f.created_on desc limit ?,?";
+	private static final String LIST_BY_USER_ID_AND_TIMELINE_WITH_PAGE_SQL = "select * from feed f where f.created_on<=? and (f.created_by=? or exists(select 1 from user_relationship ur where ur.follower_id=? and ur.friend_id=f.created_by)) order by f.created_on desc limit ?,?";
 
 	/**
 	 * 根据时间线分页获取与我相关的消息

@@ -36,9 +36,10 @@ public class ApiContext {
 
 	private static ApiContext instance;
 
-	private ApiContext(String appKey, String appSecret) {
+	private static final Charset UTF8 = Charset.forName("UTF-8");
+
+	private ApiContext() {
 		authorized = false;
-		Charset charset = Charset.forName("UTF-8");
 
 		restTemplate = new RestTemplate();
 		/**
@@ -52,7 +53,7 @@ public class ApiContext {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new ByteArrayHttpMessageConverter());
 		messageConverters.add(new FormHttpMessageConverter());
-		messageConverters.add(new StringHttpMessageConverter(charset));
+		messageConverters.add(new StringHttpMessageConverter(UTF8));
 		// messageConverters.add(new MappingJackson2HttpMessageConverter());
 
 		MappingJacksonHttpMessageConverter mjm = new MappingJacksonHttpMessageConverter();
@@ -64,7 +65,7 @@ public class ApiContext {
 		restTemplate.setErrorHandler(new ApiExceptionHandler());
 
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-		interceptors.add(new ApiInterceptor(appKey, appSecret));
+		interceptors.add(new ApiInterceptor());
 		restTemplate.setInterceptors(interceptors);
 		if (restTemplate.getRequestFactory() instanceof SimpleClientHttpRequestFactory) {
 			((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(10 * 1000);
@@ -75,9 +76,9 @@ public class ApiContext {
 		}
 	}
 
-	public static synchronized ApiContext getInstance(String appKey, String appSecret) {
+	public static synchronized ApiContext getInstance() {
 		if (instance == null) {
-			instance = new ApiContext(appKey, appSecret);
+			instance = new ApiContext();
 		}
 		return instance;
 	}

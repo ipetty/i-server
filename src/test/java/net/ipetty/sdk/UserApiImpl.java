@@ -72,6 +72,7 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	/**
 	 * 根据uid获取用户帐号
 	 */
+	@Override
 	public UserVO getByUid(int uid) {
 		return context.getRestTemplate().getForObject(ApiContext.API_SERVER_BASE + URI_GET_BY_UID, UserVO.class, uid);
 	}
@@ -81,6 +82,7 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	/**
 	 * 根据爱宠号获取用户帐号
 	 */
+	@Override
 	public UserVO getByUniqueName(String uniqueName) {
 		return context.getRestTemplate().getForObject(ApiContext.API_SERVER_BASE + URI_GET_BY_UNIQUE_NAME,
 				UserVO.class, uniqueName);
@@ -91,12 +93,63 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	/**
 	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
+	@Override
 	public boolean updateUniqueName(Integer id, String uniqueName) {
-		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
-		request.set("id", id);
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("id", String.valueOf(id));
 		request.set("uniqueName", uniqueName);
-		// FIXME 不能传递Integer、Long类型参数
 		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE_UNIQUE_NAME), request, Boolean.class);
+	}
+
+	private static final String URI_CHANGE_PASSWORD = "/changePassword";
+
+	/**
+	 * 修改密码
+	 */
+	@Override
+	public boolean changePassword(Integer id, String oldPassword, String newPassword) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("id", String.valueOf(id));
+		request.set("oldPassword", oldPassword);
+		request.set("newPassword", newPassword);
+		return context.getRestTemplate().postForObject(buildUri(URI_CHANGE_PASSWORD), request, Boolean.class);
+	}
+
+	private static final String URI_FOLLOW = "/user/follow";
+
+	/**
+	 * 关注
+	 */
+	@Override
+	public boolean follow(Integer friendId, Integer followerId) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("friendId", String.valueOf(friendId));
+		request.set("followerId", String.valueOf(followerId));
+		return context.getRestTemplate().postForObject(buildUri(URI_FOLLOW), request, Boolean.class);
+	}
+
+	private static final String URI_IS_FOLLOW = "/user/isfollow";
+
+	/**
+	 * 是否已关注，true为已关注，false为未关注
+	 */
+	public boolean isFollow(Integer friendId, Integer followerId) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("friendId", String.valueOf(friendId));
+		request.set("followerId", String.valueOf(followerId));
+		return context.getRestTemplate().postForObject(buildUri(URI_IS_FOLLOW), request, Boolean.class);
+	}
+
+	private static final String URI_IS_UNFOLLOW = "/user/unfollow";
+
+	/**
+	 * 取消关注
+	 */
+	public boolean unfollow(Integer friendId, Integer followerId) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("friendId", String.valueOf(friendId));
+		request.set("followerId", String.valueOf(followerId));
+		return context.getRestTemplate().postForObject(buildUri(URI_IS_UNFOLLOW), request, Boolean.class);
 	}
 
 }

@@ -15,16 +15,16 @@ public class UserRelationship extends AbstractEntity {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 7487379933100532714L;
 
-	private Integer subjectId; // 被关注者ID
+	private Integer friendId; // 被关注者ID
 	private Integer followerId; // 关注者ID
 	private Date followedOn; // 关注时间
 
-	public Integer getSubjectId() {
-		return subjectId;
+	public Integer getFriendId() {
+		return friendId;
 	}
 
-	public void setSubjectId(Integer subjectId) {
-		this.subjectId = subjectId;
+	public void setFriendId(Integer friendId) {
+		this.friendId = friendId;
 	}
 
 	public Integer getFollowerId() {

@@ -13,10 +13,9 @@
 
 	<!-- 拦截器 -->
 	<mvc:interceptors>
-		<!-- 多个拦截器,顺序执行 -->
 		<mvc:interceptor>
 			<mvc:mapping path="/**" /><!-- 如果不配置或/**,将拦截所有的Controller -->
-			<bean class="net.ipetty.core.web.rest.interceptor.SpringMVCInterceptor" />
+			<bean class="net.ipetty.core.web.rest.interceptor.UserContextInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
 

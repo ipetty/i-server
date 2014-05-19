@@ -50,11 +50,11 @@ create index idx_state_and_region on user_profile(state_and_region);
 
 -- user_relationship
 create table user_relationship (
-	subject_id int,
+	friend_id int,
 	follower_id int,
 	followed_on timestamp default current_timestamp,
-	primary key (subject_id, follower_id),
-	foreign key(subject_id) references users(id),
+	primary key (friend_id, follower_id),
+	foreign key(friend_id) references users(id),
 	foreign key(follower_id) references users(id)
 ) engine=innodb default charset=utf8;
 
