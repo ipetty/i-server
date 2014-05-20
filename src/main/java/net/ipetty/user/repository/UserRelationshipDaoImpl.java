@@ -32,13 +32,6 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 		}
 	};
 
-	static final RowMapper<Integer> USER_ID_ROW_MAPPER = new RowMapper<Integer>() {
-		@Override
-		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return rs.getInt(1);
-		}
-	};
-
 	private static final String INSERT_SQL = "insert into user_relationship(friend_id, follower_id) values(?, ?)";
 
 	/**
@@ -79,7 +72,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 */
 	@Override
 	public List<Integer> listFriends(Integer userId, int pageNumber, int pageSize) {
-		return super.getJdbcTemplate().query(LIST_FRIENDS_SQL, USER_ID_ROW_MAPPER, userId, pageNumber * pageSize,
+		return super.getJdbcTemplate().query(LIST_FRIENDS_SQL, INTEGER_ROW_MAPPER, userId, pageNumber * pageSize,
 				pageSize);
 	}
 
@@ -93,7 +86,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 */
 	@Override
 	public List<Integer> listFollowers(Integer userId, int pageNumber, int pageSize) {
-		return super.getJdbcTemplate().query(LIST_FOLLOWERS_SQL, USER_ID_ROW_MAPPER, userId, pageNumber * pageSize,
+		return super.getJdbcTemplate().query(LIST_FOLLOWERS_SQL, INTEGER_ROW_MAPPER, userId, pageNumber * pageSize,
 				pageSize);
 	}
 
@@ -109,7 +102,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 */
 	@Override
 	public List<Integer> listBiFriends(Integer userId, int pageNumber, int pageSize) {
-		return super.getJdbcTemplate().query(LIST_BI_FRIENDS_SQL, USER_ID_ROW_MAPPER, userId, userId,
+		return super.getJdbcTemplate().query(LIST_BI_FRIENDS_SQL, INTEGER_ROW_MAPPER, userId, userId,
 				pageNumber * pageSize, pageSize);
 	}
 

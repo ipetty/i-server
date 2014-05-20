@@ -114,9 +114,10 @@ public class UserService extends BaseService {
 		}
 	}
 
+	// FIXME update帐号字段时校验唯一性的逻辑还需改善
 	private void checkUnique(String fieldValue, String fieldLabel) throws BusinessException {
 		if (StringUtils.isNotBlank(fieldValue)) {
-			User orignal = userDao.getByLoginName(fieldValue);
+			User orignal = this.getByLoginName(fieldValue);
 			if (orignal != null) {
 				throw new BusinessException(fieldLabel + "已存在");
 			}
@@ -126,7 +127,7 @@ public class UserService extends BaseService {
 	/**
 	 * 根据ID获取用户帐号
 	 */
-	public User getById(Integer id) { // TODO 缓存
+	public User getById(Integer id) {
 		Assert.notNull(id, "ID不能为空");
 		return userDao.getById(id);
 	}
@@ -134,24 +135,34 @@ public class UserService extends BaseService {
 	/**
 	 * 根据uid获取用户帐号
 	 */
-	public User getByUid(int uid) { // TODO 缓存
-		return userDao.getByUid(uid);
+	public User getByUid(int uid) {
+		Assert.notNull(uid, "UID不能为空");
+		Integer id = userDao.getUserIdByUid(uid);
+		if (id == null) {
+			throw new BusinessException("指定UID（" + uid + "）的用户不存在");
+		}
+		return userDao.getById(id);
 	}
 
 	/**
 	 * 根据爱宠号获取用户帐号
 	 */
-	public User getByUniqueName(String uniqueName) { // TODO 缓存
+	public User getByUniqueName(String uniqueName) {
 		Assert.hasText(uniqueName, "爱宠号不能为空");
-		return userDao.getByUniqueName(uniqueName);
+		Integer id = userDao.getUserIdByUniqueName(uniqueName);
+		if (id == null) {
+			throw new BusinessException("指定爱宠号（" + uniqueName + "）的用户不存在");
+		}
+		return userDao.getById(id);
 	}
 
 	/**
 	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户帐号
 	 */
-	public User getByLoginName(String loginName) { // TODO 缓存
+	public User getByLoginName(String loginName) {
 		Assert.hasText(loginName, "帐号不能为空");
-		return userDao.getByLoginName(loginName);
+		Integer id = userDao.getUserIdByLoginName(loginName);
+		return id == null ? null : userDao.getById(id);
 	}
 
 	/**

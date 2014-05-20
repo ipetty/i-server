@@ -8,6 +8,10 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.UpdatesToHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.User;
@@ -90,39 +94,43 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 * 根据ID获取用户帐号
 	 */
 	@Override
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_ID_TO_USER, keyName = "${id}")
 	public User getById(Integer id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
-	private static final String GET_BY_UID_SQL = "select * from users where uid=?";
+	private static final String GET_BY_UID_SQL = "select id from users where uid=?";
 
 	/**
-	 * 根据uid获取用户帐号
+	 * 根据uid获取用户ID
 	 */
 	@Override
-	public User getByUid(int uid) {
-		return super.queryUniqueEntity(GET_BY_UID_SQL, ROW_MAPPER, uid);
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_UID_TO_USER_ID, keyName = "${uid}")
+	public Integer getUserIdByUid(int uid) {
+		return super.queryUniqueEntity(GET_BY_UID_SQL, INTEGER_ROW_MAPPER, uid);
 	}
 
-	private static final String GET_BY_UNIQUE_NAME_SQL = "select * from users where unique_name=?";
+	private static final String GET_BY_UNIQUE_NAME_SQL = "select id from users where unique_name=?";
 
 	/**
-	 * 根据爱宠号获取用户帐号
+	 * 根据爱宠号获取用户ID
 	 */
 	@Override
-	public User getByUniqueName(String uniqueName) {
-		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, ROW_MAPPER, uniqueName);
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_UNIQUE_NAME_TO_USER_ID, keyName = "${uniqueName}")
+	public Integer getUserIdByUniqueName(String uniqueName) {
+		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, INTEGER_ROW_MAPPER, uniqueName);
 	}
 
-	private static final String GET_BY_LOGIN_NAME_SQL = "select * from users where unique_name=? or phone_number=? or email=? or qzone_uid=? or weibo_uid=?";
+	private static final String GET_BY_LOGIN_NAME_SQL = "select id from users where unique_name=? or phone_number=? or email=? or qzone_uid=? or weibo_uid=?";
 
 	/**
-	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户帐号
+	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户ID
 	 */
 	@Override
-	public User getByLoginName(String loginName) {
-		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, ROW_MAPPER, loginName, loginName, loginName, loginName,
-				loginName);
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${loginName}")
+	public Integer getUserIdByLoginName(String loginName) {
+		return super.queryUniqueEntity(GET_BY_LOGIN_NAME_SQL, INTEGER_ROW_MAPPER, loginName, loginName, loginName,
+				loginName, loginName);
 	}
 
 	private static final String UPDATE_USER_SQL = "update users set phone_number=?, email=?, qq=?, qzone_uid=?, weibo_account=?, weibo_uid=? where id=?";
@@ -131,6 +139,16 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 * 更新用户帐号信息
 	 */
 	@Override
+	@UpdatesToHazelcast({
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_ID_TO_USER, keyName = "${user.id}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_UID_TO_USER_ID, keyName = "${user.uid}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_UNIQUE_NAME_TO_USER_ID, keyName = "${user.uniqueName}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${user.phoneNumber}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${user.email}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${user.qq}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${user.qzoneUid}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${user.weiboAccount}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, keyName = "${user.weiboUid}") })
 	public void update(User user) {
 		super.getJdbcTemplate().update(UPDATE_USER_SQL, user.getPhoneNumber(), user.getEmail(), user.getQq(),
 				user.getQzoneUid(), user.getWeiboAccount(), user.getWeiboUid(), user.getId());
@@ -143,6 +161,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 * 更新爱宠号
 	 */
 	@Override
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_ID_TO_USER, keyName = "${id}")
 	public void updateUniqueName(Integer id, String uniqueName) {
 		super.getJdbcTemplate().update(UPDATE_UNIQUE_NAME_SQL, uniqueName, id);
 		logger.debug("updated unique name for user({}), unique name is {}", id, uniqueName);
@@ -154,6 +173,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 * 修改密码
 	 */
 	@Override
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_ID_TO_USER, keyName = "${id}")
 	public void changePassword(Integer id, String newEncodedPassword) {
 		super.getJdbcTemplate().update(CHANGE_PASSWORD_SQL, newEncodedPassword, id);
 		logger.debug("changed password for user({})", id);

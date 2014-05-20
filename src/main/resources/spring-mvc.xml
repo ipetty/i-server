@@ -15,7 +15,9 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" /><!-- 如果不配置或/**,将拦截所有的Controller -->
-			<bean class="net.ipetty.core.web.rest.interceptor.UserContextInterceptor" />
+			<bean class="net.ipetty.core.web.rest.interceptor.UserContextInterceptor">
+				<property name="userService" ref="userService" />
+			</bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
 

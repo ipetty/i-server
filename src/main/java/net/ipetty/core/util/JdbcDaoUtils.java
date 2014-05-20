@@ -24,8 +24,24 @@ public class JdbcDaoUtils {
 	/**
 	 * 从ResultSet中获取Integer对象的列值
 	 */
+	public static Integer getInteger(ResultSet rs, int columnIndex) throws SQLException {
+		int columnValue = rs.getInt(columnIndex);
+		return columnValue == 0 ? null : columnValue;
+	}
+
+	/**
+	 * 从ResultSet中获取Long对象的列值
+	 */
 	public static Long getLong(ResultSet rs, String columnLabel) throws SQLException {
 		long columnValue = rs.getInt(columnLabel);
+		return columnValue == 0 ? null : columnValue;
+	}
+
+	/**
+	 * 从ResultSet中获取Long对象的列值
+	 */
+	public static Long getLong(ResultSet rs, int columnIndex) throws SQLException {
+		long columnValue = rs.getInt(columnIndex);
 		return columnValue == 0 ? null : columnValue;
 	}
 

@@ -5,9 +5,8 @@ import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.ipetty.core.cache.UserCache;
-import net.ipetty.core.cache.UserTokenCache;
-import net.ipetty.core.context.SpringContextHelper;
+import net.ipetty.core.cache.BaseHazelcastCache;
+import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.web.rest.exception.RestException;
@@ -34,6 +33,8 @@ public class UserContextInterceptor implements HandlerInterceptor {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
+	private UserService userService;
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		// 从request中读取用户token，解析后写入到线程安全的UserContext中
@@ -43,14 +44,9 @@ public class UserContextInterceptor implements HandlerInterceptor {
 			String userToken = new String(Encodes.decodeBase64(encodedUserToken), UTF8);
 			logger.debug("request header: {}={}", HEADER_NAME_USER_TOKEN, userToken);
 			// 从服务器缓存中获取对应用户信息并写入到线程安全的UserContext中
-			Integer userId = UserTokenCache.getUserIdByToken(userToken);
+			Integer userId = BaseHazelcastCache.get(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, userToken);
 			if (userId != null) {
-				User user = UserCache.getUserById(userId);
-				if (user == null) {
-					// FIXME
-					UserService userService = SpringContextHelper.getBean(UserService.class);
-					user = userService.getById(userId);
-				}
+				User user = userService.getById(userId);
 				UserPrincipal principal = UserPrincipal.fromUser(user, userToken);
 				UserContext.setContext(principal);
 				logger.debug("current user is {}", principal);
@@ -81,6 +77,14 @@ public class UserContextInterceptor implements HandlerInterceptor {
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 }

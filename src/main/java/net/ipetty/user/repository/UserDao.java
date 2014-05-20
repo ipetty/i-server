@@ -21,19 +21,19 @@ public interface UserDao {
 	public User getById(Integer id);
 
 	/**
-	 * 根据uid获取用户帐号
+	 * 根据uid获取用户ID
 	 */
-	public User getByUid(int uid);
+	public Integer getUserIdByUid(int uid);
 
 	/**
-	 * 根据爱宠号获取用户帐号
+	 * 根据爱宠号获取用户ID
 	 */
-	public User getByUniqueName(String uniqueName);
+	public Integer getUserIdByUniqueName(String uniqueName);
 
 	/**
-	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户帐号
+	 * 根据帐号（爱宠帐号，手机号码，邮箱，Qzone Uid，新浪微博Uid）获取用户ID
 	 */
-	public User getByLoginName(String loginName);
+	public Integer getUserIdByLoginName(String loginName);
 
 	/**
 	 * 更新用户帐号信息

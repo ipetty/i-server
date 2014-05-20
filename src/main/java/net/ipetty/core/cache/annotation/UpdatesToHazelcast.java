@@ -6,17 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * UpdateToHazelcast
+ * UpdatesToHazelcast
  * 
  * @author luocanfeng
- * @date 2014年5月15日
+ * @date 2014年5月20日
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface UpdateToHazelcast {
+public @interface UpdatesToHazelcast {
 
-	String mapName(); // 缓存的mapName
-
-	String keyName(); // 缓存的key
+	UpdateToHazelcast[] value();
 
 }

@@ -1,7 +1,12 @@
 package net.ipetty.core.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+
+import net.ipetty.core.util.JdbcDaoUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +22,27 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
  * @date 2014年4月30日
  */
 public abstract class BaseJdbcDaoSupport extends JdbcDaoSupport {
+
+	protected static final RowMapper<Integer> INTEGER_ROW_MAPPER = new RowMapper<Integer>() {
+		@Override
+		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return JdbcDaoUtils.getInteger(rs, 1);
+		}
+	};
+
+	protected static final RowMapper<Long> LONG_ROW_MAPPER = new RowMapper<Long>() {
+		@Override
+		public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return JdbcDaoUtils.getLong(rs, 1);
+		}
+	};
+
+	protected static final RowMapper<String> STRING_ROW_MAPPER = new RowMapper<String>() {
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getString(1);
+		}
+	};
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 

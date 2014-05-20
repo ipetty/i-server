@@ -18,9 +18,6 @@ public class BaseHazelcastCache {
 	protected static final Config hazelcastConfig = new Config(hazelcastInstanceName);
 	protected static final HazelcastInstance hazelcast = Hazelcast.getOrCreateHazelcastInstance(hazelcastConfig);
 
-	public static final String MAP_NAME_USER_ID_TO_USER = "mapUserId2User";
-	public static final String MAP_NAME_USER_TOKEN_TO_USER_ID = "mapUserToken2UserId";
-
 	public static <K extends Object, V extends Object> Map<K, V> getMap(String mapName) {
 		return hazelcast.getMap(mapName);
 	}
@@ -32,6 +29,10 @@ public class BaseHazelcastCache {
 
 	public static <K extends Object, V extends Object> void set(String mapName, K key, V value) {
 		getMap(mapName).put(key, value);
+	}
+
+	public static <K extends Object> void delete(String mapName, K key) {
+		getMap(mapName).remove(key);
 	}
 
 	public static <K extends Object, V extends Object> boolean containsKey(String mapName, K key) {
