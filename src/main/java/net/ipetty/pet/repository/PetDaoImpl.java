@@ -9,6 +9,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.UpdatesToHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.pet.domain.Pet;
@@ -84,28 +88,31 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 根据ID获取宠物
 	 */
 	@Override
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, keyName = "${id}")
 	public Pet getById(Integer id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
-	private static final String GET_BY_UID_SQL = "select * from pet where uid=?";
+	private static final String GET_BY_UID_SQL = "select id from pet where uid=?";
 
 	/**
-	 * 根据uid获取宠物
+	 * 根据uid获取宠物ID
 	 */
 	@Override
-	public Pet getByUid(int uid) {
-		return super.queryUniqueEntity(GET_BY_UID_SQL, ROW_MAPPER, uid);
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_UID_TO_PET_ID, keyName = "${uid}")
+	public Integer getPetIdByUid(int uid) {
+		return super.queryUniqueEntity(GET_BY_UID_SQL, INTEGER_ROW_MAPPER, uid);
 	}
 
-	private static final String GET_BY_UNIQUE_NAME_SQL = "select * from pet where unique_name=?";
+	private static final String GET_BY_UNIQUE_NAME_SQL = "select id from pet where unique_name=?";
 
 	/**
-	 * 根据爱宠号获取宠物
+	 * 根据爱宠号获取宠物ID
 	 */
 	@Override
-	public Pet getByUniqueName(String uniqueName) {
-		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, ROW_MAPPER, uniqueName);
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_UN_TO_PET_ID, keyName = "${uniqueName}")
+	public Integer getPetIdByUniqueName(String uniqueName) {
+		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, INTEGER_ROW_MAPPER, uniqueName);
 	}
 
 	private static final String LIST_BY_USER_ID_SQL = "select * from pet where user_id=? order by sort_order asc";
@@ -124,6 +131,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 更新宠物信息
 	 */
 	@Override
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, keyName = "${pet.id}")
 	public void update(Pet pet) {
 		super.getJdbcTemplate().update(UPDATE_PET_SQL, pet.getName(), pet.getGender(), pet.getSortOrder(), pet.getId());
 		logger.debug("updated {}", pet);
@@ -135,6 +143,8 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 更新爱宠唯一标识
 	 */
 	@Override
+	@UpdatesToHazelcast({ @UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, keyName = "${id}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_UN_TO_PET_ID, keyName = "${uniqueName}") })
 	public void updateUniqueName(Integer id, String uniqueName) {
 		super.getJdbcTemplate().update(UPDATE_UNIQUE_NAME_SQL, uniqueName, id);
 		logger.debug("updated unique name for pet({}), unique name is {}", id, uniqueName);

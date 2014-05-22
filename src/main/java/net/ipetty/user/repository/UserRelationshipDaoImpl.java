@@ -48,6 +48,9 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 * 获取关注信息
 	 */
 	@Override
+	// @LoadFromHazelcast(mapName =
+	// CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, keyName =
+	// "${friendId}_${followerId}")
 	public UserRelationship get(Integer friendId, Integer followerId) {
 		return super.queryUniqueEntity(RETRIEVE_SQL, ROW_MAPPER, friendId, followerId);
 	}
@@ -58,6 +61,9 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 * 取消关注
 	 */
 	@Override
+	// @UpdateToHazelcast(mapName =
+	// CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, keyName =
+	// "${friendId}_${followerId}")
 	public void unfollow(Integer friendId, Integer followerId) {
 		super.getJdbcTemplate().update(DELETE_SQL, friendId, followerId);
 	}

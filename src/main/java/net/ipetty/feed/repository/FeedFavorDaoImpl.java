@@ -90,7 +90,7 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 	private static final String GET_BY_ID_SQL = "select * from feed_favor where id=?";
 
 	/**
-	 * 根据ID获取评论信息
+	 * 根据ID获取赞信息
 	 */
 	@Override
 	public FeedFavor getById(Long id) {

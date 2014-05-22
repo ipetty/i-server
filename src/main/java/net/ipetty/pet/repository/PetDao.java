@@ -23,14 +23,14 @@ public interface PetDao {
 	public Pet getById(Integer id);
 
 	/**
-	 * 根据uid获取宠物
+	 * 根据uid获取宠物ID
 	 */
-	public Pet getByUid(int uid);
+	public Integer getPetIdByUid(int uid);
 
 	/**
-	 * 根据爱宠号获取宠物
+	 * 根据爱宠号获取宠物ID
 	 */
-	public Pet getByUniqueName(String uniqueName);
+	public Integer getPetIdByUniqueName(String uniqueName);
 
 	/**
 	 * 获取指定用户的所有宠物

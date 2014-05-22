@@ -42,7 +42,7 @@ public class PetService extends BaseService {
 
 			// check unique
 			if (StringUtils.isNotBlank(pet.getUniqueName())) {
-				Pet orignal = petDao.getByUniqueName(pet.getUniqueName());
+				Pet orignal = this.getByUniqueName(pet.getUniqueName());
 				if (orignal != null) {
 					throw new BusinessException("爱宠唯一标识已存在");
 				}
@@ -76,7 +76,12 @@ public class PetService extends BaseService {
 	 * 根据uid获取宠物
 	 */
 	public Pet getByUid(int uid) {
-		return petDao.getByUid(uid);
+		Assert.notNull(uid, "UID不能为空");
+		Integer id = petDao.getPetIdByUid(uid);
+		if (id == null) {
+			throw new BusinessException("指定UID（" + uid + "）的宠物不存在");
+		}
+		return petDao.getById(id);
 	}
 
 	/**
@@ -84,7 +89,11 @@ public class PetService extends BaseService {
 	 */
 	public Pet getByUniqueName(String uniqueName) {
 		Assert.hasText(uniqueName, "爱宠唯一标识不能为空");
-		return petDao.getByUniqueName(uniqueName);
+		Integer id = petDao.getPetIdByUniqueName(uniqueName);
+		if (id == null) {
+			throw new BusinessException("指定爱宠唯一标识（" + uniqueName + "）的宠物不存在");
+		}
+		return petDao.getById(id);
 	}
 
 	/**
@@ -113,7 +122,7 @@ public class PetService extends BaseService {
 		Assert.notNull(id, "宠物ID不能为空");
 		Assert.hasText(uniqueName, "爱宠唯一标识不能为空");
 
-		Pet pet = petDao.getByUniqueName(uniqueName);
+		Pet pet = this.getByUniqueName(uniqueName);
 		if (pet != null) {// 校验唯一性
 			throw new BusinessException("爱宠唯一标识已存在");
 		}

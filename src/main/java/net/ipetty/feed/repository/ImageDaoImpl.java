@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.annotation.LoadFromHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -76,6 +78,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	 * 根据ID获取图片信息
 	 */
 	@Override
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, keyName = "${id}")
 	public Image getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
