@@ -19,6 +19,7 @@ create table users (
 	weibo_uid varchar(50),
 	password varchar(50),
 	salt varchar(20),
+	version int not null default 1,
 	foreign key(uid) references sys_uid_pool(uid)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on users(created_on desc);
@@ -31,7 +32,7 @@ create index idx_weibo_account on users(weibo_account);
 create index idx_weibo_uid on users(weibo_uid);
 -- 插入一条初始值，密码888888
 insert into sys_uid_pool(uid,enable) values(10000,0);
-insert into users(id,uid,unique_name,email,password,salt) values(1,10000,'admin','service@ipetty.net','be8d68e706c7067deb0a1c150965ad6cabf50610','4f49f396ae6d9dc3');
+insert into users(id,uid,unique_name,email,password,salt,version) values(1,10000,'admin','service@ipetty.net','be8d68e706c7067deb0a1c150965ad6cabf50610','4f49f396ae6d9dc3');
 
 -- user_profile
 create table user_profile (
@@ -68,6 +69,7 @@ create table pet (
 	name varchar(50),
 	gender varchar(10),
 	sort_order tinyint,
+	version int not null default 1,
 	foreign key(user_id) references users(id),
 	foreign key(uid) references sys_uid_pool(uid)
 ) engine=innodb default charset=utf8;

@@ -32,7 +32,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// id, created_on, uid, unique_name, phone_number, email, qq,
-			// qzone_uid, weibo_account, weibo_uid, password, salt
+			// qzone_uid, weibo_account, weibo_uid, password, salt, version
 			User user = new User();
 			user.setId(rs.getInt("id"));
 			user.setCreatedOn(rs.getDate("created_on"));
@@ -47,12 +47,13 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			user.setPassword(rs.getString("password"));
 			user.setEncodedPassword(user.getPassword());
 			user.setSalt(rs.getString("salt"));
+			user.setVersion(rs.getInt("version"));
 			return user;
 		}
 	};
 
-	private static final String CREATE_USER_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on)"
-			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String CREATE_USER_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on, version)"
+			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存用户帐号
@@ -60,6 +61,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	@Override
 	public void save(User user) {
 		user.setCreatedOn(new Date());
+		user.setVersion(1);
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -74,6 +76,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			statement.setString(9, user.getEncodedPassword());
 			statement.setString(10, user.getSalt());
 			statement.setTimestamp(11, new Timestamp(user.getCreatedOn().getTime()));
+			statement.setInt(12, user.getVersion());
 
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
@@ -133,7 +136,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 				loginName, loginName);
 	}
 
-	private static final String UPDATE_USER_SQL = "update users set phone_number=?, email=?, qq=?, qzone_uid=?, weibo_account=?, weibo_uid=? where id=?";
+	private static final String UPDATE_USER_SQL = "update users set phone_number=?, email=?, qq=?, qzone_uid=?, weibo_account=?, weibo_uid=?, version=version+1 where id=?";
 
 	/**
 	 * 更新用户帐号信息
@@ -155,7 +158,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		logger.debug("updated {}", user);
 	}
 
-	private static final String UPDATE_UNIQUE_NAME_SQL = "update users set unique_name=? where id=?";
+	private static final String UPDATE_UNIQUE_NAME_SQL = "update users set unique_name=?, version=version+1 where id=?";
 
 	/**
 	 * 更新爱宠号

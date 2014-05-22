@@ -16,9 +16,19 @@ public abstract class AbstractEntity implements Serializable {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1167460074726231060L;
 
+	private int version; // 实体版本号
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }
