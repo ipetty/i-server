@@ -1,24 +1,30 @@
 package net.ipetty.user.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import net.ipetty.core.context.SpringContextHelper;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
+import net.ipetty.core.util.ImageUtils;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
+import net.ipetty.user.domain.UserZone;
 import net.ipetty.user.repository.UserDao;
 import net.ipetty.user.repository.UserProfileDao;
 import net.ipetty.user.repository.UserRelationshipDao;
+import net.ipetty.user.repository.UserZoneDao;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * UserService
@@ -35,6 +41,9 @@ public class UserService extends BaseService {
 
 	@Resource
 	private UserProfileDao userProfileDao;
+
+	@Resource
+	private UserZoneDao userZoneDao;
 
 	@Resource
 	private UserRelationshipDao relationshipDao;
@@ -106,8 +115,14 @@ public class UserService extends BaseService {
 			user.getProfile().setUserId(user.getId());
 			userProfileDao.save(user.getProfile());
 
-			// TODO persist user zone
+			// persist user zone
+			user.setZone(new UserZone(user.getId()));
+			userZoneDao.save(user.getZone());
+
+			// TODO persist user zone statistics
+
 			// TODO persist user preferences
+
 			// TODO persist user statistics
 
 			// TODO persist user roles
@@ -308,6 +323,37 @@ public class UserService extends BaseService {
 			}
 		}
 		return users;
+	}
+
+	/**
+	 * 更新用户头像
+	 */
+	public String updateAvatar(MultipartFile imageFile, Integer userId, int userUid) {
+		try {
+			String avatarUrl = ImageUtils
+					.saveImageFile(imageFile, SpringContextHelper.getWebContextRealPath(), userUid);
+			UserProfile profile = userProfileDao.getByUserId(userId);
+			profile.setAvatar(avatarUrl);
+			userProfileDao.update(profile);
+			return profile.getAvatar();
+		} catch (IOException e) {
+			throw new BusinessException("保存图片时出错", e);
+		}
+	}
+
+	/**
+	 * 更新个人空间背景图片
+	 */
+	public String updateBackground(MultipartFile imageFile, Integer userId, int userUid) {
+		try {
+			String imageUrl = ImageUtils.saveImageFile(imageFile, SpringContextHelper.getWebContextRealPath(), userUid);
+			UserProfile profile = userProfileDao.getByUserId(userId);
+			profile.setBackground(imageUrl);
+			userProfileDao.update(profile);
+			return profile.getBackground();
+		} catch (IOException e) {
+			throw new BusinessException("保存图片时出错", e);
+		}
 	}
 
 }

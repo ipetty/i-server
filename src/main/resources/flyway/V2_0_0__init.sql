@@ -32,7 +32,7 @@ create index idx_weibo_account on users(weibo_account);
 create index idx_weibo_uid on users(weibo_uid);
 -- 插入一条初始值，密码888888
 insert into sys_uid_pool(uid,enable) values(10000,0);
-insert into users(id,uid,unique_name,email,password,salt,version) values(1,10000,'admin','service@ipetty.net','be8d68e706c7067deb0a1c150965ad6cabf50610','4f49f396ae6d9dc3');
+insert into users(id,uid,unique_name,email,password,salt) values(1,10000,'admin','service@ipetty.net','be8d68e706c7067deb0a1c150965ad6cabf50610','4f49f396ae6d9dc3');
 
 -- user_profile
 create table user_profile (
@@ -48,6 +48,12 @@ create table user_profile (
 create index idx_nickname on user_profile(nickname);
 create index idx_gender on user_profile(gender);
 create index idx_state_and_region on user_profile(state_and_region);
+
+-- user_zone
+create table user_zone (
+	user_id int primary key,
+	foreign key(user_id) references users(id)
+) engine=innodb default charset=utf8;
 
 -- user_relationship
 create table user_relationship (

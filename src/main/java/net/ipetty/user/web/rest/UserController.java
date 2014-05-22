@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * UserController
@@ -166,10 +167,16 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/user/uniqueName", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public boolean updateUniqueName(String id, String uniqueName) {
-		Assert.hasText(id, "ID不能为空");
+	public boolean updateUniqueName(String uniqueName) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能设置爱宠号");
+		}
+		if (StringUtils.isNotBlank(currentUser.getUniqueName())) {
+			throw new RestException("爱宠号已设置，不能再次设置爱宠号");
+		}
 		Assert.hasText(uniqueName, "爱宠号不能为空");
-		userService.updateUniqueName(Integer.valueOf(id), uniqueName);
+		userService.updateUniqueName(currentUser.getId(), uniqueName);
 		return true;
 	}
 
@@ -178,11 +185,14 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/changePassword", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public boolean changePassword(String id, String oldPassword, String newPassword) {
-		Assert.hasText(id, "ID不能为空");
+	public boolean changePassword(String oldPassword, String newPassword) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能修改密码");
+		}
 		Assert.hasText(oldPassword, "旧密码不能为空");
 		Assert.hasText(newPassword, "新密码不能为空");
-		userService.changePassword(Integer.valueOf(id), oldPassword, newPassword);
+		userService.changePassword(currentUser.getId(), oldPassword, newPassword);
 		return true;
 	}
 
@@ -191,10 +201,13 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/user/follow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public boolean follow(String friendId, String followerId) {
+	public boolean follow(String friendId) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能关注/取消关注");
+		}
 		Assert.hasText(friendId, "被关注人ID不能为空");
-		Assert.hasText(followerId, "关注人ID不能为空");
-		userService.follow(Integer.valueOf(friendId), Integer.valueOf(followerId));
+		userService.follow(Integer.valueOf(friendId), currentUser.getId());
 		return true;
 	}
 
@@ -203,10 +216,13 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/user/isfollow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public boolean isFollow(String friendId, String followerId) {
+	public boolean isFollow(String friendId) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			return false; // 未登录一律显示为未关注
+		}
 		Assert.hasText(friendId, "被关注人ID不能为空");
-		Assert.hasText(followerId, "关注人ID不能为空");
-		return userService.isFollow(Integer.valueOf(friendId), Integer.valueOf(followerId));
+		return userService.isFollow(Integer.valueOf(friendId), currentUser.getId());
 	}
 
 	/**
@@ -214,10 +230,13 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/user/unfollow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public boolean unfollow(String friendId, String followerId) {
+	public boolean unfollow(String friendId) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能关注/取消关注");
+		}
 		Assert.hasText(friendId, "被关注人ID不能为空");
-		Assert.hasText(followerId, "关注人ID不能为空");
-		userService.unfollow(Integer.valueOf(friendId), Integer.valueOf(followerId));
+		userService.unfollow(Integer.valueOf(friendId), currentUser.getId());
 		return true;
 	}
 
@@ -240,6 +259,32 @@ public class UserController extends BaseController {
 			vos.add(user.toVO());
 		}
 		return vos;
+	}
+
+	/**
+	 * 更新用户头像
+	 */
+	@RequestMapping(value = "/user/updateAvatar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String updateAvatar(MultipartFile imageFile) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能更新头像");
+		}
+		return userService.updateAvatar(imageFile, currentUser.getId(), currentUser.getUid());
+	}
+
+	/**
+	 * 更新个人空间背景图片
+	 */
+	@RequestMapping(value = "/user/updateBackground", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String updateBackground(MultipartFile imageFile) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能更新个人空间背景图片");
+		}
+		return userService.updateBackground(imageFile, currentUser.getId(), currentUser.getUid());
 	}
 
 }

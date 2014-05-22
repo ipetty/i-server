@@ -29,6 +29,9 @@ public interface CacheConstants {
 	/* user profile */
 	public static final String CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP = "mapUserRelationshipId2Relationship";
 
+	/* user zone */
+	public static final String CACHE_USER_ZONE_ID_TO_ZONE = "mapUseZoneId2UserZone";
+
 	/* pet */
 	public static final String CACHE_PET_ID_TO_PET = "mapPetId2Pet";
 

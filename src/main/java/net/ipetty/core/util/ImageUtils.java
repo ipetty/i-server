@@ -43,9 +43,6 @@ public class ImageUtils {
 
 	/**
 	 * 保存图片文件并返回Image对象
-	 * 
-	 * @throws IOException
-	 * @throws IllegalStateException
 	 */
 	public static Image saveImage(MultipartFile file, String webContextRealPath, Integer author, int authorUid)
 			throws IOException {
@@ -74,6 +71,27 @@ public class ImageUtils {
 		ImageUtils.processImage(originalImageFile, WIDTH_MAX, HEIGHT_MAX, smallImageFile);
 
 		return image;
+	}
+
+	/**
+	 * 保存图片文件并返回图片文件存放的相对地址
+	 */
+	public static String saveImageFile(MultipartFile file, String webContextRealPath, int authorUid) throws IOException {
+		ImageUtils.verifyImageType(file);
+
+		String originalFilename = file.getOriginalFilename();
+		String fileExtension = ImageUtils.getFileExtension(originalFilename);
+		String shortUuid = UUIDUtils.generateShortUUID();
+
+		String imageURL = new StringBuilder(ROOT_FILE_RELATIVE_PATH).append(FILE_SEPARATOR).append(authorUid)
+				.append(FILE_SEPARATOR).append(ORGINAL_IMAGE_FILE_PREFIX).append(shortUuid).append(".")
+				.append(fileExtension).toString();
+
+		File imageFile = new File(webContextRealPath + imageURL);
+		ImageUtils.makeDirsIfNotExists(imageFile);
+		file.transferTo(imageFile);
+
+		return imageURL;
 	}
 
 	private static void makeDirsIfNotExists(File file) {

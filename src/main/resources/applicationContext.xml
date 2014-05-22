@@ -11,7 +11,7 @@
 	<context:property-placeholder ignore-unresolvable="true" location="classpath:/jdbc.properties" />
 
 	<import resource="classpath:/applicationContext-datasource.xml" />
-	<!-- <import resource="classpath:/applicationContext-flyway.xml" /> -->
+	<import resource="classpath:/applicationContext-flyway.xml" />
 	<import resource="classpath:/applicationContext-persistent.xml" />
 
 	<context:annotation-config />

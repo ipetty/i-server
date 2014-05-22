@@ -21,7 +21,15 @@
 	<users id="10000" uid="10000" unique_name="admin" email="service@ipetty.net" password="be8d68e706c7067deb0a1c150965ad6cabf50610"
 		salt="4f49f396ae6d9dc3" />
 
-	<user_profile />
+	<user_profile user_id="11" />
+	<user_profile user_id="12" />
+	<user_profile user_id="13" />
+	<user_profile user_id="10000" />
+
+	<user_zone user_id="11" />
+	<user_zone user_id="12" />
+	<user_zone user_id="13" />
+	<user_zone user_id="10000" />
 
 	<user_relationship friend_id="10000" follower_id="11" followed_on="2014-05-13 11:07:31" />
 	<user_relationship friend_id="10000" follower_id="12" followed_on="2014-05-13 11:07:32" />

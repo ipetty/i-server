@@ -101,6 +101,8 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 	 */
 	@Override
 	public List<FeedVO> listByTimelineForHomePage(Date timeline, int pageNumber, int pageSize) {
+		super.requireAuthorization();
+
 		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.add("timeline", DateUtils.toDatetimeString(timeline));
 		request.add("pageNumber", String.valueOf(pageNumber));
@@ -116,6 +118,8 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 	 */
 	@Override
 	public FeedVO comment(CommentVO comment) {
+		super.requireAuthorization();
+
 		return context.getRestTemplate().postForObject(buildUri(URI_COMMENT), comment, FeedVO.class);
 	}
 
@@ -126,6 +130,8 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 	 */
 	@Override
 	public FeedVO favor(FeedFavorVO favor) {
+		super.requireAuthorization();
+
 		return context.getRestTemplate().postForObject(buildUri(URI_FAVOR), favor, FeedVO.class);
 	}
 
@@ -136,6 +142,8 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 	 */
 	@Override
 	public FeedVO unfavor(FeedFavorVO favor) {
+		super.requireAuthorization();
+
 		return context.getRestTemplate().postForObject(buildUri(URI_UNFAVOR), favor, FeedVO.class);
 	}
 

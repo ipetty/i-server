@@ -1,10 +1,13 @@
 package net.ipetty.sdk;
 
+import java.net.URI;
+
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserVO;
 
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -94,9 +97,10 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
 	@Override
-	public boolean updateUniqueName(Integer id, String uniqueName) {
+	public boolean updateUniqueName(String uniqueName) {
+		super.requireAuthorization();
+
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
-		request.set("id", String.valueOf(id));
 		request.set("uniqueName", uniqueName);
 		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE_UNIQUE_NAME), request, Boolean.class);
 	}
@@ -107,9 +111,10 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	 * 修改密码
 	 */
 	@Override
-	public boolean changePassword(Integer id, String oldPassword, String newPassword) {
+	public boolean changePassword(String oldPassword, String newPassword) {
+		super.requireAuthorization();
+
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
-		request.set("id", String.valueOf(id));
 		request.set("oldPassword", oldPassword);
 		request.set("newPassword", newPassword);
 		return context.getRestTemplate().postForObject(buildUri(URI_CHANGE_PASSWORD), request, Boolean.class);
@@ -121,10 +126,11 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	 * 关注
 	 */
 	@Override
-	public boolean follow(Integer friendId, Integer followerId) {
+	public boolean follow(Integer friendId) {
+		super.requireAuthorization();
+
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("friendId", String.valueOf(friendId));
-		request.set("followerId", String.valueOf(followerId));
 		return context.getRestTemplate().postForObject(buildUri(URI_FOLLOW), request, Boolean.class);
 	}
 
@@ -133,10 +139,12 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	/**
 	 * 是否已关注，true为已关注，false为未关注
 	 */
-	public boolean isFollow(Integer friendId, Integer followerId) {
+	@Override
+	public boolean isFollow(Integer friendId) {
+		super.requireAuthorization();
+
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("friendId", String.valueOf(friendId));
-		request.set("followerId", String.valueOf(followerId));
 		return context.getRestTemplate().postForObject(buildUri(URI_IS_FOLLOW), request, Boolean.class);
 	}
 
@@ -145,11 +153,43 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	/**
 	 * 取消关注
 	 */
-	public boolean unfollow(Integer friendId, Integer followerId) {
+	@Override
+	public boolean unfollow(Integer friendId) {
+		super.requireAuthorization();
+
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("friendId", String.valueOf(friendId));
-		request.set("followerId", String.valueOf(followerId));
 		return context.getRestTemplate().postForObject(buildUri(URI_IS_UNFOLLOW), request, Boolean.class);
+	}
+
+	private static final String URI_UPDATE_AVATAR = "/user/updateAvatar";
+
+	/**
+	 * 更新用户头像
+	 */
+	@Override
+	public String updateAvatar(String imagePath) {
+		super.requireAuthorization();
+
+		URI updateAvatarUri = buildUri(URI_UPDATE_AVATAR);
+		LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.add("imageFile", new FileSystemResource(imagePath));
+		return context.getRestTemplate().postForObject(updateAvatarUri, request, String.class);
+	}
+
+	private static final String URI_UPDATE_BACKGROUD = "/user/updateBackground";
+
+	/**
+	 * 更新个人空间背景图片
+	 */
+	@Override
+	public String updateBackground(String imagePath) {
+		super.requireAuthorization();
+
+		URI updateBackgroundUri = buildUri(URI_UPDATE_BACKGROUD);
+		LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.add("imageFile", new FileSystemResource(imagePath));
+		return context.getRestTemplate().postForObject(updateBackgroundUri, request, String.class);
 	}
 
 }

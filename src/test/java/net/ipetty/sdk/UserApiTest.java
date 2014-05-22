@@ -82,20 +82,21 @@ public class UserApiTest extends BaseTest {
 		UserVO user = userApi.register(register);
 		Assert.assertNotNull(user);
 
+		userApi.login("testUpdateUniqueNameWithApi@ipetty.net", "888888");
+
 		try {
-			userApi.updateUniqueName(user.getId(), TEST_ACCOUNT_UNIQUE_NAME);
+			userApi.updateUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
 		} catch (Exception e) {
 			Assert.assertTrue(true);
 		}
 
-		Assert.assertTrue(userApi.updateUniqueName(user.getId(), "_testUpdateUniqueName"));
+		Assert.assertTrue(userApi.updateUniqueName("_testUpdateUniqueName"));
 	}
 
 	@Test
 	public void testChangePassword() {
-		UserVO user = userApi.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		Assert.assertNotNull(user);
-		Assert.assertTrue(userApi.changePassword(user.getId(), TEST_ACCOUNT_PASSWORD, "888888"));
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+		Assert.assertTrue(userApi.changePassword(TEST_ACCOUNT_PASSWORD, TEST_ACCOUNT_PASSWORD));
 	}
 
 	@Test
@@ -107,15 +108,33 @@ public class UserApiTest extends BaseTest {
 		UserVO user2 = userApi.register(register2);
 		Assert.assertNotNull(user2);
 
-		userApi.follow(user2.getId(), user1.getId());
-		Assert.assertTrue(userApi.isFollow(user2.getId(), user1.getId()));
+		userApi.login("testFollowWithApi1@ipetty.net", "888888");
+		userApi.follow(user2.getId());
+		Assert.assertTrue(userApi.isFollow(user2.getId()));
 
-		userApi.follow(user1.getId(), user2.getId());
-		Assert.assertTrue(userApi.isFollow(user1.getId(), user2.getId()));
+		userApi.login("testFollowWithApi2@ipetty.net", "888888");
+		userApi.follow(user1.getId());
+		Assert.assertTrue(userApi.isFollow(user1.getId()));
 
-		userApi.unfollow(user2.getId(), user1.getId());
-		Assert.assertFalse(userApi.isFollow(user2.getId(), user1.getId()));
-		Assert.assertTrue(userApi.isFollow(user1.getId(), user2.getId()));
+		userApi.login("testFollowWithApi1@ipetty.net", "888888");
+		userApi.unfollow(user2.getId());
+		Assert.assertFalse(userApi.isFollow(user2.getId()));
+		userApi.login("testFollowWithApi2@ipetty.net", "888888");
+		Assert.assertTrue(userApi.isFollow(user1.getId()));
+	}
+
+	@Test
+	public void testUpdateAvatar() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+		String avatarUrl = userApi.updateAvatar(getTestPhotoPath());
+		Assert.assertNotNull(avatarUrl);
+	}
+
+	@Test
+	public void testUpdateBackground() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+		String backgroundUrl = userApi.updateBackground(getTestPhotoPath());
+		Assert.assertNotNull(backgroundUrl);
 	}
 
 }

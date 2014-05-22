@@ -69,7 +69,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 * 更新用户个人信息
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, keyName = "${userId}")
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, keyName = "${profile.userId}")
 	public void update(UserProfile profile) {
 		super.getJdbcTemplate().update(UPDATE_USER_PROFILE_SQL, profile.getNickname(), profile.getAvatar(),
 				profile.getBackground(), profile.getGender(), profile.getStateAndRegion(), profile.getSignature(),

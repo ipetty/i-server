@@ -16,6 +16,21 @@ public class UserZone extends AbstractEntity {
 	private Integer userId; // 用户ID
 	private UserZoneStatistics statistics; // 个人空间统计信息
 
+	public UserZone() {
+		super();
+	}
+
+	public UserZone(Integer userId) {
+		super();
+		this.userId = userId;
+	}
+
+	public UserZone(Integer userId, UserZoneStatistics statistics) {
+		super();
+		this.userId = userId;
+		this.statistics = statistics;
+	}
+
 	public Integer getUserId() {
 		return userId;
 	}

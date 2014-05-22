@@ -63,24 +63,13 @@ public class FeedController extends BaseController {
 	@RequestMapping(value = "/publishImage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ImageVO publishImage(MultipartFile imageFile) {
-		UserPrincipal currentUser = this.getCurrentUser();
-		Image image = imageService.save(imageFile, SpringContextHelper.getWebContextRealPath(), currentUser.getId(),
-				currentUser.getUid());
-		return image.toVO();
-	}
-
-	private UserPrincipal getCurrentUser() {
-		// FIXME
 		UserPrincipal currentUser = UserContext.getContext();
-		if (currentUser == null) {
-			currentUser = new UserPrincipal();
-		}
-		currentUser.setId(13);
-		currentUser.setUid(3);
 		if (currentUser == null || currentUser.getId() == null) {
 			throw new RestException("注册用户才能发布消息");
 		}
-		return currentUser;
+		Image image = imageService.save(imageFile, SpringContextHelper.getWebContextRealPath(), currentUser.getId(),
+				currentUser.getUid());
+		return image.toVO();
 	}
 
 	/**
@@ -95,7 +84,10 @@ public class FeedController extends BaseController {
 		}
 
 		// 当前用户
-		UserPrincipal currentUser = this.getCurrentUser();
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能发布消息");
+		}
 
 		// Feed
 		Feed feed = new Feed();
@@ -139,7 +131,7 @@ public class FeedController extends BaseController {
 		Assert.hasText(timeline, "时间线不能为空");
 		Assert.hasText(pageNumber, "页码不能为空");
 		Assert.hasText(pageSize, "每页条数不能为空");
-		UserPrincipal currentUser = this.getCurrentUser();
+		UserPrincipal currentUser = UserContext.getContext();
 		Integer currentUserId = currentUser == null ? null : currentUser.getId();
 		logger.debug("list by timeline for square userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
 				timeline, pageNumber, pageSize);
@@ -159,11 +151,14 @@ public class FeedController extends BaseController {
 		Assert.hasText(timeline, "时间线不能为空");
 		Assert.hasText(pageNumber, "页码不能为空");
 		Assert.hasText(pageSize, "每页条数不能为空");
-		UserPrincipal currentUser = this.getCurrentUser();
-		Integer currentUserId = currentUser == null ? null : currentUser.getId();
-		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
-				timeline, pageNumber, pageSize);
-		return feedService.listByTimelineForHomePage(currentUserId, DateUtils.fromDatetimeString(timeline),
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			// 用户未登录，首页不显示任何消息
+			throw new RestException("未登录的用户首页无任何消息");
+		}
+		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}",
+				currentUser.getId(), timeline, pageNumber, pageSize);
+		return feedService.listByTimelineForHomePage(currentUser.getId(), DateUtils.fromDatetimeString(timeline),
 				Integer.valueOf(pageNumber), Integer.valueOf(pageSize));
 	}
 
@@ -176,10 +171,11 @@ public class FeedController extends BaseController {
 		Assert.notNull(comment, "评论不能为空");
 		Assert.hasText(comment.getText(), "评论内容不能为空");
 		Assert.notNull(comment.getFeedId(), "评论的消息不能为空");
-		UserPrincipal currentUser = this.getCurrentUser();
-		Integer currentUserId = currentUser == null ? null : currentUser.getId();
-
-		comment.setCreatedBy(currentUserId);
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能评论消息");
+		}
+		comment.setCreatedBy(currentUser.getId());
 		Comment entity = Comment.fromVO(comment);
 		return feedService.comment(entity);
 	}
@@ -192,10 +188,11 @@ public class FeedController extends BaseController {
 	public FeedVO favor(@RequestBody FeedFavorVO favor) {
 		Assert.notNull(favor, "赞不能为空");
 		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
-		UserPrincipal currentUser = this.getCurrentUser();
-		Integer currentUserId = currentUser == null ? null : currentUser.getId();
-
-		favor.setCreatedBy(currentUserId);
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能赞消息");
+		}
+		favor.setCreatedBy(currentUser.getId());
 		FeedFavor entity = FeedFavor.fromVO(favor);
 		return feedService.favor(entity);
 	}
@@ -208,10 +205,11 @@ public class FeedController extends BaseController {
 	public FeedVO unfavor(@RequestBody FeedFavorVO favor) {
 		Assert.notNull(favor, "赞不能为空");
 		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
-		UserPrincipal currentUser = this.getCurrentUser();
-		Integer currentUserId = currentUser == null ? null : currentUser.getId();
-
-		favor.setCreatedBy(currentUserId);
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能赞/取消赞");
+		}
+		favor.setCreatedBy(currentUser.getId());
 		FeedFavor entity = FeedFavor.fromVO(favor);
 		return feedService.unfavor(entity);
 	}
