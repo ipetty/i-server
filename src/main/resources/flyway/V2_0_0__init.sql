@@ -154,3 +154,15 @@ create table feed_statistics (
 	favor_count int,
 	foreign key(feed_id) references feed(id)
 ) engine=innodb default charset=utf8;
+
+
+
+-- activity
+create table activity (
+	id bigint primary key auto_increment,
+	type varchar(20),
+	created_by int,
+	target_id bigint,
+	created_on timestamp default current_timestamp,
+	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;

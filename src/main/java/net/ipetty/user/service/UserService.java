@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import net.ipetty.activity.annotation.ActivityRecord;
+import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.context.SpringContextHelper;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
@@ -54,6 +56,7 @@ public class UserService extends BaseService {
 	/**
 	 * 登录验证
 	 */
+	@ActivityRecord(type = ActivityType.LOGIN, createdBy = "${return.id}")
 	public User login(String username, String password) throws BusinessException {
 		Assert.hasText(username, "用户名不能为空");
 		Assert.hasText(password, "密码不能为空");
@@ -234,6 +237,7 @@ public class UserService extends BaseService {
 	/**
 	 * 关注
 	 */
+	@ActivityRecord(type = ActivityType.FOLLOW, createdBy = "${followerId}", targetId = "${friendId}")
 	public void follow(Integer friendId, Integer followerId) {
 		Assert.notNull(friendId, "被关注人ID不能为空");
 		Assert.notNull(followerId, "关注人ID不能为空");
@@ -258,6 +262,7 @@ public class UserService extends BaseService {
 	/**
 	 * 取消关注
 	 */
+	@ActivityRecord(type = ActivityType.UNFOLLOW, createdBy = "${followerId}", targetId = "${friendId}")
 	public void unfollow(Integer friendId, Integer followerId) {
 		Assert.notNull(friendId, "被关注人ID不能为空");
 		Assert.notNull(followerId, "关注人ID不能为空");
