@@ -1,6 +1,6 @@
 package net.ipetty.activity.interceptor;
 
-import net.ipetty.activity.annotation.ActivityRecord;
+import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.core.mq.ActivityHazelcastMQ;
 import net.ipetty.core.util.AopUtils;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class ActivityRecordInterceptor {
 
-	private final String ACTIVITY_RECORD = "@annotation(net.ipetty.activity.annotation.ActivityRecord)";
+	private final String PRODUCE_ACTIVITY = "@annotation(net.ipetty.activity.annotation.ProduceActivity)";
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -31,18 +31,18 @@ public class ActivityRecordInterceptor {
 	 * 获取ActivityRecord，并进行相应业务处理
 	 */
 	@SuppressWarnings("unchecked")
-	@Around(ACTIVITY_RECORD)
-	public <T> T get(ProceedingJoinPoint call) throws Throwable {
-		ActivityRecord activityRecord = AopUtils.getAnnotation(call, ActivityRecord.class);
+	@Around(PRODUCE_ACTIVITY)
+	public <T> T record(ProceedingJoinPoint call) throws Throwable {
+		ProduceActivity activityAnnotation = AopUtils.getAnnotation(call, ProduceActivity.class);
 		T result = (T) call.proceed();
 
-		String targetIdKey = activityRecord.targetId();
-		Long targetId = StringUtils.isNotBlank(targetIdKey) ? ((Number) AopUtils.executeOgnl(targetIdKey, call, result))
-				.longValue() : null;
-		String createdByKey = activityRecord.createdBy();
-		Integer createdBy = StringUtils.isNotBlank(createdByKey) ? (Integer) AopUtils.executeOgnl(createdByKey, call,
-				result) : null;
-		Activity activity = new Activity(activityRecord.type(), targetId, createdBy);
+		String targetIdKey = activityAnnotation.targetId();
+		Long targetId = StringUtils.isNotBlank(targetIdKey) ? ((Number) AopUtils.executeSingleKey(targetIdKey, call,
+				result)).longValue() : null;
+		String createdByKey = activityAnnotation.createdBy();
+		Integer createdBy = StringUtils.isNotBlank(createdByKey) ? (Integer) AopUtils.executeSingleKey(createdByKey,
+				call, result) : null;
+		Activity activity = new Activity(activityAnnotation.type(), targetId, createdBy);
 
 		ActivityHazelcastMQ.publish(activity);
 		logger.debug("published {}", activity);

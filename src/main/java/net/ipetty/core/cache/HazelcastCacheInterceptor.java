@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 /**
  * HazelcastCacheInterceptor
  * 
- * 参考 http://www.cnblogs.com/warden/p/
- * simple_cache_solutions_base_on_springaop_and_annotation.html
+ * 参考
+ * "http://www.cnblogs.com/warden/p/simple_cache_solutions_base_on_springaop_and_annotation.html"
  * 
  * @author luocanfeng
  * @date 2014年5月15日
@@ -39,10 +39,10 @@ public class HazelcastCacheInterceptor {
 	public <K, V> V get(ProceedingJoinPoint call) throws Throwable {
 		LoadFromHazelcast annotation = AopUtils.getAnnotation(call, LoadFromHazelcast.class);
 		String mapName = annotation.mapName();
-		String keyName = annotation.keyName();
+		String keyName = annotation.key();
 
 		// get actual key
-		K key = AopUtils.executeOgnl(keyName, call);
+		String key = AopUtils.executeJoinedKey(keyName, call);
 		V value = BaseHazelcastCache.get(mapName, key);
 		logger.debug("Hazelcast.get('{}', {}) = {}", mapName, key, value);
 
@@ -68,11 +68,11 @@ public class HazelcastCacheInterceptor {
 	public <K, V> V update(ProceedingJoinPoint call) throws Throwable {
 		UpdateToHazelcast annotation = AopUtils.getAnnotation(call, UpdateToHazelcast.class);
 		String mapName = annotation.mapName();
-		String keyName = annotation.keyName();
+		String keyName = annotation.key();
 
 		V value = (V) call.proceed();
 
-		K key = AopUtils.executeOgnl(keyName, call);
+		String key = AopUtils.executeJoinedKey(keyName, call, value);
 		BaseHazelcastCache.delete(mapName, key);
 		logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 
@@ -90,9 +90,9 @@ public class HazelcastCacheInterceptor {
 
 		for (UpdateToHazelcast annotation : annotations.value()) {
 			String mapName = annotation.mapName();
-			String keyName = annotation.keyName();
+			String keyName = annotation.key();
 
-			K key = AopUtils.executeOgnl(keyName, call);
+			String key = AopUtils.executeJoinedKey(keyName, call, value);
 			BaseHazelcastCache.delete(mapName, key);
 			logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 		}

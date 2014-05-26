@@ -4,6 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.UpdateToHazelcast;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
 import net.ipetty.user.domain.UserRelationship;
@@ -48,9 +51,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 * 获取关注信息
 	 */
 	@Override
-	// @LoadFromHazelcast(mapName =
-	// CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, keyName =
-	// "${friendId}_${followerId}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, key = "${friendId}_${followerId}")
 	public UserRelationship get(Integer friendId, Integer followerId) {
 		return super.queryUniqueEntity(RETRIEVE_SQL, ROW_MAPPER, friendId, followerId);
 	}
@@ -61,9 +62,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 * 取消关注
 	 */
 	@Override
-	// @UpdateToHazelcast(mapName =
-	// CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, keyName =
-	// "${friendId}_${followerId}")
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, key = "${friendId}_${followerId}")
 	public void unfollow(Integer friendId, Integer followerId) {
 		super.getJdbcTemplate().update(DELETE_SQL, friendId, followerId);
 	}

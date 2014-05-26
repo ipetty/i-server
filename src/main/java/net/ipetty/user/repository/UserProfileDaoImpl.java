@@ -58,7 +58,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 * 根据用户ID获取用户个人信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, keyName = "${userId}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, key = "${userId}")
 	public UserProfile getByUserId(Integer userId) {
 		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
@@ -69,7 +69,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 * 更新用户个人信息
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, keyName = "${profile.userId}")
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, key = "${profile.userId}")
 	public void update(UserProfile profile) {
 		super.getJdbcTemplate().update(UPDATE_USER_PROFILE_SQL, profile.getNickname(), profile.getAvatar(),
 				profile.getBackground(), profile.getGender(), profile.getStateAndRegion(), profile.getSignature(),

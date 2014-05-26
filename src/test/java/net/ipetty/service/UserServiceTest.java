@@ -65,16 +65,6 @@ public class UserServiceTest extends BaseTest {
 	}
 
 	@Test
-	public void testUpdate() {
-		String phoneNumber = "13800138000";
-		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		user.setPhoneNumber(phoneNumber);
-		userService.update(user);
-		user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		Assert.assertEquals("13800138000", user.getPhoneNumber());
-	}
-
-	@Test
 	public void testUpdateUniqueName() {
 		try {
 			User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);

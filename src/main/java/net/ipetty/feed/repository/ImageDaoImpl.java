@@ -78,7 +78,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	 * 根据ID获取图片信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, keyName = "${id}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
 	public Image getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}

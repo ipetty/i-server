@@ -47,7 +47,7 @@ public class UserZoneDaoImpl extends BaseJdbcDaoSupport implements UserZoneDao {
 	 * 根据用户ID获取用户空间
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_ZONE_ID_TO_ZONE, keyName = "${userId}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_ZONE_ID_TO_ZONE, key = "${userId}")
 	public UserZone getByUserId(Integer userId) {
 		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}

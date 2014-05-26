@@ -16,8 +16,9 @@ import net.ipetty.core.cache.BaseHazelcastCache;
 /**
  * 通过读取Class文件,获得方法形参名称列表
  * 
- * 参考 http://www.cnblogs.com/warden/p/
- * simple_cache_solutions_base_on_springaop_and_annotation.html
+ * 参考
+ * "http://www.cnblogs.com/warden/p/simple_cache_solutions_base_on_springaop_and_annotation.html"
+ * 引用自"https://gist.github.com/wendal/2011728"
  * 
  * @date 2014年5月15日
  */

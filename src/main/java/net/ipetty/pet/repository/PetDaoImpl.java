@@ -88,7 +88,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 根据ID获取宠物
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, keyName = "${id}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, key = "${id}")
 	public Pet getById(Integer id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
@@ -99,7 +99,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 根据uid获取宠物ID
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_UID_TO_PET_ID, keyName = "${uid}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_UID_TO_PET_ID, key = "${uid}")
 	public Integer getPetIdByUid(int uid) {
 		return super.queryUniqueEntity(GET_BY_UID_SQL, INTEGER_ROW_MAPPER, uid);
 	}
@@ -110,7 +110,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 根据爱宠号获取宠物ID
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_UN_TO_PET_ID, keyName = "${uniqueName}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_PET_UN_TO_PET_ID, key = "${uniqueName}")
 	public Integer getPetIdByUniqueName(String uniqueName) {
 		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, INTEGER_ROW_MAPPER, uniqueName);
 	}
@@ -131,7 +131,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 更新宠物信息
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, keyName = "${pet.id}")
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, key = "${pet.id}")
 	public void update(Pet pet) {
 		super.getJdbcTemplate().update(UPDATE_PET_SQL, pet.getName(), pet.getGender(), pet.getSortOrder(), pet.getId());
 		logger.debug("updated {}", pet);
@@ -143,8 +143,8 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	 * 更新爱宠唯一标识
 	 */
 	@Override
-	@UpdatesToHazelcast({ @UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, keyName = "${id}"),
-			@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_UN_TO_PET_ID, keyName = "${uniqueName}") })
+	@UpdatesToHazelcast({ @UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, key = "${id}"),
+			@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_UN_TO_PET_ID, key = "${uniqueName}") })
 	public void updateUniqueName(Integer id, String uniqueName) {
 		super.getJdbcTemplate().update(UPDATE_UNIQUE_NAME_SQL, uniqueName, id);
 		logger.debug("updated unique name for pet({}), unique name is {}", id, uniqueName);

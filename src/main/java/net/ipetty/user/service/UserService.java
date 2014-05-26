@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import net.ipetty.activity.annotation.ActivityRecord;
+import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.context.SpringContextHelper;
 import net.ipetty.core.exception.BusinessException;
@@ -56,7 +56,7 @@ public class UserService extends BaseService {
 	/**
 	 * 登录验证
 	 */
-	@ActivityRecord(type = ActivityType.LOGIN, createdBy = "${return.id}")
+	@ProduceActivity(type = ActivityType.LOGIN, createdBy = "${return.id}")
 	public User login(String username, String password) throws BusinessException {
 		Assert.hasText(username, "用户名不能为空");
 		Assert.hasText(password, "密码不能为空");
@@ -73,6 +73,7 @@ public class UserService extends BaseService {
 	/**
 	 * 注册帐号
 	 */
+	@ProduceActivity(type = ActivityType.SIGN_UP, createdBy = "${user.id}")
 	public void register(User user) throws BusinessException {
 		synchronized (uidService) {
 			// verify accounts feilds
@@ -184,17 +185,9 @@ public class UserService extends BaseService {
 	}
 
 	/**
-	 * 更新用户帐号信息
-	 */
-	public void update(User user) {
-		Assert.notNull(user, "用户不能为空");
-		Assert.notNull(user.getId(), "用户ID不能为空");
-		userDao.update(user);
-	}
-
-	/**
 	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
+	@ProduceActivity(type = ActivityType.UPDATE_UNIQUE_NAME, createdBy = "${id}")
 	public void updateUniqueName(Integer id, String uniqueName) {
 		Assert.notNull(id, "用户ID不能为空");
 		Assert.hasText(uniqueName, "爱宠号不能为空");
@@ -215,6 +208,7 @@ public class UserService extends BaseService {
 	/**
 	 * 修改密码
 	 */
+	@ProduceActivity(type = ActivityType.CHANGE_PASSWORD, createdBy = "${id}")
 	public void changePassword(Integer id, String oldPassword, String newPassword) {
 		Assert.notNull(id, "用户ID不能为空");
 		Assert.hasText(oldPassword, "旧密码不能为空");
@@ -237,7 +231,7 @@ public class UserService extends BaseService {
 	/**
 	 * 关注
 	 */
-	@ActivityRecord(type = ActivityType.FOLLOW, createdBy = "${followerId}", targetId = "${friendId}")
+	@ProduceActivity(type = ActivityType.FOLLOW, createdBy = "${followerId}", targetId = "${friendId}")
 	public void follow(Integer friendId, Integer followerId) {
 		Assert.notNull(friendId, "被关注人ID不能为空");
 		Assert.notNull(followerId, "关注人ID不能为空");
@@ -262,7 +256,7 @@ public class UserService extends BaseService {
 	/**
 	 * 取消关注
 	 */
-	@ActivityRecord(type = ActivityType.UNFOLLOW, createdBy = "${followerId}", targetId = "${friendId}")
+	@ProduceActivity(type = ActivityType.UNFOLLOW, createdBy = "${followerId}", targetId = "${friendId}")
 	public void unfollow(Integer friendId, Integer followerId) {
 		Assert.notNull(friendId, "被关注人ID不能为空");
 		Assert.notNull(followerId, "关注人ID不能为空");
@@ -333,6 +327,7 @@ public class UserService extends BaseService {
 	/**
 	 * 更新用户头像
 	 */
+	@ProduceActivity(type = ActivityType.UPDATE_AVATAR, createdBy = "${userId}")
 	public String updateAvatar(MultipartFile imageFile, Integer userId, int userUid) {
 		try {
 			String avatarUrl = ImageUtils
@@ -349,6 +344,7 @@ public class UserService extends BaseService {
 	/**
 	 * 更新个人空间背景图片
 	 */
+	@ProduceActivity(type = ActivityType.UPDATE_BACKGROUND, createdBy = "${userId}")
 	public String updateBackground(MultipartFile imageFile, Integer userId, int userUid) {
 		try {
 			String imageUrl = ImageUtils.saveImageFile(imageFile, SpringContextHelper.getWebContextRealPath(), userUid);

@@ -17,6 +17,6 @@ public @interface LoadFromHazelcast {
 
 	String mapName(); // 缓存的mapName
 
-	String keyName(); // 缓存的key
+	String key(); // 缓存的key，可以是多个字段拼合的key
 
 }
