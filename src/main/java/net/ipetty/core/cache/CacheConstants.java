@@ -26,8 +26,8 @@ public interface CacheConstants {
 	/* user profile */
 	public static final String CACHE_USER_PROFILE_ID_TO_PROFILE = "mapUserId2UserProfile";
 
-	/* user profile */
-	public static final String CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP = "mapUserRelationshipId2Relationship";
+	/* user relationship */
+	public static final String CACHE_USER_RELATIONSHIP = "mapUserRelationship";
 
 	/* user zone */
 	public static final String CACHE_USER_ZONE_ID_TO_ZONE = "mapUseZoneId2UserZone";
@@ -40,6 +40,15 @@ public interface CacheConstants {
 
 	/* pet */
 	public static final String CACHE_PET_UN_TO_PET_ID = "mapPetUN2PetId";
+
+	/* feed */
+	public static final String CACHE_FEED_ID_TO_FEED = "mapFeedId2Feed";
+
+	/* feed comment */
+	public static final String CACHE_COMMENT_ID_TO_COMMENT = "mapCommentId2Comment";
+
+	/* feed statistics */
+	public static final String CACHE_FEED_STATISTICS = "mapFeedStatistics";
 
 	/* image */
 	public static final String CACHE_IMAGE_ID_TO_IMAGE = "mapImageId2Image";

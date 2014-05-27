@@ -30,14 +30,14 @@ public class UserZoneDaoImpl extends BaseJdbcDaoSupport implements UserZoneDao {
 		}
 	};
 
-	private static final String SAVE_USER_ZONE_SQL = "insert into user_zone(user_id) values(?)";
+	private static final String SAVE_SQL = "insert into user_zone(user_id) values(?)";
 
 	/**
 	 * 保存用户空间
 	 */
 	@Override
 	public void save(UserZone userZone) {
-		super.getJdbcTemplate().update(SAVE_USER_ZONE_SQL, userZone.getUserId());
+		super.getJdbcTemplate().update(SAVE_SQL, userZone.getUserId());
 		logger.debug("saved {}", userZone);
 	}
 

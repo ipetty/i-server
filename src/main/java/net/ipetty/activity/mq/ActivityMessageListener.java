@@ -1,11 +1,15 @@
-package net.ipetty.core.mq;
+package net.ipetty.activity.mq;
+
+import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.activity.service.ActivityService;
-import net.ipetty.core.context.SpringContextHelper;
+import net.ipetty.bonuspoint.service.BonusPointService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
@@ -16,17 +20,16 @@ import com.hazelcast.core.MessageListener;
  * @author luocanfeng
  * @date 2014年5月23日
  */
+@Component
+@Transactional
 public class ActivityMessageListener implements MessageListener<Activity> {
 
-	private static ActivityService activityService;
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	@Resource
+	private ActivityService activityService;
+	@Resource
+	private BonusPointService bonusPointService;
 
-	private static ActivityService getActivityService() {
-		if (activityService == null) {
-			activityService = SpringContextHelper.getBean(ActivityService.class);
-		}
-		return activityService;
-	}
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void onMessage(Message<Activity> message) {
@@ -34,9 +37,10 @@ public class ActivityMessageListener implements MessageListener<Activity> {
 		logger.debug("receive {}", activity);
 
 		// save activity
-		getActivityService().save(activity);
+		activityService.save(activity);
 
 		// bonus point
+		bonusPointService.gain(activity);
 
 		// statistics
 	}

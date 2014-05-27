@@ -42,7 +42,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into image(created_by, small_url, cut_url, original_url, created_on) values(?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into image(created_by, small_url, cut_url, original_url, created_on) values(?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存图片信息
@@ -52,7 +52,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		image.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			// 图片必须要有创建人
 			JdbcDaoUtils.setInteger(statement, 1, image.getCreatedBy());
 			statement.setString(2, image.getSmallURL());

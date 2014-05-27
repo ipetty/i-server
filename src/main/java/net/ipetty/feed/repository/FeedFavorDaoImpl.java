@@ -40,7 +40,7 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into feed_favor(created_by, feed_id, created_on) values(?, ?, ?)";
+	private static final String SAVE_SQL = "insert into feed_favor(created_by, feed_id, created_on) values(?, ?, ?)";
 
 	/**
 	 * 保存赞
@@ -50,7 +50,7 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 		feedFavor.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setInteger(statement, 1, feedFavor.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 2, feedFavor.getFeedId());
 			statement.setTimestamp(3, new Timestamp(feedFavor.getCreatedOn().getTime()));
@@ -77,14 +77,14 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 		return super.queryUniqueEntity(GET_BY_USER_ID_AND_FEED_ID_SQL, ROW_MAPPER, userId, feedId);
 	}
 
-	private static final String DELETE_BY_ID_SQL = "delete from feed_favor where id=?";
+	private static final String DELETE_SQL = "delete from feed_favor where id=?";
 
 	/**
 	 * 删除赞
 	 */
 	@Override
 	public void delete(Long id) {
-		super.getJdbcTemplate().update(DELETE_BY_ID_SQL, id);
+		super.getJdbcTemplate().update(DELETE_SQL, id);
 	}
 
 	private static final String GET_BY_ID_SQL = "select * from feed_favor where id=?";

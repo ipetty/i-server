@@ -1,5 +1,6 @@
-package net.ipetty.core.cache;
+package net.ipetty.core.cache.interceptor;
 
+import net.ipetty.core.cache.BaseHazelcastCache;
 import net.ipetty.core.cache.annotation.LoadFromHazelcast;
 import net.ipetty.core.cache.annotation.UpdateToHazelcast;
 import net.ipetty.core.cache.annotation.UpdatesToHazelcast;
@@ -42,7 +43,7 @@ public class HazelcastCacheInterceptor {
 		String keyName = annotation.key();
 
 		// get actual key
-		String key = AopUtils.executeJoinedKey(keyName, call);
+		String key = AopUtils.executeOgnlKey(keyName, call);
 		V value = BaseHazelcastCache.get(mapName, key);
 		logger.debug("Hazelcast.get('{}', {}) = {}", mapName, key, value);
 
@@ -72,7 +73,7 @@ public class HazelcastCacheInterceptor {
 
 		V value = (V) call.proceed();
 
-		String key = AopUtils.executeJoinedKey(keyName, call, value);
+		String key = AopUtils.executeOgnlKey(keyName, call, value);
 		BaseHazelcastCache.delete(mapName, key);
 		logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 
@@ -92,7 +93,7 @@ public class HazelcastCacheInterceptor {
 			String mapName = annotation.mapName();
 			String keyName = annotation.key();
 
-			String key = AopUtils.executeJoinedKey(keyName, call, value);
+			String key = AopUtils.executeOgnlKey(keyName, call, value);
 			BaseHazelcastCache.delete(mapName, key);
 			logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 		}

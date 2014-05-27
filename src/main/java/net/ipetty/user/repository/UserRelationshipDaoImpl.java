@@ -35,14 +35,14 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into user_relationship(friend_id, follower_id) values(?, ?)";
+	private static final String SAVE_SQL = "insert into user_relationship(friend_id, follower_id) values(?, ?)";
 
 	/**
 	 * 关注
 	 */
 	@Override
 	public void follow(Integer friendId, Integer followerId) {
-		super.getJdbcTemplate().update(INSERT_SQL, friendId, followerId);
+		super.getJdbcTemplate().update(SAVE_SQL, friendId, followerId);
 	}
 
 	private static final String RETRIEVE_SQL = "select * from user_relationship where friend_id=? and follower_id=?";
@@ -51,7 +51,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 * 获取关注信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, key = "${friendId}_${followerId}")
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_RELATIONSHIP, key = "${friendId}_${followerId}")
 	public UserRelationship get(Integer friendId, Integer followerId) {
 		return super.queryUniqueEntity(RETRIEVE_SQL, ROW_MAPPER, friendId, followerId);
 	}
@@ -62,7 +62,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 	 * 取消关注
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_RELATIONSHIP_ID_TO_RELATIONSHIP, key = "${friendId}_${followerId}")
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_RELATIONSHIP, key = "${friendId}_${followerId}")
 	public void unfollow(Integer friendId, Integer followerId) {
 		super.getJdbcTemplate().update(DELETE_SQL, friendId, followerId);
 	}

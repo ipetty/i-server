@@ -52,7 +52,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		}
 	};
 
-	private static final String CREATE_USER_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on, version)"
+	private static final String SAVE_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on, version)"
 			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
@@ -64,7 +64,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		user.setVersion(1);
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			statement.setInt(1, user.getUid());
 			statement.setString(2, user.getUniqueName());
 			statement.setString(3, user.getPhoneNumber());

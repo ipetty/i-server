@@ -2,7 +2,7 @@ package net.ipetty.activity.interceptor;
 
 import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.core.mq.ActivityHazelcastMQ;
+import net.ipetty.activity.mq.ActivityHazelcastMQ;
 import net.ipetty.core.util.AopUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,14 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * ActivityRecordInterceptor
+ * ActivityInterceptor
  * 
  * @author luocanfeng
  * @date 2014年5月23日
  */
 @Component
 @Aspect
-public class ActivityRecordInterceptor {
+public class ActivityInterceptor {
 
 	private final String PRODUCE_ACTIVITY = "@annotation(net.ipetty.activity.annotation.ProduceActivity)";
 
@@ -37,11 +37,11 @@ public class ActivityRecordInterceptor {
 		T result = (T) call.proceed();
 
 		String targetIdKey = activityAnnotation.targetId();
-		Long targetId = StringUtils.isNotBlank(targetIdKey) ? ((Number) AopUtils.executeSingleKey(targetIdKey, call,
-				result)).longValue() : null;
+		String targetIdStr = AopUtils.executeOgnlKey(targetIdKey, call, result);
+		Long targetId = StringUtils.isNotBlank(targetIdStr) ? Long.valueOf(targetIdStr) : null;
 		String createdByKey = activityAnnotation.createdBy();
-		Integer createdBy = StringUtils.isNotBlank(createdByKey) ? (Integer) AopUtils.executeSingleKey(createdByKey,
-				call, result) : null;
+		String createdByStr = AopUtils.executeOgnlKey(createdByKey, call, result);
+		Integer createdBy = StringUtils.isNotBlank(createdByStr) ? Integer.valueOf(createdByStr) : null;
 		Activity activity = new Activity(activityAnnotation.type(), targetId, createdBy);
 
 		ActivityHazelcastMQ.publish(activity);

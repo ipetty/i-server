@@ -39,7 +39,7 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into location(longitude, latitude, geoHash, address) values(?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into location(longitude, latitude, geoHash, address) values(?, ?, ?, ?)";
 
 	/**
 	 * 保存位置信息
@@ -48,7 +48,7 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 	public void save(Location location) {
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setLong(statement, 1, location.getLongitude());
 			JdbcDaoUtils.setLong(statement, 2, location.getLatitude());
 			statement.setString(3, location.getGeoHash());

@@ -38,7 +38,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 		}
 	};
 
-	private static final String SAVE_USER_PROFILE_SQL = "insert into user_profile(user_id, nickname, avatar, background, gender, state_and_region, signature)"
+	private static final String SAVE_SQL = "insert into user_profile(user_id, nickname, avatar, background, gender, state_and_region, signature)"
 			+ " values(?, ?, ?, ?, ?, ?, ?)";
 
 	/**
@@ -46,7 +46,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 */
 	@Override
 	public void save(UserProfile profile) {
-		super.getJdbcTemplate().update(SAVE_USER_PROFILE_SQL, profile.getUserId(), profile.getNickname(),
+		super.getJdbcTemplate().update(SAVE_SQL, profile.getUserId(), profile.getNickname(),
 				profile.getAvatar(), profile.getBackground(), profile.getGender(), profile.getStateAndRegion(),
 				profile.getSignature());
 		logger.debug("saved {}", profile);

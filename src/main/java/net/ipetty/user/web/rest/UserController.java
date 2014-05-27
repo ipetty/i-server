@@ -92,7 +92,7 @@ public class UserController extends BaseController {
 
 		if (StringUtils.isNotBlank(register.getPetName())) {
 			Pet pet = new Pet();
-			pet.setUserId(user.getId());
+			pet.setCreatedBy(user.getId());
 			pet.setGender(register.getPetGender());
 			pet.setName(register.getPetName());
 			petService.save(pet);

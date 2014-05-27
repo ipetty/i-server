@@ -68,15 +68,15 @@ create table user_relationship (
 -- pet
 create table pet (
 	id int primary key auto_increment,
+	created_by int not null,
 	created_on timestamp default current_timestamp,
-	user_id int not null,
 	uid int not null unique,
 	unique_name varchar(50),
 	name varchar(50),
 	gender varchar(10),
 	sort_order tinyint,
 	version int not null default 1,
-	foreign key(user_id) references users(id),
+	foreign key(created_by) references users(id),
 	foreign key(uid) references sys_uid_pool(uid)
 ) engine=innodb default charset=utf8;
 create index idx_unique_name on pet(unique_name);
@@ -165,4 +165,38 @@ create table activity (
 	target_id bigint,
 	created_on timestamp default current_timestamp,
 	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;
+
+-- bonus_point
+create table bonus_point (
+	id bigint primary key auto_increment,
+	activity_id bigint,
+	bonus int,
+	expired boolean default false,
+	spent boolean default false,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	foreign key(activity_id) references activity(id),
+	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;
+
+-- bonus_point_consumption
+create table bonus_point_consumption (
+	id bigint primary key auto_increment,
+	activity_id bigint,
+	bonus int,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	foreign key(activity_id) references activity(id),
+	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;
+
+-- bonus_point_bill
+create table bonus_point_bill (
+	bonus_point_id bigint not null,
+	bonus_point_consumption_id bigint not null,
+	bonus int,
+	primary key (bonus_point_id, bonus_point_consumption_id),
+	foreign key(bonus_point_id) references bonus_point(id),
+	foreign key(bonus_point_consumption_id) references bonus_point_consumption(id)
 ) engine=innodb default charset=utf8;

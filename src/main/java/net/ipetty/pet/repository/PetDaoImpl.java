@@ -32,12 +32,12 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	static final RowMapper<Pet> ROW_MAPPER = new RowMapper<Pet>() {
 		@Override
 		public Pet mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_on, user_id, uid, unique_name, name, gender,
+			// id, created_on, created_by, uid, unique_name, name, gender,
 			// sort_order, version
 			Pet pet = new Pet();
 			pet.setId(rs.getInt("id"));
+			pet.setCreatedBy(rs.getInt("created_by"));
 			pet.setCreatedOn(rs.getDate("created_on"));
-			pet.setUserId(rs.getInt("user_id"));
 			pet.setUid(rs.getInt("uid"));
 			pet.setUniqueName(rs.getString("unique_name"));
 			pet.setName(rs.getString("name"));
@@ -48,7 +48,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		}
 	};
 
-	private static final String CREATE_PET_SQL = "insert into pet(user_id, uid, unique_name, name, gender, sort_order, created_on, version) values(?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into pet(created_by, uid, unique_name, name, gender, sort_order, created_on, version) values(?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存宠物信息
@@ -59,9 +59,9 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		pet.setVersion(1);
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(CREATE_PET_SQL, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			// 宠物必须要有主人
-			statement.setInt(1, pet.getUserId());
+			statement.setInt(1, pet.getCreatedBy());
 			statement.setInt(2, pet.getUid());
 			statement.setString(3, pet.getUniqueName());
 			statement.setString(4, pet.getName());
@@ -115,7 +115,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		return super.queryUniqueEntity(GET_BY_UNIQUE_NAME_SQL, INTEGER_ROW_MAPPER, uniqueName);
 	}
 
-	private static final String LIST_BY_USER_ID_SQL = "select * from pet where user_id=? order by sort_order asc";
+	private static final String LIST_BY_USER_ID_SQL = "select * from pet where created_by=? order by sort_order asc";
 
 	/**
 	 * 获取指定用户的所有宠物

@@ -9,6 +9,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.annotation.LoadFromHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -41,7 +43,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 		}
 	};
 
-	private static final String INSERT_SQL = "insert into feed_comment(created_by, feed_id, text, created_on) values(?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into feed_comment(created_by, feed_id, text, created_on) values(?, ?, ?, ?)";
 
 	/**
 	 * 保存评论
@@ -51,7 +53,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 		comment.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setInteger(statement, 1, comment.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 2, comment.getFeedId());
 			statement.setString(3, comment.getText());
@@ -75,6 +77,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 	 * 根据ID获取评论信息
 	 */
 	@Override
+	@LoadFromHazelcast(mapName = CacheConstants.CACHE_COMMENT_ID_TO_COMMENT, key = "${id}")
 	public Comment getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}

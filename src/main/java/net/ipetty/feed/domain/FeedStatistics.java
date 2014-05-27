@@ -17,6 +17,17 @@ public class FeedStatistics extends AbstractEntity {
 	private int commentCount; // 评论数
 	private int favorCount; // 赞的数量
 
+	public FeedStatistics() {
+		super();
+	}
+
+	public FeedStatistics(Long feedId, int commentCount, int favorCount) {
+		super();
+		this.feedId = feedId;
+		this.commentCount = commentCount;
+		this.favorCount = favorCount;
+	}
+
 	public Long getFeedId() {
 		return feedId;
 	}

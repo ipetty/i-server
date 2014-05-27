@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.activity.repository.ActivityDao;
+import net.ipetty.core.service.BaseService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class ActivityService {
+public class ActivityService extends BaseService {
 
 	@Resource
 	private ActivityDao activityDao;

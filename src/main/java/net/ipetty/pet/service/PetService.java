@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import net.ipetty.activity.annotation.ProduceActivity;
+import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.pet.domain.Pet;
@@ -34,10 +36,11 @@ public class PetService extends BaseService {
 	/**
 	 * 新增宠物
 	 */
+	@ProduceActivity(type = ActivityType.NEW_PET, createdBy = "${pet.createdBy}", targetId = "${pet.id}")
 	public void save(Pet pet) {
 		synchronized (uidService) {
 			Assert.notNull(pet, "宠物不能为空");
-			Assert.notNull(pet.getUserId(), "宠物主人不能为空");
+			Assert.notNull(pet.getCreatedBy(), "宠物主人不能为空");
 			Assert.hasText(pet.getName(), "宠物名称不能为空");
 
 			// check unique
@@ -53,7 +56,7 @@ public class PetService extends BaseService {
 			pet.setUid(uid);
 
 			// set sort order
-			List<Pet> pets = petDao.listByUserId(pet.getUserId());
+			List<Pet> pets = petDao.listByUserId(pet.getCreatedBy());
 			pet.setSortOrder(pets.size());
 
 			// persist
@@ -107,10 +110,11 @@ public class PetService extends BaseService {
 	/**
 	 * 更新宠物信息
 	 */
+	@ProduceActivity(type = ActivityType.UPDATE_PET, createdBy = "${pet.createdBy}", targetId = "${pet.id}")
 	public void update(Pet pet) {
 		Assert.notNull(pet, "宠物不能为空");
 		Assert.notNull(pet.getId(), "宠物ID不能为空");
-		Assert.notNull(pet.getUserId(), "宠物主人不能为空");
+		Assert.notNull(pet.getCreatedBy(), "宠物主人不能为空");
 		Assert.hasText(pet.getName(), "宠物名称不能为空");
 		petDao.update(pet);
 	}
@@ -118,16 +122,16 @@ public class PetService extends BaseService {
 	/**
 	 * 设置爱宠唯一标识，只能设置一次，一经设置不能变更
 	 */
-	public void updateUniqueName(Integer id, String uniqueName) {
+	@ProduceActivity(type = ActivityType.UPDATE_PET_UNIQUE_NAME, createdBy = "${return.createdBy}", targetId = "${id}")
+	public Pet updateUniqueName(Integer id, String uniqueName) {
 		Assert.notNull(id, "宠物ID不能为空");
 		Assert.hasText(uniqueName, "爱宠唯一标识不能为空");
 
-		Pet pet = this.getByUniqueName(uniqueName);
-		if (pet != null) {// 校验唯一性
+		if (petDao.getPetIdByUniqueName(uniqueName) != null) { // 校验唯一性
 			throw new BusinessException("爱宠唯一标识已存在");
 		}
 
-		pet = petDao.getById(id);
+		Pet pet = petDao.getById(id);
 		if (pet == null) {
 			throw new BusinessException("宠物不存在");
 		}
@@ -137,6 +141,8 @@ public class PetService extends BaseService {
 		}
 
 		petDao.updateUniqueName(id, uniqueName);
+
+		return petDao.getById(id);
 	}
 
 }

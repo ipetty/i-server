@@ -1,6 +1,8 @@
-package net.ipetty.core.mq;
+package net.ipetty.activity.mq;
 
 import net.ipetty.activity.domain.Activity;
+import net.ipetty.core.context.SpringContextHelper;
+import net.ipetty.core.mq.BaseActivityHazelcastMQ;
 
 import com.hazelcast.core.ITopic;
 
@@ -16,7 +18,7 @@ public class ActivityHazelcastMQ extends BaseActivityHazelcastMQ {
 	protected static final ITopic<Activity> topic = getTopic(ACTIVITY_MQ_TOPIC);
 
 	static {
-		topic.addMessageListener(new ActivityMessageListener());
+		topic.addMessageListener(SpringContextHelper.getBean(ActivityMessageListener.class));
 	}
 
 	public static void publish(Activity message) {

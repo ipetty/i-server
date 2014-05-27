@@ -43,77 +43,30 @@ public class AopUtils {
 	}
 
 	/**
-	 * 执行包括单个ognl表达式的key并返回结果
+	 * 执行包括多个ognl表达式的key并返回结果
 	 */
-	public static <T> T executeSingleKey(String singleKey, ProceedingJoinPoint call) throws OgnlException {
-		return executeOgnl(singleKey, call, null);
-	}
-
-	/**
-	 * 执行包括单个ognl表达式的key并返回结果
-	 */
-	public static <T, R> T executeSingleKey(String singleKey, ProceedingJoinPoint call, R result) throws OgnlException {
-		return executeOgnl(singleKey, call, result);
-	}
-
-	/**
-	 * 执行ognl表达式并返回结果
-	 * 
-	 * @param result
-	 *            被拦截方法的返回值
-	 */
-	@SuppressWarnings("unchecked")
-	private static <T, R> T executeOgnl(String ognl, ProceedingJoinPoint call, R result) throws OgnlException {
-		Method method = ((MethodSignature) call.getSignature()).getMethod();
-
-		// 形参列表
-		List<String> paramNames = MethodParamNamesScaner.getParamNames(method);
-		logger.debug("MethodParamNamesScaner.getParamNames is {}", paramNames);
-
-		// 参数值
-		Object[] paramValues = call.getArgs();
-
-		// 形参与参数值对照Map
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		for (int i = 0; i < paramNames.size(); i++) {
-			paramMap.put(paramNames.get(i), paramValues[i]);
-		}
-		// 将结果也放入到形参Map中
-		paramMap.put(RESULT_KEY, result);
-
-		// 去除${与}
-		String paramName = ognl.substring(2, ognl.length() - 1);
-		logger.debug("param name is {}", paramName);
-
-		// 返回ognl执行结果
-		return (T) Ognl.getValue(paramName, paramMap);
+	public static <R> String executeOgnlKey(String ognlKey, ProceedingJoinPoint call) throws OgnlException {
+		return executeOgnlKey(ognlKey, call, null);
 	}
 
 	/**
 	 * 执行包括多个ognl表达式的key并返回结果
 	 */
-	public static <R> String executeJoinedKey(String joinedKey, ProceedingJoinPoint call) throws OgnlException {
-		return executeJoinedKey(joinedKey, call, null);
-	}
-
-	/**
-	 * 执行包括多个ognl表达式的key并返回结果
-	 */
-	public static <R> String executeJoinedKey(String joinedKey, ProceedingJoinPoint call, R result)
+	public static <R> String executeOgnlKey(String ognlKey, ProceedingJoinPoint call, R result)
 			throws OgnlException {
-		if (!joinedKey.contains("$")) {
-			return joinedKey;
+		if (!ognlKey.contains("$")) {
+			return ognlKey;
 		}
 
 		String regexp = "\\$\\{[^\\}]+\\}";
 		Pattern pattern = Pattern.compile(regexp);
-		Matcher matcher = pattern.matcher(joinedKey);
+		Matcher matcher = pattern.matcher(ognlKey);
 		List<String> ognls = new ArrayList<String>();
 		try {
 			while (matcher.find()) {
 				ognls.add(matcher.group());
 			}
-			return executeOgnls(joinedKey, ognls, call, result);
+			return executeOgnls(ognlKey, ognls, call, result);
 		} catch (Exception e) {
 			logger.error("Regex Parse Error!", e);
 			throw new BusinessException(e);
@@ -134,6 +87,7 @@ public class AopUtils {
 		}
 
 		Method method = ((MethodSignature) call.getSignature()).getMethod();
+		logger.debug("Method name is {}", method.getName());
 
 		// 形参列表
 		List<String> paramNames = MethodParamNamesScaner.getParamNames(method);

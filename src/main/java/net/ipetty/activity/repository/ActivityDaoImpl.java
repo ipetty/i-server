@@ -39,7 +39,7 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 		}
 	};
 
-	private static final String SAVE_ACTIVITY_SQL = "insert into activity(type, created_by, target_id, created_on) values(?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into activity(type, created_by, target_id, created_on) values(?, ?, ?, ?)";
 
 	/**
 	 * 保存事件
@@ -49,7 +49,7 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 		activity.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(SAVE_ACTIVITY_SQL,
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL,
 					Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, activity.getType());
 			JdbcDaoUtils.setInteger(statement, 2, activity.getCreatedBy());

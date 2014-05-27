@@ -60,4 +60,10 @@
 
 	<activity />
 
+	<bonus_point />
+
+	<bonus_point_consumption />
+
+	<bonus_point_bill />
+
 </dataset>

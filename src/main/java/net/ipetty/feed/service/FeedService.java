@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import net.ipetty.activity.annotation.ProduceActivity;
+import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.feed.domain.Comment;
@@ -17,6 +19,7 @@ import net.ipetty.feed.domain.FeedStatistics;
 import net.ipetty.feed.repository.CommentDao;
 import net.ipetty.feed.repository.FeedDao;
 import net.ipetty.feed.repository.FeedFavorDao;
+import net.ipetty.feed.repository.FeedStatisticsDao;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedVO;
@@ -41,6 +44,9 @@ public class FeedService extends BaseService {
 	private FeedDao feedDao;
 
 	@Resource
+	private FeedStatisticsDao feedStatisticsDao;
+
+	@Resource
 	private CommentDao commentDao;
 
 	@Resource
@@ -49,12 +55,14 @@ public class FeedService extends BaseService {
 	/**
 	 * 保存消息
 	 */
+	@ProduceActivity(type = ActivityType.PUBLISH_FEED, createdBy = "${feed.createdBy}", targetId = "${feed.id}")
 	public FeedVO save(Feed feed) {
 		Assert.notNull(feed, "消息不能为空");
 		if (StringUtils.isBlank(feed.getText()) && feed.getImageId() == null) {
 			throw new BusinessException("图片与内容不能为空");
 		}
 		feedDao.save(feed);
+		feedStatisticsDao.save(new FeedStatistics(feed.getId(), 0, 0));
 		return this.getById(feed.getId());
 	}
 
@@ -66,7 +74,7 @@ public class FeedService extends BaseService {
 		Feed feed = feedDao.getById(id);
 		feed.setComments(commentDao.listByFeedId(id));
 		feed.setFavors(feedFavorDao.listByFeedId(id));
-		feed.setStatistics(feedDao.getStatisticsByFeedId(id));
+		feed.setStatistics(feedStatisticsDao.getStatisticsByFeedId(id));
 		FeedVO vo = feed.toVO();
 		return vo;
 	}
@@ -120,7 +128,7 @@ public class FeedService extends BaseService {
 		}
 
 		// fullfill statistics
-		List<FeedStatistics> statisticses = feedDao.listStatisticsByFeedIds(feedIds);
+		List<FeedStatistics> statisticses = feedStatisticsDao.listStatisticsByFeedIds(feedIds);
 		for (FeedStatistics statistics : statisticses) {
 			feedMap.get(statistics.getFeedId()).setStatistics(statistics);
 		}
@@ -136,6 +144,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 发表评论
 	 */
+	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.feedId}")
 	public FeedVO comment(Comment comment) {
 		Assert.notNull(comment, "评论不能为空");
 		Assert.notNull(comment.getFeedId(), "评论的消息不能为空");
@@ -164,6 +173,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 赞
 	 */
+	@ProduceActivity(type = ActivityType.FEED_FAVOR, createdBy = "${favor.createdBy}", targetId = "${favor.feedId}")
 	public FeedVO favor(FeedFavor favor) {
 		Assert.notNull(favor, "赞不能为空");
 		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
@@ -177,6 +187,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 取消赞
 	 */
+	@ProduceActivity(type = ActivityType.FEED_UNFAVOR, createdBy = "${favor.createdBy}", targetId = "${favor.feedId}")
 	public FeedVO unfavor(FeedFavor favor) {
 		Assert.notNull(favor, "赞不能为空");
 		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
