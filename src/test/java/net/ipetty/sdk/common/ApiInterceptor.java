@@ -3,7 +3,7 @@ package net.ipetty.sdk.common;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import net.ipetty.util.Encodes;
+import net.ipetty.core.util.Encodes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,10 +37,12 @@ public class ApiInterceptor implements ClientHttpRequestInterceptor {
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
+		logger.debug("request uri: {}", request.getURI());
+
 		// retrieve user token from user context
-		String userToken = USER_CONTEXT;
-		if (StringUtils.isNotBlank(userToken)) {
-			request.getHeaders().set(HEADER_NAME_USER_TOKEN, Encodes.encodeBase64(userToken.getBytes(UTF8)));
+		logger.debug("userToken: {}", USER_CONTEXT);
+		if (StringUtils.isNotBlank(USER_CONTEXT)) {
+			request.getHeaders().set(HEADER_NAME_USER_TOKEN, Encodes.encodeBase64(USER_CONTEXT.getBytes(UTF8)));
 		}
 		// request.getHeaders().setAcceptEncoding(ContentCodingType.GZIP);
 
@@ -52,10 +54,13 @@ public class ApiInterceptor implements ClientHttpRequestInterceptor {
 		logger.debug("response encoded user token is: {}", encodedUserToken);
 		if (StringUtils.isNotBlank(encodedUserToken)) {
 			String responseUserToken = new String(Encodes.decodeBase64(encodedUserToken), UTF8);
-			if (!StringUtils.equals(responseUserToken, userToken)) {
+			if (!StringUtils.equals(responseUserToken, USER_CONTEXT)) {
 				USER_CONTEXT = responseUserToken;
 				logger.debug("set USER_CONTEXT: {}", USER_CONTEXT);
 			}
+		} else {
+			USER_CONTEXT = null;
+			logger.debug("set userToken: {}", USER_CONTEXT);
 		}
 
 		return response;

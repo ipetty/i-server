@@ -16,16 +16,16 @@ public class SaltEncoder {
 	 */
 	public static final String generateSalt() {
 		byte[] salt = Digests.generateSalt(SALT_SIZE);
-		return net.ipetty.util.Encodes.encodeHex(salt);
+		return net.ipetty.core.util.Encodes.encodeHex(salt);
 	}
 
 	/**
 	 * 加密密码
 	 */
 	public static final String encode(String orignal, String salt) {
-		byte[] hashPassword = Digests.sha1(orignal.getBytes(), net.ipetty.util.Encodes.decodeHex(salt),
+		byte[] hashPassword = Digests.sha1(orignal.getBytes(), net.ipetty.core.util.Encodes.decodeHex(salt),
 				HASH_INTERATIONS);
-		return net.ipetty.util.Encodes.encodeHex(hashPassword);
+		return net.ipetty.core.util.Encodes.encodeHex(hashPassword);
 	}
 
 }

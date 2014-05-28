@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import net.ipetty.core.util.DateUtils;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
-import net.ipetty.util.DateUtils;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedFormVO;

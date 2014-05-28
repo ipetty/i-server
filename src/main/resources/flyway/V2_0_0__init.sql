@@ -65,6 +65,19 @@ create table user_relationship (
 	foreign key(follower_id) references users(id)
 ) engine=innodb default charset=utf8;
 
+-- user_statistics
+create table user_statistics (
+	user_id int primary key,
+	bonus_of_history int default 0,
+	bonus_current int default 0,
+	friends_num int default 0,
+	follower_num int default 0,
+	feed_num int default 0,
+	comment_num int default 0,
+	favor_num int default 0,
+	foreign key(user_id) references users(id)
+) engine=innodb default charset=utf8;
+
 -- pet
 create table pet (
 	id int primary key auto_increment,

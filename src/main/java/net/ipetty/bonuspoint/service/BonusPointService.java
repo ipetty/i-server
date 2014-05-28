@@ -30,17 +30,20 @@ public class BonusPointService extends BaseService {
 	private BonusPointConsumptionDao bonusPointConsumptionDao;
 
 	/**
-	 * 从事件中获得积分
+	 * 从事件中获得积分并保存
 	 */
 	public void gain(Activity activity) {
 		Assert.notNull(activity, "事件不能为空");
 		Assert.notNull(activity.getId(), "事件ID不能为空");
 		BonusPoint bonusPoint = activity2BonusPoint(activity);
-		if (bonusPoint != null) {
+		if (bonusPoint != null && bonusPoint.getBonus() > 0) {
 			bonusPointDao.save(bonusPoint);
 		}
 	}
 
+	/**
+	 * 从事件中获得积分
+	 */
 	private BonusPoint activity2BonusPoint(Activity activity) {
 		Assert.notNull(activity, "事件不能为空");
 		Assert.notNull(activity.getId(), "事件ID不能为空");

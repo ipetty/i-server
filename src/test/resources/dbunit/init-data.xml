@@ -44,6 +44,11 @@
 	<user_relationship friend_id="13" follower_id="12" followed_on="2014-05-13 11:07:41" />
 	<user_relationship friend_id="13" follower_id="10000" followed_on="2014-05-13 11:07:42" />
 
+	<user_statistics user_id="11" />
+	<user_statistics user_id="12" />
+	<user_statistics user_id="13" />
+	<user_statistics user_id="10000" />
+
 	<pet />
 
 	<location />

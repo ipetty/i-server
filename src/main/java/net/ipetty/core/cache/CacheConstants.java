@@ -32,6 +32,9 @@ public interface CacheConstants {
 	/* user zone */
 	public static final String CACHE_USER_ZONE_ID_TO_ZONE = "mapUseZoneId2UserZone";
 
+	/* user statistics */
+	public static final String CACHE_USER_STATISTICS = "mapUseStatistics";
+
 	/* pet */
 	public static final String CACHE_PET_ID_TO_PET = "mapPetId2Pet";
 

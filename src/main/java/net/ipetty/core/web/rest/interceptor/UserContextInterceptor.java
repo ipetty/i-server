@@ -9,10 +9,10 @@ import net.ipetty.core.cache.BaseHazelcastCache;
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
+import net.ipetty.core.util.Encodes;
 import net.ipetty.core.web.rest.exception.RestException;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.service.UserService;
-import net.ipetty.util.Encodes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -49,8 +49,8 @@ public class UserContextInterceptor implements HandlerInterceptor {
 				User user = userService.getById(userId);
 				UserPrincipal principal = UserPrincipal.fromUser(user, userToken);
 				UserContext.setContext(principal);
-				logger.debug("current user is {}", principal);
-				response.setHeader(HEADER_NAME_USER_TOKEN, encodedUserToken);
+				logger.debug("current user is {}", UserContext.getContext());
+				// response.setHeader(HEADER_NAME_USER_TOKEN, encodedUserToken);
 			} else {
 				// TODO 如果token过期，则返回错误，要求用户重新登录
 				throw new RestException("Token无效或已过期，请重新登录");
@@ -68,10 +68,13 @@ public class UserContextInterceptor implements HandlerInterceptor {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		// response中添加用户token
+		logger.debug("request uri: {}", request.getRequestURI());
 		UserPrincipal principal = UserContext.getContext();
+		logger.debug("principal: {}", principal);
 		if (principal != null && StringUtils.isNotBlank(principal.getToken())) {
 			response.setHeader(HEADER_NAME_USER_TOKEN, Encodes.encodeBase64(principal.getToken().getBytes()));
 		}
+		logger.debug("response {}={}", HEADER_NAME_USER_TOKEN, response.getHeader(HEADER_NAME_USER_TOKEN));
 	}
 
 	@Override

@@ -69,6 +69,27 @@ public class UserController extends BaseController {
 	}
 
 	/**
+	 * 登出
+	 */
+	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean logout() {
+		logger.debug("logout");
+
+		// 清理用户上下文
+		UserPrincipal principal = UserContext.getContext();
+		if (principal == null || StringUtils.isBlank(principal.getToken())) {
+			logger.error("用户尚未登录");
+			UserContext.clearContext();
+			return true;
+		}
+		BaseHazelcastCache.delete(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken());
+		UserContext.clearContext();
+
+		return true;
+	}
+
+	/**
 	 * 注册
 	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

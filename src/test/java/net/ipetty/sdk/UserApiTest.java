@@ -41,6 +41,16 @@ public class UserApiTest extends BaseTest {
 	}
 
 	@Test
+	public void testLogout() throws InterruptedException {
+		UserVO user = userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
+		Assert.assertNotNull(user);
+		logger.debug("login success {}", user);
+		userApi.logout();
+		logger.debug("logout success");
+		Thread.sleep(500);
+	}
+
+	@Test
 	public void testCheckEmailAvailable() {
 		String email = TEST_ACCOUNT_EMAIL;
 		boolean result = userApi.checkEmailAvailable(email);
@@ -89,6 +99,8 @@ public class UserApiTest extends BaseTest {
 		} catch (Exception e) {
 			Assert.assertTrue(true);
 		}
+
+		userApi.login("testUpdateUniqueNameWithApi@ipetty.net", "888888");
 
 		Assert.assertTrue(userApi.updateUniqueName("_testUpdateUniqueName"));
 	}

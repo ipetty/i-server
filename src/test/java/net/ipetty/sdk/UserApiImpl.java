@@ -39,6 +39,18 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		return user;
 	}
 
+	private static final String URI_LOGOUT = "/logout";
+
+	/**
+	 * 登出
+	 */
+	@Override
+	public void logout() {
+		context.getRestTemplate().getForObject(buildUri(URI_LOGOUT), Boolean.class);
+		context.setAuthorized(false);
+		context.setCurrUserId(null);
+	}
+
 	private static final String URI_REGISTER = "/register";
 
 	/**

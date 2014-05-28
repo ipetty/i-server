@@ -15,10 +15,12 @@ import net.ipetty.core.util.ImageUtils;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
+import net.ipetty.user.domain.UserStatistics;
 import net.ipetty.user.domain.UserZone;
 import net.ipetty.user.repository.UserDao;
 import net.ipetty.user.repository.UserProfileDao;
 import net.ipetty.user.repository.UserRelationshipDao;
+import net.ipetty.user.repository.UserStatisticsDao;
 import net.ipetty.user.repository.UserZoneDao;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -49,6 +51,9 @@ public class UserService extends BaseService {
 
 	@Resource
 	private UserRelationshipDao relationshipDao;
+
+	@Resource
+	private UserStatisticsDao userStatisticsDao;
 
 	@Resource
 	private UidService uidService;
@@ -127,7 +132,9 @@ public class UserService extends BaseService {
 
 			// TODO persist user preferences
 
-			// TODO persist user statistics
+			// persist user statistics
+			user.setStatistics(new UserStatistics(user.getId()));
+			userStatisticsDao.save(user.getStatistics());
 
 			// TODO persist user roles
 		}
@@ -148,7 +155,11 @@ public class UserService extends BaseService {
 	 */
 	public User getById(Integer id) {
 		Assert.notNull(id, "ID不能为空");
-		return userDao.getById(id);
+		User user = userDao.getById(id);
+		user.setProfile(userProfileDao.getByUserId(id));
+		user.setZone(userZoneDao.getByUserId(id));
+		user.setStatistics(userStatisticsDao.get(id));
+		return user;
 	}
 
 	/**
@@ -160,7 +171,7 @@ public class UserService extends BaseService {
 		if (id == null) {
 			throw new BusinessException("指定UID（" + uid + "）的用户不存在");
 		}
-		return userDao.getById(id);
+		return this.getById(id);
 	}
 
 	/**
@@ -172,7 +183,7 @@ public class UserService extends BaseService {
 		if (id == null) {
 			throw new BusinessException("指定爱宠号（" + uniqueName + "）的用户不存在");
 		}
-		return userDao.getById(id);
+		return this.getById(id);
 	}
 
 	/**
@@ -181,7 +192,7 @@ public class UserService extends BaseService {
 	public User getByLoginName(String loginName) {
 		Assert.hasText(loginName, "帐号不能为空");
 		Integer id = userDao.getUserIdByLoginName(loginName);
-		return id == null ? null : userDao.getById(id);
+		return id == null ? null : this.getById(id);
 	}
 
 	/**
