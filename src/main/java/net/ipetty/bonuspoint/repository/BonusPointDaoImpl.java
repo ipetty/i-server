@@ -50,8 +50,7 @@ public class BonusPointDaoImpl extends BaseJdbcDaoSupport implements BonusPointD
 		bonusPoint.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(SAVE_SQL,
-					Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setLong(statement, 1, bonusPoint.getActivityId());
 			statement.setInt(2, bonusPoint.getBonus());
 			JdbcDaoUtils.setInteger(statement, 3, bonusPoint.getCreatedBy());
@@ -68,6 +67,17 @@ public class BonusPointDaoImpl extends BaseJdbcDaoSupport implements BonusPointD
 		} catch (SQLException e) {
 			throw new BusinessException("Database exception", e);
 		}
+	}
+
+	private static final String GET_BONUS_GAINED_TODAY_BY_ACTIVITY_TYPE_SQL = "select sum(bp.bonus) from bonus_point bp left join activity a on bp.activity_id=a.id where bp.created_by=? and a.type=?";
+
+	/**
+	 * 查找指定用户今天在指定事件类型上已经获得的积分数
+	 */
+	public int getBonusGainedTodayByActivityType(Integer userId, String activityType) {
+		Integer result = super.getJdbcTemplate().queryForObject(GET_BONUS_GAINED_TODAY_BY_ACTIVITY_TYPE_SQL,
+				INTEGER_ROW_MAPPER, userId, activityType);
+		return result == null ? 0 : result;
 	}
 
 }
