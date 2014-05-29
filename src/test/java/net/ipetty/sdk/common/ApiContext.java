@@ -22,6 +22,10 @@ import org.springframework.web.client.RestTemplate;
  */
 public class ApiContext {
 
+	// FIXME 这里测试时使用简单的字符串作为用户上下文，实际Android客户端中应该将用户上下文存储到本地系统中
+	public static String USER_CONTEXT;
+	public static String REFRESH_TOKEN;
+
 	private final RestTemplate restTemplate;
 
 	private Boolean authorized;

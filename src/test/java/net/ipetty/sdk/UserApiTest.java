@@ -41,6 +41,15 @@ public class UserApiTest extends BaseTest {
 	}
 
 	@Test
+	public void testLoginWithWrongPassword() {
+		try {
+			userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD + "123456789");
+		} catch (Exception e) {
+			Assert.assertTrue(true);
+		}
+	}
+
+	@Test
 	public void testLogout() throws InterruptedException {
 		UserVO user = userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
 		Assert.assertNotNull(user);
@@ -145,6 +154,13 @@ public class UserApiTest extends BaseTest {
 	@Test
 	public void testUpdateBackground() {
 		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+		String backgroundUrl = userApi.updateBackground(getTestPhotoPath());
+		Assert.assertNotNull(backgroundUrl);
+	}
+
+	@Test
+	public void testDoSomethingWithRefreshToken() {
+		// do not login
 		String backgroundUrl = userApi.updateBackground(getTestPhotoPath());
 		Assert.assertNotNull(backgroundUrl);
 	}

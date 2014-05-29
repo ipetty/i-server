@@ -49,6 +49,9 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		context.getRestTemplate().getForObject(buildUri(URI_LOGOUT), Boolean.class);
 		context.setAuthorized(false);
 		context.setCurrUserId(null);
+		// FIXME 这个在客户端应该删除本地存储
+		ApiContext.REFRESH_TOKEN = null;
+		ApiContext.USER_CONTEXT = null;
 	}
 
 	private static final String URI_REGISTER = "/register";

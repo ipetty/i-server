@@ -5,6 +5,7 @@ import net.ipetty.core.cache.annotation.LoadFromHazelcast;
 import net.ipetty.core.cache.annotation.UpdateToHazelcast;
 import net.ipetty.core.cache.annotation.UpdatesToHazelcast;
 import net.ipetty.core.util.AopUtils;
+import ognl.OgnlException;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -42,23 +43,28 @@ public class HazelcastCacheInterceptor {
 		String mapName = annotation.mapName();
 		String keyName = annotation.key();
 
-		// get actual key
-		String key = AopUtils.executeOgnlKey(keyName, call);
-		V value = BaseHazelcastCache.get(mapName, key);
-		logger.debug("Hazelcast.get('{}', {}) = {}", mapName, key, value);
+		try {
+			// get actual key
+			String key = AopUtils.executeOgnlKey(keyName, call);
+			V value = BaseHazelcastCache.get(mapName, key);
+			logger.debug("Hazelcast.get('{}', {}) = {}", mapName, key, value);
 
-		if (value == null) {
-			value = (V) call.proceed();
-			if (value != null) {
-				BaseHazelcastCache.set(mapName, key, value);
-				logger.debug("Hazelcast.set('{}', {}, {});", mapName, key, value);
-			} else {
-				BaseHazelcastCache.delete(mapName, key);
-				logger.debug("Hazelcast.delete('{}', {});", mapName, key);
+			if (value == null) {
+				value = (V) call.proceed();
+				if (value != null) {
+					BaseHazelcastCache.set(mapName, key, value);
+					logger.debug("Hazelcast.set('{}', {}, {});", mapName, key, value);
+				} else {
+					BaseHazelcastCache.delete(mapName, key);
+					logger.debug("Hazelcast.delete('{}', {});", mapName, key);
+				}
 			}
-		}
 
-		return value;
+			return value;
+		} catch (OgnlException e) {
+			logger.error("Ognl Execute Execption: ", e);
+			return (V) call.proceed();
+		}
 	}
 
 	/**
@@ -73,9 +79,13 @@ public class HazelcastCacheInterceptor {
 
 		V value = (V) call.proceed();
 
-		String key = AopUtils.executeOgnlKey(keyName, call, value);
-		BaseHazelcastCache.delete(mapName, key);
-		logger.debug("Hazelcast.delete('{}', {});", mapName, key);
+		try {
+			String key = AopUtils.executeOgnlKey(keyName, call, value);
+			BaseHazelcastCache.delete(mapName, key);
+			logger.debug("Hazelcast.delete('{}', {});", mapName, key);
+		} catch (OgnlException e) {
+			logger.error("Ognl Execute Execption: ", e);
+		}
 
 		return value;
 	}
@@ -93,9 +103,13 @@ public class HazelcastCacheInterceptor {
 			String mapName = annotation.mapName();
 			String keyName = annotation.key();
 
-			String key = AopUtils.executeOgnlKey(keyName, call, value);
-			BaseHazelcastCache.delete(mapName, key);
-			logger.debug("Hazelcast.delete('{}', {});", mapName, key);
+			try {
+				String key = AopUtils.executeOgnlKey(keyName, call, value);
+				BaseHazelcastCache.delete(mapName, key);
+				logger.debug("Hazelcast.delete('{}', {});", mapName, key);
+			} catch (OgnlException e) {
+				logger.error("Ognl Execute Execption: ", e);
+			}
 		}
 		return value;
 	}

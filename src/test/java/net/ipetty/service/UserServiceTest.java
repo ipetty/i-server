@@ -87,9 +87,9 @@ public class UserServiceTest extends BaseTest {
 	@Test
 	public void testChangePassword() {
 		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
-		userService.changePassword(user.getId(), "888888", "123456");
+		userService.changePassword(user.getId(), "888888", "888888");
 		user = userService.getById(user.getId());
-		Assert.assertEquals(SaltEncoder.encode("123456", user.getSalt()), user.getEncodedPassword());
+		Assert.assertEquals(SaltEncoder.encode("888888", user.getSalt()), user.getEncodedPassword());
 	}
 
 	@Test

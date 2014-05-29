@@ -21,6 +21,8 @@
 	<users id="10000" uid="10000" unique_name="admin" email="service@ipetty.net" password="be8d68e706c7067deb0a1c150965ad6cabf50610"
 		salt="4f49f396ae6d9dc3" />
 
+	<user_refresh_token />
+
 	<user_profile user_id="11" />
 	<user_profile user_id="12" />
 	<user_profile user_id="13" />

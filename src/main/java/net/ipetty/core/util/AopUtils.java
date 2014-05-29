@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.ipetty.core.exception.BusinessException;
 import ognl.Ognl;
 import ognl.OgnlException;
 
@@ -52,8 +51,7 @@ public class AopUtils {
 	/**
 	 * 执行包括多个ognl表达式的key并返回结果
 	 */
-	public static <R> String executeOgnlKey(String ognlKey, ProceedingJoinPoint call, R result)
-			throws OgnlException {
+	public static <R> String executeOgnlKey(String ognlKey, ProceedingJoinPoint call, R result) throws OgnlException {
 		if (!ognlKey.contains("$")) {
 			return ognlKey;
 		}
@@ -62,15 +60,10 @@ public class AopUtils {
 		Pattern pattern = Pattern.compile(regexp);
 		Matcher matcher = pattern.matcher(ognlKey);
 		List<String> ognls = new ArrayList<String>();
-		try {
-			while (matcher.find()) {
-				ognls.add(matcher.group());
-			}
-			return executeOgnls(ognlKey, ognls, call, result);
-		} catch (Exception e) {
-			logger.error("Regex Parse Error!", e);
-			throw new BusinessException(e);
+		while (matcher.find()) {
+			ognls.add(matcher.group());
 		}
+		return executeOgnls(ognlKey, ognls, call, result);
 	}
 
 	/**

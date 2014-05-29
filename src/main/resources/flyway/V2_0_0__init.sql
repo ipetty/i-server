@@ -34,6 +34,18 @@ create index idx_weibo_uid on users(weibo_uid);
 insert into sys_uid_pool(uid,enable) values(10000,0);
 insert into users(id,uid,unique_name,email,password,salt) values(1,10000,'admin','service@ipetty.net','be8d68e706c7067deb0a1c150965ad6cabf50610','4f49f396ae6d9dc3');
 
+-- user_refresh_token
+create table user_refresh_token (
+	user_id int not null,
+	device_screen_name varchar(50),
+	device_id varchar(50), -- IMEI
+	device_mac varchar(50),
+	device_uuid varchar(50) not null, -- 客户端根据设备的多个唯一ID生成的UUID
+	refresh_token varchar(50) not null,
+	created_on timestamp default current_timestamp,
+	foreign key(user_id) references users(id)
+) engine=innodb default charset=utf8;
+
 -- user_profile
 create table user_profile (
 	user_id int primary key,

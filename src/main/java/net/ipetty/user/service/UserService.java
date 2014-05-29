@@ -15,10 +15,12 @@ import net.ipetty.core.util.ImageUtils;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
+import net.ipetty.user.domain.UserRefreshToken;
 import net.ipetty.user.domain.UserStatistics;
 import net.ipetty.user.domain.UserZone;
 import net.ipetty.user.repository.UserDao;
 import net.ipetty.user.repository.UserProfileDao;
+import net.ipetty.user.repository.UserRefreshTokenDao;
 import net.ipetty.user.repository.UserRelationshipDao;
 import net.ipetty.user.repository.UserStatisticsDao;
 import net.ipetty.user.repository.UserZoneDao;
@@ -42,6 +44,9 @@ public class UserService extends BaseService {
 
 	@Resource
 	private UserDao userDao;
+
+	@Resource
+	private UserRefreshTokenDao refreshTokenDao;
 
 	@Resource
 	private UserProfileDao userProfileDao;
@@ -72,7 +77,11 @@ public class UserService extends BaseService {
 		}
 
 		String encodedPassword = SaltEncoder.encode(password, user.getSalt());
-		return StringUtils.equals(user.getEncodedPassword(), encodedPassword) ? user : null;
+		if (!StringUtils.equals(user.getEncodedPassword(), encodedPassword)) {
+			throw new BusinessException("密码错误");
+		}
+
+		return user;
 	}
 
 	/**
@@ -366,6 +375,34 @@ public class UserService extends BaseService {
 		} catch (IOException e) {
 			throw new BusinessException("保存图片时出错", e);
 		}
+	}
+
+	/**
+	 * 保存RefreshToken
+	 */
+	public void save(UserRefreshToken refreshToken) {
+		refreshTokenDao.save(refreshToken);
+	}
+
+	/**
+	 * 获取RefreshToken
+	 */
+	public UserRefreshToken getRefreshToken(String refreshToken) {
+		return refreshTokenDao.get(refreshToken);
+	}
+
+	/**
+	 * 获取指定用户在指定设备上的RefreshToken
+	 */
+	public UserRefreshToken get(Integer userId, String deviceUuid) {
+		return refreshTokenDao.get(userId, deviceUuid);
+	}
+
+	/**
+	 * 删除RefreshToken
+	 */
+	public void delete(String refreshToken) {
+		refreshTokenDao.delete(refreshToken);
 	}
 
 }

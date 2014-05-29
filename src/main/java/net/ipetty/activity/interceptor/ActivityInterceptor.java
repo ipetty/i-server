@@ -4,6 +4,7 @@ import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.activity.mq.ActivityHazelcastMQ;
 import net.ipetty.core.util.AopUtils;
+import ognl.OgnlException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -36,16 +37,20 @@ public class ActivityInterceptor {
 		ProduceActivity activityAnnotation = AopUtils.getAnnotation(call, ProduceActivity.class);
 		T result = (T) call.proceed();
 
-		String targetIdKey = activityAnnotation.targetId();
-		String targetIdStr = AopUtils.executeOgnlKey(targetIdKey, call, result);
-		Long targetId = StringUtils.isNotBlank(targetIdStr) ? Long.valueOf(targetIdStr) : null;
-		String createdByKey = activityAnnotation.createdBy();
-		String createdByStr = AopUtils.executeOgnlKey(createdByKey, call, result);
-		Integer createdBy = StringUtils.isNotBlank(createdByStr) ? Integer.valueOf(createdByStr) : null;
-		Activity activity = new Activity(activityAnnotation.type(), targetId, createdBy);
+		try {
+			String targetIdKey = activityAnnotation.targetId();
+			String targetIdStr = AopUtils.executeOgnlKey(targetIdKey, call, result);
+			Long targetId = StringUtils.isNotBlank(targetIdStr) ? Long.valueOf(targetIdStr) : null;
+			String createdByKey = activityAnnotation.createdBy();
+			String createdByStr = AopUtils.executeOgnlKey(createdByKey, call, result);
+			Integer createdBy = StringUtils.isNotBlank(createdByStr) ? Integer.valueOf(createdByStr) : null;
+			Activity activity = new Activity(activityAnnotation.type(), targetId, createdBy);
+			ActivityHazelcastMQ.publish(activity);
+			logger.debug("published {}", activity);
+		} catch (OgnlException e) {
+			logger.error("Ognl Execute Execption: ", e);
+		}
 
-		ActivityHazelcastMQ.publish(activity);
-		logger.debug("published {}", activity);
 		return result;
 	}
 

@@ -11,6 +11,9 @@ public interface CacheConstants {
 	/* user token */
 	public static final String CACHE_USER_TOKEN_TO_USER_ID = "mapUserToken2UserId";
 
+	/* user refresh token */
+	public static final String CACHE_USER_REFRESH_TOKEN = "mapUserRefreshToken";
+
 	/* user */
 	public static final String CACHE_USER_ID_TO_USER = "mapUserId2User";
 
