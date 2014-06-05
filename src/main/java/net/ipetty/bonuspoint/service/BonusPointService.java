@@ -47,8 +47,11 @@ public class BonusPointService extends BaseService {
 	private BonusPoint activity2BonusPoint(Activity activity) {
 		Assert.notNull(activity, "事件不能为空");
 		Assert.notNull(activity.getId(), "事件ID不能为空");
-		Assert.notNull(activity.getCreatedBy(), "事件发起人不能为空");
 		Assert.hasText(activity.getType(), "事件类型不能为空");
+
+		if (activity.getCreatedBy() == null) {
+			return null;
+		}
 
 		BonusPoint bonusPoint = new BonusPoint(activity.getId(), this.getBonus(activity.getCreatedBy(),
 				activity.getType()), activity.getCreatedBy(), activity.getCreatedOn());
@@ -89,13 +92,19 @@ public class BonusPointService extends BaseService {
 		else if (ActivityType.FEED_FAVOR.equals(activityType)) {
 			return getBonus(bonusGainedToday, 3, 9);
 		}
-		// TODO 邀请（+10 每日上限 20）
+		// 邀请（+10 每日上限 20）
+		else if (ActivityType.INVITE.equals(activityType)) {
+			return getBonus(bonusGainedToday, 10, 20);
+		}
 		// TODO 查看附近的人（+3 每日上限 3）
 		// TODO 与附近的人建立联系（+5 每日上限 5）
 		// TODO 与他人互扫二维码（+5 每日上限 5）
 		// TODO 商城购物（+50 每日上限 100）
 		// TODO 商城购物后进行评论和打分（+30 每日上限 60）
-		// TODO 意见反馈（+10 每日上限 10）
+		// 意见反馈（+10 每日上限 10）
+		else if (ActivityType.FEEDBACK.equals(activityType)) {
+			return getBonus(bonusGainedToday, 10, 10);
+		}
 		return 0;
 	}
 

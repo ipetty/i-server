@@ -1,6 +1,9 @@
 package net.ipetty.feedback.domain;
 
 import net.ipetty.core.domain.IntegerIdEntity;
+import net.ipetty.vo.FeedbackVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 意见反馈
@@ -27,6 +30,18 @@ public class Feedback extends IntegerIdEntity {
 		this.content = content;
 		this.contact = contact;
 		super.setCreatedBy(createdBy);
+	}
+
+	public FeedbackVO toVO() {
+		FeedbackVO vo = new FeedbackVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
+	}
+
+	public static Feedback fromVO(FeedbackVO vo) {
+		Feedback feedback = new Feedback();
+		BeanUtils.copyProperties(vo, feedback);
+		return feedback;
 	}
 
 	public String getTitle() {

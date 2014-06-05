@@ -31,7 +31,7 @@ public class InvitationService extends BaseService {
 	/**
 	 * 邀请
 	 */
-	@ProduceActivity(type = ActivityType.INVITE, createdBy = "${invitation.createdBy}")
+	@ProduceActivity(type = ActivityType.INVITE, createdBy = "${invitation.createdBy}", targetId = "${invitation.id}")
 	public void invite(Invitation invitation) {
 		Assert.notNull(invitation, "邀请不能为空");
 		Assert.notNull(invitation.getCreatedBy(), "邀请人不能为空");

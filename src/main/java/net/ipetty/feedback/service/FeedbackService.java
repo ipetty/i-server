@@ -2,6 +2,8 @@ package net.ipetty.feedback.service;
 
 import javax.annotation.Resource;
 
+import net.ipetty.activity.annotation.ProduceActivity;
+import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.feedback.domain.Feedback;
 import net.ipetty.feedback.repository.FeedbackDao;
@@ -26,6 +28,7 @@ public class FeedbackService extends BaseService {
 	/**
 	 * 反馈意见
 	 */
+	@ProduceActivity(type = ActivityType.FEEDBACK, createdBy = "${feedback.createdBy}", targetId = "${feedback.id}")
 	public void feedback(Feedback feedback) {
 		Assert.notNull(feedback, "意见反馈不能为空");
 		Assert.hasText(feedback.getContent(), "反馈内容不能为空");
