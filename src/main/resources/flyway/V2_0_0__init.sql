@@ -45,6 +45,8 @@ create table user_refresh_token (
 	created_on timestamp default current_timestamp,
 	foreign key(user_id) references users(id)
 ) engine=innodb default charset=utf8;
+create index idx_refresh_token on user_refresh_token(refresh_token);
+create index idx_device_uuid on user_refresh_token(device_uuid);
 
 -- user_profile
 create table user_profile (
@@ -191,6 +193,7 @@ create table activity (
 	created_on timestamp default current_timestamp,
 	foreign key(created_by) references users(id)
 ) engine=innodb default charset=utf8;
+create index idx_created_on on activity(created_on desc);
 
 -- bonus_point
 create table bonus_point (
@@ -204,6 +207,9 @@ create table bonus_point (
 	foreign key(activity_id) references activity(id),
 	foreign key(created_by) references users(id)
 ) engine=innodb default charset=utf8;
+create index idx_created_on on bonus_point(created_on desc);
+create index idx_expired on bonus_point(expired);
+create index idx_spent on bonus_point(spent);
 
 -- bonus_point_consumption
 create table bonus_point_consumption (
@@ -215,6 +221,7 @@ create table bonus_point_consumption (
 	foreign key(activity_id) references activity(id),
 	foreign key(created_by) references users(id)
 ) engine=innodb default charset=utf8;
+create index idx_created_on on bonus_point_consumption(created_on desc);
 
 -- bonus_point_bill
 create table bonus_point_bill (
@@ -225,3 +232,37 @@ create table bonus_point_bill (
 	foreign key(bonus_point_id) references bonus_point(id),
 	foreign key(bonus_point_consumption_id) references bonus_point_consumption(id)
 ) engine=innodb default charset=utf8;
+
+
+
+-- invitation
+create table invitation (
+	id int primary key auto_increment,
+	invite_code varchar(50) unique not null,
+	invite_type varchar(20) not null,
+	inviter varchar(50),
+	inviter_id int,
+	invited boolean default false,
+	invited_on datetime,
+	expired_datetime datetime not null,
+	expired boolean default false,
+	created_by int,
+	created_on timestamp default current_timestamp,
+	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;
+create index idx_created_on on invitation(created_on desc);
+create index idx_expired_datetime on invitation(expired_datetime desc);
+create index idx_invited on invitation(invited);
+create index idx_expired on invitation(expired);
+
+-- feedback
+create table feedback (
+	id int primary key auto_increment,
+	title varchar(100),
+	content text,
+	contact varchar(100),
+	created_by int,
+	created_on timestamp default current_timestamp,
+	foreign key(created_by) references users(id)
+) engine=innodb default charset=utf8;
+create index idx_created_on on feedback(created_on desc);

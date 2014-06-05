@@ -29,7 +29,10 @@ public interface ActivityType {
 	public static final String FEED_UNFAVOR = "feed_unfavor";
 
 	public static final String INVITE = "invite";
-	public static final String LOCATE = "locate";
+	public static final String ACCEPT_INVITE = "accept_invite";
+
 	public static final String FEEDBACK = "feedback";
+
+	public static final String LOCATE = "locate";
 
 }

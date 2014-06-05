@@ -73,4 +73,8 @@
 
 	<bonus_point_bill />
 
+	<invitation />
+
+	<feedback />
+
 </dataset>
