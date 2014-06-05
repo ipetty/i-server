@@ -40,7 +40,7 @@ public class UserApiTest extends BaseTest {
 		logger.debug("login success {}", user);
 	}
 
-	@Test
+	// @Test
 	public void testLoginWithWrongPassword() {
 		try {
 			userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD + "123456789");

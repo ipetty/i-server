@@ -82,17 +82,18 @@ public class AopUtils {
 		Method method = ((MethodSignature) call.getSignature()).getMethod();
 		logger.debug("Method name is {}", method.getName());
 
+		// TODO http://www.tuicool.com/articles/iUfMBr
 		// 形参列表
-		List<String> paramNames = MethodParamNamesScaner.getParamNames(method);
-		logger.debug("MethodParamNamesScaner.getParamNames is {}", paramNames);
+		String[] paramNames = AsmMethodParamNamesScaner.getMethodParamNames(method);
+		logger.debug("MethodParamNamesScaner.getParamNames is {}", (Object) paramNames);
 
 		// 参数值
 		Object[] paramValues = call.getArgs();
 
 		// 形参与参数值对照Map
 		Map<String, Object> paramMap = new HashMap<String, Object>();
-		for (int i = 0; i < paramNames.size(); i++) {
-			paramMap.put(paramNames.get(i), paramValues[i]);
+		for (int i = 0; i < paramNames.length; i++) {
+			paramMap.put(paramNames[i], paramValues[i]);
 		}
 		// 将结果也放入到形参Map中
 		paramMap.put(RESULT_KEY, result);
@@ -102,7 +103,7 @@ public class AopUtils {
 			String temp = ognl.substring(2);
 			temp = temp.substring(0, temp.length() - 1);
 			Object ognlValue = Ognl.getValue(temp, paramMap);
-			value = replace(value, ognl, ognlValue == null ? "null" : ognlValue.toString());
+			value = replace(value, ognl, ognlValue == null ? "" : ognlValue.toString());
 		}
 
 		// 返回ognl执行结果

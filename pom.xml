@@ -111,6 +111,7 @@
 							<include>**/AllApiTest.java</include>
 						</includes>
 						<argLine>-Xmx256M</argLine>
+						<skip>true</skip>
 					</configuration>
 					<dependencies>
 						<dependency>
