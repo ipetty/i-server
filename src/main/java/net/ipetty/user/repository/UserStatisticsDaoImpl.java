@@ -72,4 +72,45 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 				statistics.getCommentNum(), statistics.getFavorNum(), statistics.getUserId());
 	}
 
+	private static final String RECOUNT_RELATIONSHIP_NUM_SQL = "update user_statistics set friends_num=(select count(*) from user_relationship where follower_id=?),"
+			+ " follower_num=(select count(*) from user_relationship where friend_id=?) where user_id=?";
+
+	/**
+	 * 更新指定用户的关注数、粉丝数
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	public void recountRelationshipNum(Integer userId) {
+		super.getJdbcTemplate().update(RECOUNT_RELATIONSHIP_NUM_SQL, userId, userId, userId);
+	}
+
+	private static final String RECOUNT_FEED_NUM_SQL = "update user_statistics set feed_num=(select count(*) from feed where created_by=? and deleted=false) where user_id=?";
+
+	/**
+	 * 更新指定用户的发布消息数目
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	public void recountFeedNum(Integer userId) {
+		super.getJdbcTemplate().update(RECOUNT_FEED_NUM_SQL, userId, userId);
+	}
+
+	private static final String RECOUNT_COMMENT_NUM_SQL = "update user_statistics set comment_num=(select count(*) from feed_comment where created_by=? and deleted=false) where user_id=?";
+
+	/**
+	 * 更新指定用户的发布评论数目
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	public void recountCommentNum(Integer userId) {
+		super.getJdbcTemplate().update(RECOUNT_COMMENT_NUM_SQL, userId, userId);
+	}
+
+	private static final String RECOUNT_FEED_FAVORS_SQL = "update user_statistics set favor_num=(select count(*) from feed_favor where created_by=?) where user_id=?";
+
+	/**
+	 * 更新指定用户发出赞的数目
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	public void recountFeedFavorNum(Integer userId) {
+		super.getJdbcTemplate().update(RECOUNT_FEED_FAVORS_SQL, userId, userId);
+	}
+
 }

@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.activity.service.ActivityService;
 import net.ipetty.bonuspoint.service.BonusPointService;
+import net.ipetty.user.service.UserStatisticsService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ public class ActivityMessageListener implements MessageListener<Activity> {
 	private ActivityService activityService;
 	@Resource
 	private BonusPointService bonusPointService;
+	@Resource
+	private UserStatisticsService userStatisticsService;
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -42,7 +45,10 @@ public class ActivityMessageListener implements MessageListener<Activity> {
 		// bonus point
 		bonusPointService.gain(activity);
 
-		// statistics
+		// user statistics
+		userStatisticsService.updateStatisticsFromActivity(activity);
+
+		// feed statistics
 	}
 
 }

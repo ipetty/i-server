@@ -25,4 +25,24 @@ public interface UserStatisticsDao {
 	 */
 	public void update(UserStatistics statistics);
 
+	/**
+	 * 更新指定用户的关注数、粉丝数
+	 */
+	public void recountRelationshipNum(Integer userId);
+
+	/**
+	 * 更新指定用户的发布消息数目
+	 */
+	public void recountFeedNum(Integer userId);
+
+	/**
+	 * 更新指定用户的发布评论数目
+	 */
+	public void recountCommentNum(Integer userId);
+
+	/**
+	 * 更新指定用户发出赞的数目
+	 */
+	public void recountFeedFavorNum(Integer userId);
+
 }
