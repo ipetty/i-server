@@ -11,6 +11,7 @@ import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.UpdateToHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -32,13 +33,14 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 	static final RowMapper<Comment> ROW_MAPPER = new RowMapper<Comment>() {
 		@Override
 		public Comment mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_by, created_on, feed_id, text
+			// id, created_by, created_on, feed_id, text, deleted
 			Comment comment = new Comment();
 			comment.setId(rs.getLong("id"));
 			comment.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
 			comment.setCreatedOn(rs.getDate("created_on"));
 			comment.setFeedId(JdbcDaoUtils.getLong(rs, "feed_id"));
 			comment.setText(rs.getString("text"));
+			comment.setDeleted(rs.getBoolean("deleted"));
 			return comment;
 		}
 	};
@@ -71,7 +73,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 		}
 	}
 
-	private static final String GET_BY_ID_SQL = "select * from feed_comment where id=?";
+	private static final String GET_BY_ID_SQL = "select * from feed_comment where id=? and deleted=false";
 
 	/**
 	 * 根据ID获取评论信息
@@ -82,7 +84,18 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
-	private static final String LIST_BY_FEED_ID_SQL = "select * from feed_comment where feed_id=? order by id asc";
+	private static final String DELETE_SQL = "update feed_comment set deleted=true where id=?";
+
+	/**
+	 * 删除评论
+	 */
+	@Override
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_COMMENT_ID_TO_COMMENT, key = "${id}")
+	public void delete(Long id) {
+		super.getJdbcTemplate().update(DELETE_SQL, id);
+	}
+
+	private static final String LIST_BY_FEED_ID_SQL = "select * from feed_comment where feed_id=? and deleted=false order by id asc";
 
 	/**
 	 * 获取指定主题消息的所有评论列表
@@ -92,7 +105,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 		return super.getJdbcTemplate().query(LIST_BY_FEED_ID_SQL, ROW_MAPPER, feedId);
 	}
 
-	private static final String LIST_BY_FEED_IDS_SQL = "select * from feed_comment where feed_id in (?) order by feed_id, id asc";
+	private static final String LIST_BY_FEED_IDS_SQL = "select * from feed_comment where feed_id in (?) and deleted=false order by feed_id, id asc";
 
 	/**
 	 * 获取指定主题消息列表的所有评论列表

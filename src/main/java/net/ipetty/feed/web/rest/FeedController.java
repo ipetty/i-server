@@ -120,6 +120,22 @@ public class FeedController extends BaseController {
 	}
 
 	/**
+	 * 删除消息
+	 */
+	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean delete(Long id) {
+		logger.debug("delete {}", id);
+		Assert.notNull(id, "消息ID不能为空");
+		FeedVO vo = feedService.getById(id);
+		if (vo == null) {
+			return false;
+		}
+		feedService.delete(Feed.fromVO(vo));
+		return true;
+	}
+
+	/**
 	 * 根据时间线分页获取消息（广场）
 	 * 
 	 * @param pageNumber
@@ -178,6 +194,22 @@ public class FeedController extends BaseController {
 		comment.setCreatedBy(currentUser.getId());
 		Comment entity = Comment.fromVO(comment);
 		return feedService.comment(entity);
+	}
+
+	/**
+	 * 删除评论
+	 */
+	@RequestMapping(value = "/comment/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean deleteComment(Long id) {
+		logger.debug("delete {}", id);
+		Assert.notNull(id, "评论ID不能为空");
+		CommentVO vo = feedService.getCommentById(id);
+		if (vo == null) {
+			return false;
+		}
+		feedService.delete(Comment.fromVO(vo));
+		return true;
 	}
 
 	/**

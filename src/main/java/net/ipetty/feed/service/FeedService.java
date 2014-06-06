@@ -10,6 +10,8 @@ import javax.annotation.Resource;
 
 import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.ActivityType;
+import net.ipetty.core.context.UserContext;
+import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.feed.domain.Comment;
@@ -72,11 +74,26 @@ public class FeedService extends BaseService {
 	public FeedVO getById(Long id) {
 		Assert.notNull(id, "ID不能为空");
 		Feed feed = feedDao.getById(id);
+		if (feed == null) {
+			return null;
+		}
 		feed.setComments(commentDao.listByFeedId(id));
 		feed.setFavors(feedFavorDao.listByFeedId(id));
 		feed.setStatistics(feedStatisticsDao.getStatisticsByFeedId(id));
-		FeedVO vo = feed.toVO();
-		return vo;
+		return feed.toVO();
+	}
+
+	/**
+	 * 删除消息
+	 */
+	@ProduceActivity(type = ActivityType.DELETE_FEED, createdBy = "${feed.createdBy}", targetId = "${feed.id}")
+	public void delete(Feed feed) {
+		Assert.notNull(feed, "消息不存在");
+		UserPrincipal principal = UserContext.getContext();
+		if (principal == null || feed.getCreatedBy() == null || !feed.getCreatedBy().equals(principal.getId())) {
+			throw new BusinessException("只能删除自己的消息");
+		}
+		feedDao.delete(feed.getId());
 	}
 
 	/**
@@ -152,6 +169,31 @@ public class FeedService extends BaseService {
 		Assert.notNull(comment.getCreatedBy(), "评论人不能为空");
 		commentDao.save(comment);
 		return this.getById(comment.getFeedId());
+	}
+
+	/**
+	 * 根据评论ID获取评论
+	 */
+	public CommentVO getCommentById(Long id) {
+		Assert.notNull(id, "评论ID不能为空");
+		Comment comment = commentDao.getById(id);
+		if (comment == null) {
+			return null;
+		}
+		return comment.toVO();
+	}
+
+	/**
+	 * 删除评论
+	 */
+	@ProduceActivity(type = ActivityType.DELETE_COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.id}")
+	public void delete(Comment comment) {
+		Assert.notNull(comment, "评论不存在");
+		UserPrincipal principal = UserContext.getContext();
+		if (principal == null || comment.getCreatedBy() == null || !comment.getCreatedBy().equals(principal.getId())) {
+			throw new BusinessException("只能删除自己的评论");
+		}
+		commentDao.delete(comment.getId());
 	}
 
 	/**

@@ -3,6 +3,8 @@ package net.ipetty.activity.interceptor;
 import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.activity.mq.ActivityHazelcastMQ;
+import net.ipetty.core.context.UserContext;
+import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.util.AopUtils;
 import ognl.OgnlException;
 
@@ -43,7 +45,14 @@ public class ActivityInterceptor {
 			Long targetId = StringUtils.isNotBlank(targetIdStr) ? Long.valueOf(targetIdStr) : null;
 			String createdByKey = activityAnnotation.createdBy();
 			String createdByStr = AopUtils.executeOgnlKey(createdByKey, call, result);
-			Integer createdBy = StringUtils.isNotBlank(createdByStr) ? Integer.valueOf(createdByStr) : null;
+			Integer createdBy = null;
+			if (StringUtils.isNotBlank(createdByStr)) {
+				createdBy = Integer.valueOf(createdByStr);
+			} else {
+				UserPrincipal principal = UserContext.getContext();
+				logger.debug("-----{}", principal);
+				createdBy = principal == null ? null : principal.getId();
+			}
 			Activity activity = new Activity(activityAnnotation.type(), targetId, createdBy);
 			ActivityHazelcastMQ.publish(activity);
 			logger.debug("published {}", activity);

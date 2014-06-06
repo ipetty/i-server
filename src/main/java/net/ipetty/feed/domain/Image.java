@@ -19,6 +19,7 @@ public class Image extends LongIdEntity {
 	private String smallURL; // 缩略图
 	private String cutURL; // 裁剪图
 	private String originalURL; // 原图
+	private boolean deleted = false; // 删除标识
 
 	public Image() {
 		super();
@@ -60,6 +61,14 @@ public class Image extends LongIdEntity {
 
 	public void setOriginalURL(String originalURL) {
 		this.originalURL = originalURL;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }

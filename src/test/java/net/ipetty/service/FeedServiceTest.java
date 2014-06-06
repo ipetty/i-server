@@ -5,7 +5,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import net.ipetty.core.context.UserContext;
+import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.test.BaseTest;
+import net.ipetty.core.util.UUIDUtils;
 import net.ipetty.feed.domain.Comment;
 import net.ipetty.feed.domain.Feed;
 import net.ipetty.feed.domain.FeedFavor;
@@ -20,6 +23,7 @@ import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedVO;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -94,6 +98,38 @@ public class FeedServiceTest extends BaseTest {
 	}
 
 	@Test
+	public void testDelete() {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		UserContext.setContext(UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID()));
+
+		Image image = new Image(user.getId(), "smallURL", "cutURL", "originalURL");
+		imageService.save(image);
+		Assert.assertNotNull(image.getId());
+
+		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
+		locationService.save(location);
+		Assert.assertNotNull(location.getId());
+
+		Feed feed = new Feed();
+		feed.setCreatedBy(user.getId());
+		feed.setImageId(image.getId());
+		feed.setText("testFeed");
+		feed.setLocationId(location.getId());
+		feedService.save(feed);
+		Assert.assertNotNull(feed.getId());
+
+		FeedVO feedVO = feedService.getById(feed.getId());
+		Assert.assertNotNull(feedVO);
+		Assert.assertNotNull(feedVO.getId());
+
+		feedService.delete(feed);
+		feedVO = feedService.getById(feed.getId());
+		Assert.assertNull(feedVO);
+
+		UserContext.clearContext();
+	}
+
+	@Test
 	public void testListByTimelineForSquare() throws InterruptedException {
 		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
 		this.createFeeds(10, user.getId());
@@ -145,6 +181,27 @@ public class FeedServiceTest extends BaseTest {
 		feedService.comment(comment);
 		Assert.assertNotNull(comment.getId());
 		Assert.assertNotNull(comment.getCreatedOn());
+	}
+
+	@Test
+	public void testDeleteComment() {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		UserContext.setContext(UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID()));
+		Feed feed = new Feed();
+		feed.setCreatedBy(user.getId());
+		feed.setText("test feed text");
+		feedService.save(feed);
+		Assert.assertNotNull(feed.getId());
+
+		Comment comment = new Comment(feed.getId(), "test comment text", user.getId());
+		feedService.comment(comment);
+		Assert.assertNotNull(comment.getId());
+		Assert.assertNotNull(comment.getCreatedOn());
+
+		feedService.delete(comment);
+		Assert.assertTrue(CollectionUtils.isEmpty(feedService.listCommentsByFeedId(feed.getId())));
+
+		UserContext.clearContext();
 	}
 
 	@Test

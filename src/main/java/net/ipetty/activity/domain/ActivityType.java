@@ -24,7 +24,9 @@ public interface ActivityType {
 	public static final String UPDATE_PET_UNIQUE_NAME = "update_pet_un";
 
 	public static final String PUBLISH_FEED = "publish_feed";
+	public static final String DELETE_FEED = "delete_feed";
 	public static final String COMMENT = "comment";
+	public static final String DELETE_COMMENT = "delete_comment";
 	public static final String FEED_FAVOR = "feed_favor";
 	public static final String FEED_UNFAVOR = "feed_unfavor";
 

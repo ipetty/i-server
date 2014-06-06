@@ -11,6 +11,7 @@ import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.UpdateToHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -31,7 +32,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 	static final RowMapper<Feed> ROW_MAPPER = new RowMapper<Feed>() {
 		@Override
 		public Feed mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_by, created_on, image_id, text, location_id
+			// id, created_by, created_on, image_id, text, location_id, deleted
 			Feed feed = new Feed();
 			feed.setId(rs.getLong("id"));
 			feed.setCreatedBy(rs.getInt("created_by"));
@@ -39,6 +40,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 			feed.setImageId(JdbcDaoUtils.getLong(rs, "image_id"));
 			feed.setText(rs.getString("text"));
 			feed.setLocationId(JdbcDaoUtils.getLong(rs, "location_id"));
+			feed.setDeleted(rs.getBoolean("deleted"));
 			return feed;
 		}
 	};
@@ -72,7 +74,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 		}
 	}
 
-	private static final String GET_BY_ID_SQL = "select * from feed where id=?";
+	private static final String GET_BY_ID_SQL = "select * from feed where id=? and deleted=false";
 
 	/**
 	 * 根据ID获取消息
@@ -83,7 +85,18 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
-	private static final String LIST_BY_TIMELINE_WITH_PAGE_SQL = "select * from feed where created_on<=? order by created_on desc limit ?,?";
+	private static final String DELETE_SQL = "update feed set deleted=true where id=?";
+
+	/**
+	 * 删除消息
+	 */
+	@Override
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_ID_TO_FEED, key = "${id}")
+	public void delete(Long id) {
+		super.getJdbcTemplate().update(DELETE_SQL, id);
+	}
+
+	private static final String LIST_BY_TIMELINE_WITH_PAGE_SQL = "select * from feed where created_on<=? and deleted=false order by created_on desc limit ?,?";
 
 	/**
 	 * 根据时间线分页获取消息
@@ -96,7 +109,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 				pageNumber * pageSize, pageSize);
 	}
 
-	private static final String LIST_BY_USER_ID_AND_TIMELINE_WITH_PAGE_SQL = "select * from feed f where f.created_on<=? and (f.created_by=? or exists(select 1 from user_relationship ur where ur.follower_id=? and ur.friend_id=f.created_by)) order by f.created_on desc limit ?,?";
+	private static final String LIST_BY_USER_ID_AND_TIMELINE_WITH_PAGE_SQL = "select * from feed f where f.created_on<=? and deleted=false and (f.created_by=? or exists(select 1 from user_relationship ur where ur.follower_id=? and ur.friend_id=f.created_by)) order by f.created_on desc limit ?,?";
 
 	/**
 	 * 根据时间线分页获取与我相关的消息

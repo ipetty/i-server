@@ -2,6 +2,8 @@ package net.ipetty.sdk.common;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.social.MissingAuthorizationException;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 public class BaseApi {
 
 	protected ApiContext context;
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final LinkedMultiValueMap<String, String> EMPTY_PARAMETERS = new LinkedMultiValueMap<String, String>();
 

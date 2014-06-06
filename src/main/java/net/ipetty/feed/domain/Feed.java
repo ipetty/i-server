@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.ipetty.core.domain.LongIdEntity;
+import net.ipetty.vo.CommentVO;
+import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedVO;
 
 import org.springframework.beans.BeanUtils;
@@ -26,6 +28,7 @@ public class Feed extends LongIdEntity {
 	private List<FeedFavor> favors = new ArrayList<FeedFavor>(); // 赞列表
 	private FeedStatistics statistics; // 统计信息
 	private Long locationId; // 发表位置ID
+	private boolean deleted = false; // 删除标识
 
 	public Feed() {
 		super();
@@ -48,6 +51,24 @@ public class Feed extends LongIdEntity {
 		}
 
 		return vo;
+	}
+
+	public static Feed fromVO(FeedVO vo) {
+		Feed feed = new Feed();
+		BeanUtils.copyProperties(vo, feed, "comments", "favors");
+
+		for (CommentVO commentVO : vo.getComments()) {
+			feed.getComments().add(Comment.fromVO(commentVO));
+		}
+
+		for (FeedFavorVO favorVO : vo.getFavors()) {
+			feed.getFavors().add(FeedFavor.fromVO(favorVO));
+		}
+
+		feed.setStatistics(new FeedStatistics());
+		BeanUtils.copyProperties(vo, feed.getStatistics());
+
+		return feed;
 	}
 
 	public String getText() {
@@ -96,6 +117,14 @@ public class Feed extends LongIdEntity {
 
 	public void setLocationId(Long locationId) {
 		this.locationId = locationId;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }

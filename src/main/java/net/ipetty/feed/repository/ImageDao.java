@@ -20,4 +20,9 @@ public interface ImageDao {
 	 */
 	public Image getById(Long id);
 
+	/**
+	 * 删除图片
+	 */
+	public void delete(Long id);
+
 }

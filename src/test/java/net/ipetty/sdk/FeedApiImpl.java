@@ -73,6 +73,18 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 		return context.getRestTemplate().getForObject(ApiContext.API_SERVER_BASE + URI_GET_BY_ID, FeedVO.class, id);
 	}
 
+	private static final String URI_DELETE_BY_ID = "/feed/delete";
+
+	/**
+	 * 删除消息
+	 */
+	public boolean delete(Long id) {
+		super.requireAuthorization();
+
+		return context.getRestTemplate().postForObject(buildUri(URI_DELETE_BY_ID, "id", String.valueOf(id)), null,
+				Boolean.class);
+	}
+
 	private static final String URI_LIST_BY_TIMELINE_FOR_SQUARE = "/feed/square";
 
 	/**
@@ -121,6 +133,18 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 		super.requireAuthorization();
 
 		return context.getRestTemplate().postForObject(buildUri(URI_COMMENT), comment, FeedVO.class);
+	}
+
+	private static final String URI_DELETE_COMMENT = "/feed/comment/delete";
+
+	/**
+	 * 删除评论
+	 */
+	public boolean deleteComment(Long id) {
+		super.requireAuthorization();
+
+		return context.getRestTemplate().postForObject(buildUri(URI_DELETE_COMMENT, "id", String.valueOf(id)), null,
+				Boolean.class);
 	}
 
 	private static final String URI_FAVOR = "/feed/favor";

@@ -18,6 +18,7 @@ public class Comment extends LongIdEntity {
 
 	private Long feedId; // 评论的对象
 	private String text; // 评论内容
+	private boolean deleted = false; // 删除标识
 
 	public Comment() {
 		super();
@@ -56,6 +57,14 @@ public class Comment extends LongIdEntity {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }

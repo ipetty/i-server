@@ -92,6 +92,22 @@ public class FeedApiTest extends BaseTest {
 	}
 
 	@Test
+	public void testDelete() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		feed = feedApi.getById(feed.getId());
+		logger.debug("get by id from api is {}", feed);
+
+		Assert.assertTrue(feedApi.delete(feed.getId()));
+	}
+
+	@Test
 	public void testPublishWithZhcn() {
 		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
@@ -136,6 +152,25 @@ public class FeedApiTest extends BaseTest {
 		comment.setText("test comment text");
 		feed = feedApi.comment(comment);
 		Assert.assertEquals(1, feed.getComments().size());
+	}
+
+	@Test
+	public void testDeleteComment() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		CommentVO comment = new CommentVO();
+		comment.setFeedId(feed.getId());
+		comment.setText("test comment text");
+		feed = feedApi.comment(comment);
+		Assert.assertEquals(1, feed.getComments().size());
+
+		Assert.assertTrue(feedApi.deleteComment(feed.getComments().get(0).getId()));
 	}
 
 	@Test

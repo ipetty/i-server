@@ -23,6 +23,11 @@ public interface CommentDao {
 	public Comment getById(Long id);
 
 	/**
+	 * 删除评论
+	 */
+	public void delete(Long id);
+
+	/**
 	 * 获取指定主题消息的所有评论列表
 	 */
 	public List<Comment> listByFeedId(Long feedId);

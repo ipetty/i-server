@@ -24,6 +24,11 @@ public interface FeedDao {
 	public Feed getById(Long id);
 
 	/**
+	 * 删除消息
+	 */
+	public void delete(Long id);
+
+	/**
 	 * 根据时间线分页获取消息
 	 * 
 	 * @param pageNumber

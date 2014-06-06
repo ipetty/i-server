@@ -156,6 +156,10 @@ public class UserContextInterceptor implements HandlerInterceptor {
 				&& (principal == null || StringUtils.isBlank(principal.getToken()))) {
 			userService.delete(new String(Encodes.decodeBase64(encodedRefreshToken), UTF8));
 		}
+
+		// 仅供测试用
+		// 每次请求处理完后，清理线程安全的用户上下文。
+		// UserContext.clearContext();
 	}
 
 	@Override

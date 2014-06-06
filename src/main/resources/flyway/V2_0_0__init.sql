@@ -132,9 +132,11 @@ create table image (
 	small_url varchar(255),
 	cut_url varchar(255),
 	original_url varchar(255),
+	deleted boolean default false,
 	foreign key(created_by) references users(id)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on image(created_on desc);
+create index idx_deleted on image(deleted);
 
 -- feed
 create table feed (
@@ -144,11 +146,13 @@ create table feed (
 	image_id bigint,
 	text varchar(255),
 	location_id bigint,
+	deleted boolean default false,
 	foreign key(created_by) references users(id),
 	foreign key(image_id) references image(id),
 	foreign key(location_id) references location(id)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on feed(created_on desc);
+create index idx_deleted on feed(deleted);
 
 -- feed_comment
 create table feed_comment (
@@ -157,10 +161,12 @@ create table feed_comment (
 	created_on timestamp default current_timestamp,
 	feed_id bigint,
 	text varchar(255),
+	deleted boolean default false,
 	foreign key(created_by) references users(id),
 	foreign key(feed_id) references feed(id)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on feed_comment(created_on desc);
+create index idx_deleted on feed_comment(deleted);
 
 -- feed_favor
 create table feed_favor (

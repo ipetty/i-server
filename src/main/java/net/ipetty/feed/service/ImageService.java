@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.annotation.Resource;
 
+import net.ipetty.core.context.UserContext;
+import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.core.util.ImageUtils;
@@ -58,6 +60,17 @@ public class ImageService extends BaseService {
 	public Image getById(Long id) {
 		Assert.notNull(id, "ID不能为空");
 		return imageDao.getById(id);
+	}
+
+	/**
+	 * 删除图片
+	 */
+	public void delete(Image image) {
+		UserPrincipal principal = UserContext.getContext();
+		if (principal == null || image.getCreatedBy() == null || !image.getCreatedBy().equals(principal.getId())) {
+			throw new BusinessException("只能删除自己的图片");
+		}
+		imageDao.delete(image.getId());
 	}
 
 }

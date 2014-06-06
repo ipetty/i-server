@@ -52,6 +52,8 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		// FIXME 这个在客户端应该删除本地存储
 		ApiContext.REFRESH_TOKEN = null;
 		ApiContext.USER_CONTEXT = null;
+		logger.debug("set REFRESH_TOKEN: {}", ApiContext.REFRESH_TOKEN);
+		logger.debug("set USER_CONTEXT: {}", ApiContext.USER_CONTEXT);
 	}
 
 	private static final String URI_REGISTER = "/register";

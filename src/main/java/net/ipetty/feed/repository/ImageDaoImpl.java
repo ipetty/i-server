@@ -10,6 +10,7 @@ import java.util.Date;
 
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.UpdateToHazelcast;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -30,7 +31,8 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	static final RowMapper<Image> ROW_MAPPER = new RowMapper<Image>() {
 		@Override
 		public Image mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_by, created_on, small_url, cut_url, original_url
+			// id, created_by, created_on, small_url, cut_url, original_url,
+			// deleted
 			Image image = new Image();
 			image.setId(rs.getLong("id"));
 			image.setCreatedBy(rs.getInt("created_by"));
@@ -38,6 +40,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 			image.setSmallURL(rs.getString("small_url"));
 			image.setCutURL(rs.getString("cut_url"));
 			image.setOriginalURL(rs.getString("original_url"));
+			image.setDeleted(rs.getBoolean("deleted"));
 			return image;
 		}
 	};
@@ -72,7 +75,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		}
 	}
 
-	private static final String GET_BY_ID_SQL = "select * from image where id=?";
+	private static final String GET_BY_ID_SQL = "select * from image where id=? and deleted=false";
 
 	/**
 	 * 根据ID获取图片信息
@@ -81,6 +84,17 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	@LoadFromHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
 	public Image getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
+	}
+
+	private static final String DELETE_SQL = "update image set deleted=true where id=?";
+
+	/**
+	 * 删除图片
+	 */
+	@Override
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
+	public void delete(Long id) {
+		super.getJdbcTemplate().update(DELETE_SQL, id);
 	}
 
 }
