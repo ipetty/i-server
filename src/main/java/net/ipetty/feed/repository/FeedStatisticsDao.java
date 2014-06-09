@@ -32,4 +32,14 @@ public interface FeedStatisticsDao {
 	 */
 	public List<FeedStatistics> listStatisticsByFeedIds(Long... feedIds);
 
+	/**
+	 * 重新统计评论数
+	 */
+	public void recountCommentCount(Long feedId);
+
+	/**
+	 * 重新统计赞的数目
+	 */
+	public void recountFavorCount(Long feedId);
+
 }

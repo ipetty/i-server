@@ -81,4 +81,24 @@ public class FeedStatisticsDaoImpl extends BaseJdbcDaoSupport implements FeedSta
 				StringUtils.arrayToCommaDelimitedString(feedIds));
 	}
 
+	private static final String RECOUNT_COMMENT_COUNT_SQL = "update feed_statistics set comment_count=(select count(*) from feed_comment where feed_id=? and deleted=false) where feed_id=?";
+
+	/**
+	 * 重新统计评论数
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
+	public void recountCommentCount(Long feedId) {
+		super.getJdbcTemplate().update(RECOUNT_COMMENT_COUNT_SQL, feedId, feedId);
+	}
+
+	private static final String RECOUNT_FAVOR_COUNT_SQL = "update feed_statistics set favor_count=(select count(*) from feed_favor where feed_id=?) where feed_id=?";
+
+	/**
+	 * 重新统计赞的数目
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
+	public void recountFavorCount(Long feedId) {
+		super.getJdbcTemplate().update(RECOUNT_FAVOR_COUNT_SQL, feedId, feedId);
+	}
+
 }
