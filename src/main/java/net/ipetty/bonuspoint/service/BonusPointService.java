@@ -1,5 +1,7 @@
 package net.ipetty.bonuspoint.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
@@ -8,6 +10,7 @@ import net.ipetty.bonuspoint.domain.BonusPoint;
 import net.ipetty.bonuspoint.repository.BonusPointConsumptionDao;
 import net.ipetty.bonuspoint.repository.BonusPointDao;
 import net.ipetty.core.service.BaseService;
+import net.ipetty.vo.BonusPointVO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,6 +116,14 @@ public class BonusPointService extends BaseService {
 	 */
 	private int getBonus(int bonusGainedToday, int bonusOnce, int bonusPerDay) {
 		return bonusGainedToday + bonusOnce > bonusPerDay ? bonusPerDay - bonusGainedToday : bonusOnce;
+	}
+
+	/**
+	 * 获取有效积分记录
+	 */
+	public List<BonusPointVO> listAvaliableBonusPoints(Integer userId, int pageNumber, int pageSize) {
+		// TODO
+		return null;
 	}
 
 }

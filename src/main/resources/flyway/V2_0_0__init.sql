@@ -200,6 +200,7 @@ create table activity (
 	foreign key(created_by) references users(id)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on activity(created_on desc);
+create index idx_type on activity(type);
 
 -- bonus_point
 create table bonus_point (

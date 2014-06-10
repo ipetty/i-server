@@ -3,6 +3,9 @@ package net.ipetty.activity.domain;
 import java.util.Date;
 
 import net.ipetty.core.domain.LongIdEntity;
+import net.ipetty.vo.ActivityVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 事件
@@ -62,6 +65,12 @@ public class Activity extends LongIdEntity {
 		this.targetId = targetId;
 		setCreatedBy(createdBy);
 		setCreatedOn(new Date());
+	}
+
+	public ActivityVO toVO() {
+		ActivityVO vo = new ActivityVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
 	}
 
 	public String getType() {

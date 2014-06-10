@@ -3,6 +3,9 @@ package net.ipetty.bonuspoint.domain;
 import java.util.Date;
 
 import net.ipetty.core.domain.LongIdEntity;
+import net.ipetty.vo.BonusPointVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 积分
@@ -44,6 +47,12 @@ public class BonusPoint extends LongIdEntity {
 		this.bonus = bonus;
 		super.setCreatedBy(createdBy);
 		super.setCreatedOn(createdOn);
+	}
+
+	public BonusPointVO toVO() {
+		BonusPointVO vo = new BonusPointVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
 	}
 
 	public Long getActivityId() {

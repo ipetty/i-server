@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.core.exception.BusinessException;
@@ -49,8 +50,7 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 		activity.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(SAVE_SQL,
-					Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, activity.getType());
 			JdbcDaoUtils.setInteger(statement, 2, activity.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 3, activity.getTargetId());
@@ -67,6 +67,27 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 		} catch (SQLException e) {
 			throw new BusinessException("Database exception", e);
 		}
+	}
+
+	private static final String LIST_ACTIVITIES_SQL = "select * from activity where created_by=? order by created_on desc limit ?,?";
+
+	/**
+	 * 获取某人的事件流
+	 */
+	@Override
+	public List<Activity> listActivities(Integer userId, int pageNumber, int pageSize) {
+		return super.getJdbcTemplate().query(LIST_ACTIVITIES_SQL, ROW_MAPPER, userId, pageNumber * pageSize, pageSize);
+	}
+
+	private static final String LIST_RELATED_ACTIVITIES_SQL = "select a.* from activity a right join (select friend_id,follower_id from user_relationship where follower_id=?) ur on a.created_by=ur.friend_id union select * from activity where created_by=? order by created_on desc limit ?,?";
+
+	/**
+	 * 获取某人相关的事件流
+	 */
+	@Override
+	public List<Activity> listRelatedActivities(Integer userId, int pageNumber, int pageSize) {
+		return super.getJdbcTemplate().query(LIST_RELATED_ACTIVITIES_SQL, ROW_MAPPER, userId, userId,
+				pageNumber * pageSize, pageSize);
 	}
 
 }
