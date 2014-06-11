@@ -146,7 +146,18 @@ public class UserController extends BaseController {
 			throw new RestException("用户不存在");
 		}
 		logger.debug("get by id {}, result is {}", id, user);
-		return user.toVO();
+		return this.fullfillIsFollowed(user.toVO());
+	}
+
+	private UserVO fullfillIsFollowed(UserVO vo) {
+		if (vo == null) {
+			return vo;
+		}
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser != null && currentUser.getId() != null) {
+			vo.setFollowed(userService.isFollow(vo.getId(), currentUser.getId()));
+		}
+		return vo;
 	}
 
 	/**
@@ -160,7 +171,7 @@ public class UserController extends BaseController {
 			throw new RestException("用户不存在");
 		}
 		logger.debug("get by uid {}, result is {}", uid, user);
-		return user.toVO();
+		return this.fullfillIsFollowed(user.toVO());
 	}
 
 	/**
@@ -175,13 +186,8 @@ public class UserController extends BaseController {
 			throw new RestException("用户不存在");
 		}
 		logger.debug("get by unique name {}, result is {}", uniqueName, user);
-		return user.toVO();
+		return this.fullfillIsFollowed(user.toVO());
 	}
-
-	/**
-	 * 更新用户帐号信息
-	 */
-	// TODO
 
 	/**
 	 * 设置爱宠号，只能设置一次，一经设置不能变更
@@ -272,14 +278,29 @@ public class UserController extends BaseController {
 		Assert.hasText(pageNumber, "页码不能为空");
 		Assert.hasText(pageSize, "每页条数不能为空");
 
-		// FIXME move to service, and fullfill isFollowed field
-		List<UserVO> vos = new ArrayList<UserVO>();
+		UserPrincipal currentUser = UserContext.getContext();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+
 		List<User> users = userService.listFriends(Integer.valueOf(userId), Integer.valueOf(pageNumber),
 				Integer.valueOf(pageSize));
+		return this.fullfillIsFollowed(users, currentUserId);
+	}
+
+	private List<UserVO> fullfillIsFollowed(List<User> users, Integer currentUserId) {
+		List<UserVO> vos = new ArrayList<UserVO>();
 		for (User user : users) {
-			vos.add(user.toVO());
+			// fullfill isFollowed field
+			vos.add(this.fullfillIsFollowed(user.toVO(), currentUserId));
 		}
 		return vos;
+	}
+
+	private UserVO fullfillIsFollowed(UserVO vo, Integer currentUserId) {
+		if (vo == null || currentUserId == null) {
+			return vo;
+		}
+		vo.setFollowed(userService.isFollow(vo.getId(), currentUserId));
+		return vo;
 	}
 
 	/**

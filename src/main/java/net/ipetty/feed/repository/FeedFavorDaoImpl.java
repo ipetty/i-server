@@ -118,4 +118,15 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 				StringUtils.arrayToCommaDelimitedString(feedIds));
 	}
 
+	private static final String LIST_BY_USER_ID_AND_FEED_IDS_SQL = "select * from feed_favor where created_by=? and feed_id in (?) order by feed_id, id asc";
+
+	/**
+	 * 获取指定用户在指定主题消息列表上给出的所有赞列表
+	 */
+	@Override
+	public List<FeedFavor> listByUserIdAndFeedIds(Integer userId, Long... feedIds) {
+		return super.getJdbcTemplate().query(LIST_BY_USER_ID_AND_FEED_IDS_SQL, ROW_MAPPER, userId,
+				StringUtils.arrayToCommaDelimitedString(feedIds));
+	}
+
 }

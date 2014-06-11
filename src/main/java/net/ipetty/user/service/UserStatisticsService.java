@@ -36,8 +36,7 @@ public class UserStatisticsService extends BaseService {
 		String activityType = activity.getType();
 		// 重新统计登录次数
 		if (ActivityType.LOGIN.equals(activityType)) {
-			// TODO
-			// recountLoginNum(activity.getCreatedBy());
+			userStatisticsDao.recountLoginNum(activity.getCreatedBy());
 		}
 		// 重新统计关注数、粉丝数
 		else if (ActivityType.FOLLOW.equals(activityType) || ActivityType.UNFOLLOW.equals(activityType)) {

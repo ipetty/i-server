@@ -89,6 +89,7 @@ create table user_statistics (
 	feed_num int default 0,
 	comment_num int default 0,
 	favor_num int default 0,
+	login_num int default 0,
 	foreign key(user_id) references users(id)
 ) engine=innodb default charset=utf8;
 

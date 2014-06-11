@@ -64,7 +64,8 @@ public class UidService extends BaseService {
 		uidDao.markAsUsed(uid);
 		uids.remove(uid);
 
-		// 发现池里较少则补充 TODO 改为异步实现
+		// 发现池里较少则补充
+		// TODO 改为异步实现
 		if (uids.size() <= poolLowWarningNum) {
 			produceUids();
 		}

@@ -82,7 +82,7 @@ public class AopUtils {
 		Method method = ((MethodSignature) call.getSignature()).getMethod();
 		logger.debug("Method name is {}", method.getName());
 
-		// TODO http://www.tuicool.com/articles/iUfMBr
+		// http://www.tuicool.com/articles/iUfMBr
 		// 形参列表
 		String[] paramNames = AsmMethodParamNamesScaner.getMethodParamNames(method);
 		logger.debug("MethodParamNamesScaner.getParamNames is {}", (Object) paramNames);

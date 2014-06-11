@@ -2,9 +2,11 @@ package net.ipetty.feed.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -150,11 +152,20 @@ public class FeedService extends BaseService {
 			feedMap.get(statistics.getFeedId()).setStatistics(statistics);
 		}
 
-		// TODO fullfill favored
-
-		for (Feed feed : feeds) {
-			vos.add(feed.toVO());
+		// fullfill favored
+		Set<Long> favoredFeedIds = new HashSet<Long>();
+		List<FeedFavor> myFavors = feedFavorDao.listByUserIdAndFeedIds(userId, feedIds);
+		for (FeedFavor favor : myFavors) {
+			favoredFeedIds.add(favor.getFeedId());
 		}
+		for (Feed feed : feeds) {
+			FeedVO vo = feed.toVO();
+			if (favoredFeedIds.contains(vo.getId())) {
+				vo.setFavored(true);
+			}
+			vos.add(vo);
+		}
+
 		return vos;
 	}
 

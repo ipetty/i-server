@@ -102,11 +102,11 @@ public class UserService extends BaseService {
 			Assert.hasText(user.getPassword(), "密码不能为空");
 
 			// check unique
-			this.checkUnique(user.getUniqueName(), "爱宠号");
-			this.checkUnique(user.getPhoneNumber(), "手机号");
-			this.checkUnique(user.getEmail(), "邮箱");
-			this.checkUnique(user.getQzoneUid(), "QQ空间Uid");
-			this.checkUnique(user.getWeiboUid(), "新浪微博Uid");
+			this.checkUniqueForRegister(user.getUniqueName(), "爱宠号");
+			this.checkUniqueForRegister(user.getPhoneNumber(), "手机号");
+			this.checkUniqueForRegister(user.getEmail(), "邮箱");
+			this.checkUniqueForRegister(user.getQzoneUid(), "QQ空间Uid");
+			this.checkUniqueForRegister(user.getWeiboUid(), "新浪微博Uid");
 
 			// retreive an available uid
 			int uid = uidService.getUid();
@@ -149,8 +149,7 @@ public class UserService extends BaseService {
 		}
 	}
 
-	// FIXME update帐号字段时校验唯一性的逻辑还需改善
-	private void checkUnique(String fieldValue, String fieldLabel) throws BusinessException {
+	private void checkUniqueForRegister(String fieldValue, String fieldLabel) throws BusinessException {
 		if (StringUtils.isNotBlank(fieldValue)) {
 			User orignal = this.getByLoginName(fieldValue);
 			if (orignal != null) {
@@ -211,7 +210,12 @@ public class UserService extends BaseService {
 	public void updateUniqueName(Integer id, String uniqueName) {
 		Assert.notNull(id, "用户ID不能为空");
 		Assert.hasText(uniqueName, "爱宠号不能为空");
-		this.checkUnique(uniqueName, "Unique Name"); // 校验唯一性
+		if (StringUtils.isNotBlank(uniqueName)) { // 校验唯一性
+			User orignalUniqueName = this.getByLoginName(uniqueName);
+			if (orignalUniqueName != null) {
+				throw new BusinessException("爱宠号已存在");
+			}
+		}
 
 		User user = userDao.getById(id);
 		if (user == null) {

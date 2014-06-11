@@ -42,4 +42,9 @@ public interface FeedFavorDao {
 	 */
 	public List<FeedFavor> listByFeedIds(Long... feedIds);
 
+	/**
+	 * 获取指定用户在指定主题消息列表上给出的所有赞列表
+	 */
+	public List<FeedFavor> listByUserIdAndFeedIds(Integer userId, Long... feedIds);
+
 }

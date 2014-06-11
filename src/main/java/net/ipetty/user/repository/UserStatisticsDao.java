@@ -45,4 +45,9 @@ public interface UserStatisticsDao {
 	 */
 	public void recountFeedFavorNum(Integer userId);
 
+	/**
+	 * 更新指定用户登录次数
+	 */
+	public void recountLoginNum(Integer userId);
+
 }

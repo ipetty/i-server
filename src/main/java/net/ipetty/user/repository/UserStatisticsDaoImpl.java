@@ -3,6 +3,7 @@ package net.ipetty.user.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromHazelcast;
 import net.ipetty.core.cache.annotation.UpdateToHazelcast;
@@ -25,7 +26,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 		@Override
 		public UserStatistics mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// user_id, bonus_of_history, bonus_current, friends_num,
-			// follower_num, feed_num, comment_num, favor_num
+			// follower_num, feed_num, comment_num, favor_num, login_num
 			UserStatistics statistics = new UserStatistics();
 			statistics.setUserId(rs.getInt("user_id"));
 			statistics.setBonusOfHistory(rs.getInt("bonus_of_history"));
@@ -35,19 +36,21 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 			statistics.setFeedNum(rs.getInt("feed_num"));
 			statistics.setCommentNum(rs.getInt("comment_num"));
 			statistics.setFavorNum(rs.getInt("favor_num"));
+			statistics.setLoginNum(rs.getInt("login_num"));
 			return statistics;
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into user_statistics(user_id, bonus_of_history, bonus_current, friends_num, follower_num, feed_num, comment_num, favor_num) values(?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into user_statistics(user_id, bonus_of_history, bonus_current, friends_num, follower_num, feed_num, comment_num, favor_num, login_num) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存用户统计信息
 	 */
 	public void save(UserStatistics statistics) {
-		super.getJdbcTemplate().update(SAVE_SQL, statistics.getUserId(), statistics.getBonusOfHistory(),
-				statistics.getBonusCurrent(), statistics.getFriendsNum(), statistics.getFollowerNum(),
-				statistics.getFeedNum(), statistics.getCommentNum(), statistics.getFavorNum());
+		super.getJdbcTemplate()
+				.update(SAVE_SQL, statistics.getUserId(), statistics.getBonusOfHistory(), statistics.getBonusCurrent(),
+						statistics.getFriendsNum(), statistics.getFollowerNum(), statistics.getFeedNum(),
+						statistics.getCommentNum(), statistics.getFavorNum(), statistics.getLoginNum());
 	}
 
 	private static final String GET_SQL = "select * from user_statistics where user_id=?";
@@ -60,7 +63,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 		return super.queryUniqueEntity(GET_SQL, ROW_MAPPER, userId);
 	}
 
-	private static final String UPDATE_SQL = "update user_statistics set bonus_of_history=?, bonus_current=?, friends_num=?, follower_num=?, feed_num=?, comment_num=?, favor_num=? where user_id=?";
+	private static final String UPDATE_SQL = "update user_statistics set bonus_of_history=?, bonus_current=?, friends_num=?, follower_num=?, feed_num=?, comment_num=?, favor_num=?, login_num=? where user_id=?";
 
 	/**
 	 * 更新用户统计信息
@@ -69,7 +72,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	public void update(UserStatistics statistics) {
 		super.getJdbcTemplate().update(UPDATE_SQL, statistics.getBonusOfHistory(), statistics.getBonusCurrent(),
 				statistics.getFriendsNum(), statistics.getFollowerNum(), statistics.getFeedNum(),
-				statistics.getCommentNum(), statistics.getFavorNum(), statistics.getUserId());
+				statistics.getCommentNum(), statistics.getFavorNum(), statistics.getLoginNum(), statistics.getUserId());
 	}
 
 	private static final String RECOUNT_RELATIONSHIP_NUM_SQL = "update user_statistics set friends_num=(select count(*) from user_relationship where follower_id=?),"
@@ -103,14 +106,24 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 		super.getJdbcTemplate().update(RECOUNT_COMMENT_NUM_SQL, userId, userId);
 	}
 
-	private static final String RECOUNT_FEED_FAVORS_SQL = "update user_statistics set favor_num=(select count(*) from feed_favor where created_by=?) where user_id=?";
+	private static final String RECOUNT_FEED_FAVORS_NUM_SQL = "update user_statistics set favor_num=(select count(*) from feed_favor where created_by=?) where user_id=?";
 
 	/**
 	 * 更新指定用户发出赞的数目
 	 */
 	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public void recountFeedFavorNum(Integer userId) {
-		super.getJdbcTemplate().update(RECOUNT_FEED_FAVORS_SQL, userId, userId);
+		super.getJdbcTemplate().update(RECOUNT_FEED_FAVORS_NUM_SQL, userId, userId);
+	}
+
+	private static final String RECOUNT_LOGIN_NUM_SQL = "update user_statistics set login_num=(select count(*) from activity where created_by=? and type=?) where user_id=?";
+
+	/**
+	 * 更新指定用户登录次数
+	 */
+	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	public void recountLoginNum(Integer userId) {
+		super.getJdbcTemplate().update(RECOUNT_LOGIN_NUM_SQL, userId, ActivityType.LOGIN, userId);
 	}
 
 }

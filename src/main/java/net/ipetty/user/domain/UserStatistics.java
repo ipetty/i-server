@@ -21,6 +21,7 @@ public class UserStatistics extends AbstractEntity {
 	private int feedNum; // 消息数
 	private int commentNum; // 评论数
 	private int favorNum; // 获得的赞数
+	private int loginNum; // 登录次数
 
 	public UserStatistics() {
 		super();
@@ -32,7 +33,7 @@ public class UserStatistics extends AbstractEntity {
 	}
 
 	public UserStatistics(Integer userId, int bonusOfHistory, int bonusCurrent, int friendsNum, int followerNum,
-			int feedNum, int commentNum, int favorNum) {
+			int feedNum, int commentNum, int favorNum, int loginNum) {
 		super();
 		this.userId = userId;
 		this.bonusOfHistory = bonusOfHistory;
@@ -42,6 +43,7 @@ public class UserStatistics extends AbstractEntity {
 		this.feedNum = feedNum;
 		this.commentNum = commentNum;
 		this.favorNum = favorNum;
+		this.loginNum = loginNum;
 	}
 
 	public Integer getUserId() {
@@ -106,6 +108,14 @@ public class UserStatistics extends AbstractEntity {
 
 	public void setFavorNum(int favorNum) {
 		this.favorNum = favorNum;
+	}
+
+	public int getLoginNum() {
+		return loginNum;
+	}
+
+	public void setLoginNum(int loginNum) {
+		this.loginNum = loginNum;
 	}
 
 }
