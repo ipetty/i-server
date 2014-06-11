@@ -1,5 +1,7 @@
 package net.ipetty.sdk;
 
+import java.util.List;
+
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.HumanGender;
@@ -142,6 +144,31 @@ public class UserApiTest extends BaseTest {
 		Assert.assertFalse(userApi.isFollow(user2.getId()));
 		userApi.login("testFollowWithApi2@ipetty.net", "888888");
 		Assert.assertTrue(userApi.isFollow(user1.getId()));
+	}
+
+	@Test
+	public void testListRelationships() {
+		UserVO user = userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<UserVO> users = userApi.listFriends(user.getId(), 0, 20);
+		logger.debug("userApi.listFriends, size={}", users.size());
+
+		users = userApi.listFollowers(user.getId(), 0, 20);
+		logger.debug("userApi.listFollowers, size={}", users.size());
+
+		users = userApi.listBiFriends(user.getId(), 0, 20);
+		logger.debug("userApi.listBiFriends, size={}", users.size());
+
+		userApi.logout();
+
+		users = userApi.listFriends(user.getId(), 0, 20);
+		logger.debug("userApi.listFriends, size={}", users.size());
+
+		users = userApi.listFollowers(user.getId(), 0, 20);
+		logger.debug("userApi.listFollowers, size={}", users.size());
+
+		users = userApi.listBiFriends(user.getId(), 0, 20);
+		logger.debug("userApi.listBiFriends, size={}", users.size());
 	}
 
 	@Test

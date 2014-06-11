@@ -1,6 +1,8 @@
 package net.ipetty.sdk;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
@@ -177,6 +179,57 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("friendId", String.valueOf(friendId));
 		return context.getRestTemplate().postForObject(buildUri(URI_IS_UNFOLLOW), request, Boolean.class);
+	}
+
+	private static final String URI_LIST_FRIENDS = "/user/friends";
+
+	/**
+	 * 分页获取关注列表
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<UserVO> listFriends(Integer userId, int pageNumber, int pageSize) {
+		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.add("userId", String.valueOf(userId));
+		request.add("pageNumber", String.valueOf(pageNumber));
+		request.add("pageSize", String.valueOf(pageSize));
+		URI uri = buildUri(URI_LIST_FRIENDS, request);
+		return Arrays.asList(context.getRestTemplate().getForObject(uri, UserVO[].class));
+	}
+
+	private static final String URI_LIST_FOLLOWERS = "/user/followers";
+
+	/**
+	 * 获取粉丝列表
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<UserVO> listFollowers(Integer userId, int pageNumber, int pageSize) {
+		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.add("userId", String.valueOf(userId));
+		request.add("pageNumber", String.valueOf(pageNumber));
+		request.add("pageSize", String.valueOf(pageSize));
+		URI uri = buildUri(URI_LIST_FOLLOWERS, request);
+		return Arrays.asList(context.getRestTemplate().getForObject(uri, UserVO[].class));
+	}
+
+	private static final String URI_LIST_BIFRIENDS = "/user/bifriends";
+
+	/**
+	 * 获取好友列表（双向关注）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<UserVO> listBiFriends(Integer userId, int pageNumber, int pageSize) {
+		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.add("userId", String.valueOf(userId));
+		request.add("pageNumber", String.valueOf(pageNumber));
+		request.add("pageSize", String.valueOf(pageSize));
+		URI uri = buildUri(URI_LIST_BIFRIENDS, request);
+		return Arrays.asList(context.getRestTemplate().getForObject(uri, UserVO[].class));
 	}
 
 	private static final String URI_UPDATE_AVATAR = "/user/updateAvatar";

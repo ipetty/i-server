@@ -273,6 +273,8 @@ public class UserController extends BaseController {
 	 * @param pageNumber
 	 *            分页页码，从0开始
 	 */
+	@RequestMapping(value = "/user/friends", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
 	public List<UserVO> listFriends(String userId, String pageNumber, String pageSize) {
 		Assert.hasText(userId, "用户ID不能为空");
 		Assert.hasText(pageNumber, "页码不能为空");
@@ -301,6 +303,48 @@ public class UserController extends BaseController {
 		}
 		vo.setFollowed(userService.isFollow(vo.getId(), currentUserId));
 		return vo;
+	}
+
+	/**
+	 * 获取粉丝列表
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/user/followers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<UserVO> listFollowers(String userId, String pageNumber, String pageSize) {
+		Assert.hasText(userId, "用户ID不能为空");
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
+
+		UserPrincipal currentUser = UserContext.getContext();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+
+		List<User> users = userService.listFollowers(Integer.valueOf(userId), Integer.valueOf(pageNumber),
+				Integer.valueOf(pageSize));
+		return this.fullfillIsFollowed(users, currentUserId);
+	}
+
+	/**
+	 * 获取好友列表（双向关注）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/user/bifriends", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<UserVO> listBiFriends(String userId, String pageNumber, String pageSize) {
+		Assert.hasText(userId, "用户ID不能为空");
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
+
+		UserPrincipal currentUser = UserContext.getContext();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+
+		List<User> users = userService.listBiFriends(Integer.valueOf(userId), Integer.valueOf(pageNumber),
+				Integer.valueOf(pageSize));
+		return this.fullfillIsFollowed(users, currentUserId);
 	}
 
 	/**
