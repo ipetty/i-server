@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
-import net.ipetty.vo.HumanGender;
 import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserVO;
 
@@ -28,7 +27,7 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testRegister() {
-		RegisterVO register = new RegisterVO("testRegisterWithApi@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		RegisterVO register = new RegisterVO("testRegisterWithApi@ipetty.net", "888888", "通过API注册用户", "male");
 		logger.debug("register {}", register);
 		UserVO user = userApi.register(register);
 		Assert.assertNotNull(user);
@@ -98,8 +97,7 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testUpdateUniqueName() {
-		RegisterVO register = new RegisterVO("testUpdateUniqueNameWithApi@ipetty.net", "888888", "通过API注册用户",
-				HumanGender.MALE);
+		RegisterVO register = new RegisterVO("testUpdateUniqueNameWithApi@ipetty.net", "888888", "通过API注册用户", "male");
 		UserVO user = userApi.register(register);
 		Assert.assertNotNull(user);
 
@@ -124,10 +122,10 @@ public class UserApiTest extends BaseTest {
 
 	@Test
 	public void testFollowAndIsFollowAndUnfollow() {
-		RegisterVO register1 = new RegisterVO("testFollowWithApi1@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		RegisterVO register1 = new RegisterVO("testFollowWithApi1@ipetty.net", "888888", "通过API注册用户", "male");
 		UserVO user1 = userApi.register(register1);
 		Assert.assertNotNull(user1);
-		RegisterVO register2 = new RegisterVO("testFollowWithApi2@ipetty.net", "888888", "通过API注册用户", HumanGender.MALE);
+		RegisterVO register2 = new RegisterVO("testFollowWithApi2@ipetty.net", "888888", "通过API注册用户", "male");
 		UserVO user2 = userApi.register(register2);
 		Assert.assertNotNull(user2);
 

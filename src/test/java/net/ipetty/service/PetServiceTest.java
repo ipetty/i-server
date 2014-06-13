@@ -8,7 +8,6 @@ import net.ipetty.core.test.BaseTest;
 import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.service.PetService;
 import net.ipetty.user.service.UserService;
-import net.ipetty.vo.AnimalGender;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -75,10 +74,10 @@ public class PetServiceTest extends BaseTest {
 	@Test
 	public void testUpdate() {
 		Pet pet = savePet();
-		pet.setGender(AnimalGender.OTHERS);
+		pet.setGender("other");
 		petService.update(pet);
 		pet = petService.getById(pet.getId());
-		Assert.assertEquals(AnimalGender.OTHERS, pet.getGender());
+		Assert.assertEquals("other", pet.getGender());
 	}
 
 	@Test
