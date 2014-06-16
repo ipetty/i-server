@@ -8,6 +8,8 @@ import net.ipetty.core.exception.BusinessException;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.service.UserService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.ClassWriter;
@@ -24,6 +26,8 @@ import org.springframework.asm.Type;
  * @date 2014年6月4日
  */
 public class AsmMethodParamNamesScaner {
+
+	private static Logger logger = LoggerFactory.getLogger(AsmMethodParamNamesScaner.class);
 
 	/**
 	 * 比较参数类型是否一致
@@ -52,35 +56,36 @@ public class AsmMethodParamNamesScaner {
 	/**
 	 * 获取方法的参数名
 	 */
-	public static String[] getMethodParamNames(final Method m) {
-		final String[] paramNames = new String[m.getParameterTypes().length];
-		final String n = m.getDeclaringClass().getName();
-		final ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		ClassReader cr = null;
+	public static String[] getMethodParamNames(final Method method) {
+		final String[] paramNames = new String[method.getParameterTypes().length];
+		final String className = method.getDeclaringClass().getName();
+		logger.debug("class name is: {}", className);
+		final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		ClassReader classReader = null;
 		try {
-			cr = new ClassReader(n);
+			classReader = new ClassReader(className);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new BusinessException(e);
 		}
-		cr.accept(new ClassVisitor(Opcodes.ASM4, cw) {
+		classReader.accept(new ClassVisitor(Opcodes.ASM4, classWriter) {
 			@Override
 			public MethodVisitor visitMethod(final int access, final String name, final String desc,
 					final String signature, final String[] exceptions) {
 				final Type[] args = Type.getArgumentTypes(desc);
 				// 方法名相同并且参数个数相同
-				if (!name.equals(m.getName()) || !sameType(args, m.getParameterTypes())) {
+				if (!name.equals(method.getName()) || !sameType(args, method.getParameterTypes())) {
 					return super.visitMethod(access, name, desc, signature, exceptions);
 				}
-				MethodVisitor v = cv.visitMethod(access, name, desc, signature, exceptions);
-				return new MethodVisitor(Opcodes.ASM4, v) {
+				MethodVisitor methodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
+				return new MethodVisitor(Opcodes.ASM4, methodVisitor) {
 					@Override
 					public void visitLocalVariable(String name, String desc, String signature, Label start, Label end,
 							int index) {
 						int i = index - 1;
 						// 如果是静态方法，则第一就是参数
 						// 如果不是静态方法，则第一个是"this"，然后才是方法的参数
-						if (Modifier.isStatic(m.getModifiers())) {
+						if (Modifier.isStatic(method.getModifiers())) {
 							i = index;
 						}
 						if (i >= 0 && i < paramNames.length) {
