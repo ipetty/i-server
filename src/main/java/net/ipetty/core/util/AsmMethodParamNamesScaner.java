@@ -1,6 +1,7 @@
 package net.ipetty.core.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -27,7 +28,7 @@ import org.springframework.asm.Type;
  */
 public class AsmMethodParamNamesScaner {
 
-	private static Logger logger = LoggerFactory.getLogger(AsmMethodParamNamesScaner.class);
+	static Logger logger = LoggerFactory.getLogger(AsmMethodParamNamesScaner.class);
 
 	/**
 	 * 比较参数类型是否一致
@@ -58,12 +59,12 @@ public class AsmMethodParamNamesScaner {
 	 */
 	public static String[] getMethodParamNames(final Method method) {
 		final String[] paramNames = new String[method.getParameterTypes().length];
-		final String className = method.getDeclaringClass().getName();
-		logger.debug("class name is: {}", className);
+		final Class<?> clazz = method.getDeclaringClass();
 		final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		ClassReader classReader = null;
 		try {
-			classReader = new ClassReader(className);
+			InputStream inputStream = clazz.getResourceAsStream("/" + clazz.getName().replace('.', '/') + ".class");
+			classReader = new ClassReader(inputStream);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new BusinessException(e);
