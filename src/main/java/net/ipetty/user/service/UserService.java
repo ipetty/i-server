@@ -164,6 +164,9 @@ public class UserService extends BaseService {
 	public User getById(Integer id) {
 		Assert.notNull(id, "ID不能为空");
 		User user = userDao.getById(id);
+		if (user == null) {
+			throw new BusinessException("指定ID（" + id + "）的用户不存在");
+		}
 		user.setProfile(userProfileDao.getByUserId(id));
 		user.setZone(userZoneDao.getByUserId(id));
 		user.setStatistics(userStatisticsDao.get(id));
