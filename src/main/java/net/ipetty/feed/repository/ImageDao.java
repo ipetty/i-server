@@ -1,5 +1,7 @@
 package net.ipetty.feed.repository;
 
+import java.util.List;
+
 import net.ipetty.feed.domain.Image;
 
 /**
@@ -24,5 +26,10 @@ public interface ImageDao {
 	 * 删除图片
 	 */
 	public void delete(Long id);
+
+	/**
+	 * 获取指定主题消息列表的所有图片信息
+	 */
+	public List<Image> listByFeedIds(Long... feedIds);
 
 }

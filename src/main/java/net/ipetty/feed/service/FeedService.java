@@ -2,6 +2,7 @@ package net.ipetty.feed.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,10 +21,12 @@ import net.ipetty.feed.domain.Comment;
 import net.ipetty.feed.domain.Feed;
 import net.ipetty.feed.domain.FeedFavor;
 import net.ipetty.feed.domain.FeedStatistics;
+import net.ipetty.feed.domain.Image;
 import net.ipetty.feed.repository.CommentDao;
 import net.ipetty.feed.repository.FeedDao;
 import net.ipetty.feed.repository.FeedFavorDao;
 import net.ipetty.feed.repository.FeedStatisticsDao;
+import net.ipetty.feed.repository.ImageDao;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedVO;
@@ -55,6 +58,9 @@ public class FeedService extends BaseService {
 
 	@Resource
 	private FeedFavorDao feedFavorDao;
+
+	@Resource
+	private ImageDao imageDao;
 
 	/**
 	 * 保存消息
@@ -152,16 +158,29 @@ public class FeedService extends BaseService {
 			feedMap.get(statistics.getFeedId()).setStatistics(statistics);
 		}
 
-		// fullfill favored
+		// favored
 		Set<Long> favoredFeedIds = new HashSet<Long>();
 		List<FeedFavor> myFavors = feedFavorDao.listByUserIdAndFeedIds(userId, feedIds);
 		for (FeedFavor favor : myFavors) {
 			favoredFeedIds.add(favor.getFeedId());
 		}
+		// images
+		List<Image> images = imageDao.listByFeedIds(feedIds);
+		Map<Long, Image> imageMap = new HashMap<Long, Image>();
+		for (Image image : images) {
+			imageMap.put(image.getId(), image);
+		}
+
+		// fullfill favored and image
 		for (Feed feed : feeds) {
 			FeedVO vo = feed.toVO();
 			if (favoredFeedIds.contains(vo.getId())) {
 				vo.setFavored(true);
+			}
+			if (feed.getImageId() != null && imageMap.containsKey(feed.getImageId())) {
+				Image image = imageMap.get(feed.getImageId());
+				vo.setImageSmallURL(image.getSmallURL());
+				vo.setImageOriginalURL(image.getOriginalURL());
 			}
 			vos.add(vo);
 		}

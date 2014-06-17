@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromHazelcast;
@@ -18,6 +19,7 @@ import net.ipetty.feed.domain.Image;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 /**
  * ImageDaoImpl
@@ -95,6 +97,17 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	@UpdateToHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
 	public void delete(Long id) {
 		super.getJdbcTemplate().update(DELETE_SQL, id);
+	}
+
+	private static final String LIST_BY_FEED_IDS_SQL = "select * from image i right join (select image_id from feed where id in (?)) iid on i.id=iid.image_id";
+
+	/**
+	 * 获取指定主题消息列表的所有图片信息
+	 */
+	@Override
+	public List<Image> listByFeedIds(Long... feedIds) {
+		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL, ROW_MAPPER,
+				StringUtils.arrayToCommaDelimitedString(feedIds));
 	}
 
 }
