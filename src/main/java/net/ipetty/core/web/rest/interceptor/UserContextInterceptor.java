@@ -127,7 +127,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 			response.setHeader(HEADER_NAME_USER_TOKEN, Encodes.encodeBase64(principal.getToken().getBytes()));
 			logger.debug("set response header: {}={}", HEADER_NAME_USER_TOKEN, principal.getToken());
 
-			// 在登录新设备时生成refresh_token
+			// 在登录时生成refresh_token（如果请求中已带refresh_token则不返回）
 			if (StringUtils.isBlank(encodedRefreshToken) && StringUtils.isNotBlank(encodedDeviceUuid)) {
 				Integer userId = principal.getId();
 				String deviceUuid = new String(Encodes.decodeBase64(encodedDeviceUuid), UTF8);
@@ -141,13 +141,13 @@ public class UserContextInterceptor implements HandlerInterceptor {
 					userRefreshToken = new UserRefreshToken(userId, null, deviceId, deviceMac, deviceUuid,
 							UUIDUtils.generateShortUUID());
 					userService.save(userRefreshToken);
-
-					// response中设置refresh_token
-					response.setHeader(HEADER_NAME_REFRESH_TOKEN,
-							Encodes.encodeBase64(userRefreshToken.getRefreshToken().getBytes()));
-					logger.debug("set response header: {}={}", HEADER_NAME_REFRESH_TOKEN,
-							userRefreshToken.getRefreshToken());
 				}
+
+				// response中设置refresh_token
+				response.setHeader(HEADER_NAME_REFRESH_TOKEN,
+						Encodes.encodeBase64(userRefreshToken.getRefreshToken().getBytes()));
+				logger.debug("set response header: {}={}", HEADER_NAME_REFRESH_TOKEN,
+						userRefreshToken.getRefreshToken());
 			}
 		}
 
