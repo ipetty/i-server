@@ -177,8 +177,9 @@ public class FeedService extends BaseService {
 			if (favoredFeedIds.contains(vo.getId())) {
 				vo.setFavored(true);
 			}
-			if (feed.getImageId() != null && imageMap.containsKey(feed.getImageId())) {
-				Image image = imageMap.get(feed.getImageId());
+			Long imageId = feed.getImageId();
+			if (imageId != null && imageMap.containsKey(imageId)) {
+				Image image = imageMap.get(imageId);
 				vo.setImageSmallURL(image.getSmallURL());
 				vo.setImageOriginalURL(image.getOriginalURL());
 			}
