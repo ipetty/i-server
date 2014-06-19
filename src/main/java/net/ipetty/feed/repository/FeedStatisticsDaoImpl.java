@@ -77,8 +77,8 @@ public class FeedStatisticsDaoImpl extends BaseJdbcDaoSupport implements FeedSta
 	 */
 	@Override
 	public List<FeedStatistics> listStatisticsByFeedIds(Long... feedIds) {
-		return super.getJdbcTemplate().query(LIST_STATISTICS_BY_FEED_IDS_SQL, ROW_MAPPER,
-				StringUtils.arrayToCommaDelimitedString(feedIds));
+		String inStatement = feedIds.length > 0 ? StringUtils.arrayToCommaDelimitedString(feedIds) : "null";
+		return super.getJdbcTemplate().query(LIST_STATISTICS_BY_FEED_IDS_SQL.replace("?", inStatement), ROW_MAPPER);
 	}
 
 	private static final String RECOUNT_COMMENT_COUNT_SQL = "update feed_statistics set comment_count=(select count(*) from feed_comment where feed_id=? and deleted=false) where feed_id=?";

@@ -99,15 +99,15 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 		super.getJdbcTemplate().update(DELETE_SQL, id);
 	}
 
-	private static final String LIST_BY_FEED_IDS_SQL = "select * from image i right join (select image_id from feed where id in (?)) iid on i.id=iid.image_id";
+	private static final String LIST_BY_FEED_IDS_SQL = "select i.* from image i inner join (select image_id from feed where id in (?)) iid on i.id=iid.image_id";
 
 	/**
 	 * 获取指定主题消息列表的所有图片信息
 	 */
 	@Override
 	public List<Image> listByFeedIds(Long... feedIds) {
-		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL, ROW_MAPPER,
-				StringUtils.arrayToCommaDelimitedString(feedIds));
+		String inStatement = feedIds.length > 0 ? StringUtils.arrayToCommaDelimitedString(feedIds) : "null";
+		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL.replace("?", inStatement), ROW_MAPPER);
 	}
 
 }

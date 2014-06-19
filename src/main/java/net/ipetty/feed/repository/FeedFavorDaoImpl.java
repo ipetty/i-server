@@ -114,8 +114,8 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 	 */
 	@Override
 	public List<FeedFavor> listByFeedIds(Long... feedIds) {
-		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL, ROW_MAPPER,
-				StringUtils.arrayToCommaDelimitedString(feedIds));
+		String inStatement = feedIds.length > 0 ? StringUtils.arrayToCommaDelimitedString(feedIds) : "null";
+		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL.replace("?", inStatement), ROW_MAPPER);
 	}
 
 	private static final String LIST_BY_USER_ID_AND_FEED_IDS_SQL = "select * from feed_favor where created_by=? and feed_id in (?) order by feed_id, id asc";
@@ -125,8 +125,9 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 	 */
 	@Override
 	public List<FeedFavor> listByUserIdAndFeedIds(Integer userId, Long... feedIds) {
-		return super.getJdbcTemplate().query(LIST_BY_USER_ID_AND_FEED_IDS_SQL, ROW_MAPPER, userId,
-				StringUtils.arrayToCommaDelimitedString(feedIds));
+		String inStatement = feedIds.length > 0 ? StringUtils.arrayToCommaDelimitedString(feedIds) : "null";
+		return super.getJdbcTemplate().query(LIST_BY_USER_ID_AND_FEED_IDS_SQL.replace("(?)", "(" + inStatement + ")"),
+				ROW_MAPPER, userId);
 	}
 
 }

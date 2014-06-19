@@ -112,8 +112,8 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 	 */
 	@Override
 	public List<Comment> listByFeedIds(Long... feedIds) {
-		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL, ROW_MAPPER,
-				StringUtils.arrayToCommaDelimitedString(feedIds));
+		String inStatement = feedIds.length > 0 ? StringUtils.arrayToCommaDelimitedString(feedIds) : "null";
+		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL.replace("?", inStatement), ROW_MAPPER);
 	}
 
 }

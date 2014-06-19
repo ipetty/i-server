@@ -173,15 +173,19 @@ public class FeedService extends BaseService {
 
 		// fullfill favored and image
 		for (Feed feed : feeds) {
+			Long imageId = feed.getImageId();
 			FeedVO vo = feed.toVO();
 			if (favoredFeedIds.contains(vo.getId())) {
 				vo.setFavored(true);
 			}
-			Long imageId = feed.getImageId();
-			if (imageId != null && imageMap.containsKey(imageId)) {
+			if (imageId != null) {
 				Image image = imageMap.get(imageId);
+				// if (image == null) {
+				// logger.error("Image {} not loaded from database.", imageId);
+				// } else {
 				vo.setImageSmallURL(image.getSmallURL());
 				vo.setImageOriginalURL(image.getOriginalURL());
+				// }
 			}
 			vos.add(vo);
 		}
