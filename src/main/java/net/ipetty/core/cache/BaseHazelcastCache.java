@@ -21,9 +21,11 @@ public class BaseHazelcastCache {
 
 	protected static final String hazelcastInstanceName = "ipetty_hazelcast";
 	protected static final Config hazelcastConfig = new Config(hazelcastInstanceName);
-	protected static final HazelcastInstance hazelcast = Hazelcast.getOrCreateHazelcastInstance(hazelcastConfig);
+	protected static final HazelcastInstance hazelcast;
 
 	static {
+		hazelcastConfig.setProperty("hazelcast.logging.type", "log4j");
+
 		hazelcastConfig
 				.addMapConfig(
 						new MapConfig()
@@ -74,6 +76,8 @@ public class BaseHazelcastCache {
 								.setMaxSizeConfig(
 										new MaxSizeConfig().setSize(2).setMaxSizePolicy(MaxSizePolicy.USED_HEAP_SIZE))
 								.setEvictionPolicy(EvictionPolicy.LFU));
+
+		hazelcast = Hazelcast.getOrCreateHazelcastInstance(hazelcastConfig);
 	}
 
 	public static <K extends Object, V extends Object> Map<K, V> getMap(String mapName) {
