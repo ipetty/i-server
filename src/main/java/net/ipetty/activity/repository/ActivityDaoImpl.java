@@ -35,7 +35,7 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 			activity.setType(rs.getString("type"));
 			activity.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
 			activity.setTargetId(JdbcDaoUtils.getLong(rs, "target_id"));
-			activity.setCreatedOn(rs.getDate("created_on"));
+			activity.setCreatedOn(rs.getTimestamp("created_on"));
 			return activity;
 		}
 	};

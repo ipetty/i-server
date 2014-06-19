@@ -35,7 +35,7 @@ public class FeedbackDaoImpl extends BaseJdbcDaoSupport implements FeedbackDao {
 			feedback.setContent(rs.getString("content"));
 			feedback.setContact(rs.getString("contact"));
 			feedback.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
-			feedback.setCreatedOn(rs.getDate("created_on"));
+			feedback.setCreatedOn(rs.getTimestamp("created_on"));
 			return feedback;
 		}
 	};

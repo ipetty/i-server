@@ -30,7 +30,7 @@ public class UserRelationshipDaoImpl extends BaseJdbcDaoSupport implements UserR
 			UserRelationship relationship = new UserRelationship();
 			relationship.setFriendId(JdbcDaoUtils.getInteger(rs, "friend_id"));
 			relationship.setFollowerId(JdbcDaoUtils.getInteger(rs, "follower_id"));
-			relationship.setFollowedOn(rs.getDate("followed_on"));
+			relationship.setFollowedOn(rs.getTimestamp("followed_on"));
 			return relationship;
 		}
 	};

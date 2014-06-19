@@ -34,7 +34,7 @@ public class FeedFavorDaoImpl extends BaseJdbcDaoSupport implements FeedFavorDao
 			FeedFavor feedFavor = new FeedFavor();
 			feedFavor.setId(rs.getLong("id"));
 			feedFavor.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
-			feedFavor.setCreatedOn(rs.getDate("created_on"));
+			feedFavor.setCreatedOn(rs.getTimestamp("created_on"));
 			feedFavor.setFeedId(JdbcDaoUtils.getLong(rs, "feed_id"));
 			return feedFavor;
 		}

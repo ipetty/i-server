@@ -35,7 +35,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			// qzone_uid, weibo_account, weibo_uid, password, salt, version
 			User user = new User();
 			user.setId(rs.getInt("id"));
-			user.setCreatedOn(rs.getDate("created_on"));
+			user.setCreatedOn(rs.getTimestamp("created_on"));
 			user.setUid(rs.getInt("uid"));
 			user.setUniqueName(rs.getString("unique_name"));
 			user.setPhoneNumber(rs.getString("phone_number"));

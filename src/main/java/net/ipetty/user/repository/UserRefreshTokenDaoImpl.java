@@ -34,7 +34,7 @@ public class UserRefreshTokenDaoImpl extends BaseJdbcDaoSupport implements UserR
 			refreshToken.setDeviceMac(rs.getString("device_mac"));
 			refreshToken.setDeviceUuid(rs.getString("device_uuid"));
 			refreshToken.setRefreshToken(rs.getString("refresh_token"));
-			refreshToken.setCreatedOn(rs.getDate("created_on"));
+			refreshToken.setCreatedOn(rs.getTimestamp("created_on"));
 			return refreshToken;
 		}
 	};

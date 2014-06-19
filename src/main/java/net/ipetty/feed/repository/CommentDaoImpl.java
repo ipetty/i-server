@@ -37,7 +37,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 			Comment comment = new Comment();
 			comment.setId(rs.getLong("id"));
 			comment.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
-			comment.setCreatedOn(rs.getDate("created_on"));
+			comment.setCreatedOn(rs.getTimestamp("created_on"));
 			comment.setFeedId(JdbcDaoUtils.getLong(rs, "feed_id"));
 			comment.setText(rs.getString("text"));
 			comment.setDeleted(rs.getBoolean("deleted"));

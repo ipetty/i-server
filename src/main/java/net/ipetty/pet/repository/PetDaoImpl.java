@@ -37,7 +37,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 			Pet pet = new Pet();
 			pet.setId(rs.getInt("id"));
 			pet.setCreatedBy(rs.getInt("created_by"));
-			pet.setCreatedOn(rs.getDate("created_on"));
+			pet.setCreatedOn(rs.getTimestamp("created_on"));
 			pet.setUid(rs.getInt("uid"));
 			pet.setUniqueName(rs.getString("unique_name"));
 			pet.setName(rs.getString("name"));

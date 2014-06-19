@@ -36,7 +36,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 			Feed feed = new Feed();
 			feed.setId(rs.getLong("id"));
 			feed.setCreatedBy(rs.getInt("created_by"));
-			feed.setCreatedOn(rs.getDate("created_on"));
+			feed.setCreatedOn(rs.getTimestamp("created_on"));
 			feed.setImageId(JdbcDaoUtils.getLong(rs, "image_id"));
 			feed.setText(rs.getString("text"));
 			feed.setLocationId(JdbcDaoUtils.getLong(rs, "location_id"));

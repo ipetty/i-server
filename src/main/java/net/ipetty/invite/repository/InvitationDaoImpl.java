@@ -38,11 +38,11 @@ public class InvitationDaoImpl extends BaseJdbcDaoSupport implements InvitationD
 			invitation.setInviter(rs.getString("inviter"));
 			invitation.setInviterId(JdbcDaoUtils.getInteger(rs, "inviter_id"));
 			invitation.setInvited(rs.getBoolean("invited"));
-			invitation.setInvitedOn(rs.getDate("invited_on"));
-			invitation.setExpiredDatetime(rs.getDate("expired_datetime"));
+			invitation.setInvitedOn(rs.getTimestamp("invited_on"));
+			invitation.setExpiredDatetime(rs.getTimestamp("expired_datetime"));
 			invitation.setExpired(rs.getBoolean("expired"));
 			invitation.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
-			invitation.setCreatedOn(rs.getDate("created_on"));
+			invitation.setCreatedOn(rs.getTimestamp("created_on"));
 			return invitation;
 		}
 	};

@@ -34,7 +34,7 @@ public class BonusPointConsumptionDaoImpl extends BaseJdbcDaoSupport implements 
 			bonusPointConsumption.setActivityId(JdbcDaoUtils.getLong(rs, "activity_id"));
 			bonusPointConsumption.setBonus(rs.getInt("bonus"));
 			bonusPointConsumption.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
-			bonusPointConsumption.setCreatedOn(rs.getDate("created_on"));
+			bonusPointConsumption.setCreatedOn(rs.getTimestamp("created_on"));
 			return bonusPointConsumption;
 		}
 	};
@@ -48,8 +48,7 @@ public class BonusPointConsumptionDaoImpl extends BaseJdbcDaoSupport implements 
 		bonusPointConsumption.setCreatedOn(new Date());
 		try {
 			Connection connection = super.getConnection();
-			PreparedStatement statement = connection.prepareStatement(SAVE_SQL,
-					Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
 			JdbcDaoUtils.setLong(statement, 1, bonusPointConsumption.getActivityId());
 			statement.setInt(2, bonusPointConsumption.getBonus());
 			JdbcDaoUtils.setInteger(statement, 3, bonusPointConsumption.getCreatedBy());

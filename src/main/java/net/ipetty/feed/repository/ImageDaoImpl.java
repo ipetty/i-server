@@ -38,7 +38,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 			Image image = new Image();
 			image.setId(rs.getLong("id"));
 			image.setCreatedBy(rs.getInt("created_by"));
-			image.setCreatedOn(rs.getDate("created_on"));
+			image.setCreatedOn(rs.getTimestamp("created_on"));
 			image.setSmallURL(rs.getString("small_url"));
 			image.setCutURL(rs.getString("cut_url"));
 			image.setOriginalURL(rs.getString("original_url"));

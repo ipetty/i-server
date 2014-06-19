@@ -36,7 +36,7 @@ public class BonusPointDaoImpl extends BaseJdbcDaoSupport implements BonusPointD
 			bonusPoint.setExpired(rs.getBoolean("expired"));
 			bonusPoint.setSpent(rs.getBoolean("spent"));
 			bonusPoint.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
-			bonusPoint.setCreatedOn(rs.getDate("created_on"));
+			bonusPoint.setCreatedOn(rs.getTimestamp("created_on"));
 			return bonusPoint;
 		}
 	};
