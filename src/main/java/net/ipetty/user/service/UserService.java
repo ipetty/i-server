@@ -385,9 +385,22 @@ public class UserService extends BaseService {
 	}
 
 	/**
+	 * 更新个人信息（不含头像、背景图片的更新）
+	 */
+	public UserProfile updateProfile(UserProfile profile) {
+		Assert.notNull(profile, "用户个人信息不能为空");
+		Assert.notNull(profile.getUserId(), "用户ID不能为空");
+		UserProfile original = userProfileDao.getByUserId(profile.getUserId());
+		profile.setAvatar(original.getAvatar());
+		profile.setBackground(original.getBackground());
+		userProfileDao.update(profile);
+		return profile;
+	}
+
+	/**
 	 * 保存RefreshToken
 	 */
-	public void save(UserRefreshToken refreshToken) {
+	public void saveRefreshToken(UserRefreshToken refreshToken) {
 		refreshTokenDao.save(refreshToken);
 	}
 
@@ -401,14 +414,14 @@ public class UserService extends BaseService {
 	/**
 	 * 获取指定用户在指定设备上的RefreshToken
 	 */
-	public UserRefreshToken get(Integer userId, String deviceUuid) {
+	public UserRefreshToken getRefreshToken(Integer userId, String deviceUuid) {
 		return refreshTokenDao.get(userId, deviceUuid);
 	}
 
 	/**
 	 * 删除RefreshToken
 	 */
-	public void delete(String refreshToken) {
+	public void deleteRefreshToken(String refreshToken) {
 		refreshTokenDao.delete(refreshToken);
 	}
 

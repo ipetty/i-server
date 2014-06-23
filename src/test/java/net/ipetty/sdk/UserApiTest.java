@@ -5,6 +5,7 @@ import java.util.List;
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.RegisterVO;
+import net.ipetty.vo.UserFormVO;
 import net.ipetty.vo.UserVO;
 
 import org.junit.Assert;
@@ -38,6 +39,7 @@ public class UserApiTest extends BaseTest {
 	public void testLogin() {
 		UserVO user = userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
 		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
 		logger.debug("login success {}", user);
 	}
 
@@ -181,6 +183,15 @@ public class UserApiTest extends BaseTest {
 		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 		String backgroundUrl = userApi.updateBackground(getTestPhotoPath());
 		Assert.assertNotNull(backgroundUrl);
+	}
+
+	@Test
+	public void testUpdateProfile() {
+		UserVO userVo = userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+		UserFormVO userFormVo = new UserFormVO();
+		userFormVo.setId(userVo.getId());
+		userFormVo.setNickname("testUpdateUNFromApi");
+		userApi.update(userFormVo);
 	}
 
 	@Test

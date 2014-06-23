@@ -25,7 +25,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 		@Override
 		public UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {
 			// user_id, nickname, avatar, background, gender, state_and_region,
-			// signature
+			// signature, birthday
 			UserProfile profile = new UserProfile();
 			profile.setUserId(rs.getInt("user_id"));
 			profile.setNickname(rs.getString("nickname"));
@@ -34,21 +34,22 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 			profile.setGender(rs.getString("gender"));
 			profile.setStateAndRegion(rs.getString("state_and_region"));
 			profile.setSignature(rs.getString("signature"));
+			profile.setBirthday(rs.getDate("birthday"));
 			return profile;
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into user_profile(user_id, nickname, avatar, background, gender, state_and_region, signature)"
-			+ " values(?, ?, ?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into user_profile(user_id, nickname, avatar, background, gender, state_and_region, signature, birthday)"
+			+ " values(?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存用户个人信息
 	 */
 	@Override
 	public void save(UserProfile profile) {
-		super.getJdbcTemplate().update(SAVE_SQL, profile.getUserId(), profile.getNickname(),
-				profile.getAvatar(), profile.getBackground(), profile.getGender(), profile.getStateAndRegion(),
-				profile.getSignature());
+		super.getJdbcTemplate().update(SAVE_SQL, profile.getUserId(), profile.getNickname(), profile.getAvatar(),
+				profile.getBackground(), profile.getGender(), profile.getStateAndRegion(), profile.getSignature(),
+				profile.getBirthday());
 		logger.debug("saved {}", profile);
 	}
 
@@ -63,7 +64,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
 
-	private static final String UPDATE_USER_PROFILE_SQL = "update user_profile set nickname=?, avatar=?, background=?, gender=?, state_and_region=?, signature=? where user_id=?";
+	private static final String UPDATE_USER_PROFILE_SQL = "update user_profile set nickname=?, avatar=?, background=?, gender=?, state_and_region=?, signature=?, birthday=? where user_id=?";
 
 	/**
 	 * 更新用户个人信息
@@ -73,7 +74,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	public void update(UserProfile profile) {
 		super.getJdbcTemplate().update(UPDATE_USER_PROFILE_SQL, profile.getNickname(), profile.getAvatar(),
 				profile.getBackground(), profile.getGender(), profile.getStateAndRegion(), profile.getSignature(),
-				profile.getUserId());
+				profile.getBirthday(), profile.getUserId());
 		logger.debug("updated {}", profile);
 	}
 

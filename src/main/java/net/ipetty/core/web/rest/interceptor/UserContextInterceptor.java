@@ -136,11 +136,11 @@ public class UserContextInterceptor implements HandlerInterceptor {
 				String deviceMac = StringUtils.isNotBlank(encodedDeviceMac) ? new String(
 						Encodes.decodeBase64(encodedDeviceMac), UTF8) : null;
 
-				UserRefreshToken userRefreshToken = userService.get(userId, deviceUuid);
+				UserRefreshToken userRefreshToken = userService.getRefreshToken(userId, deviceUuid);
 				if (userRefreshToken == null) { // 用户在此设备上未登录过
 					userRefreshToken = new UserRefreshToken(userId, null, deviceId, deviceMac, deviceUuid,
 							UUIDUtils.generateShortUUID());
-					userService.save(userRefreshToken);
+					userService.saveRefreshToken(userRefreshToken);
 				}
 
 				// response中设置refresh_token
@@ -154,7 +154,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 		// 在登出时删除refresh_token
 		if (StringUtils.isNotBlank(encodedRefreshToken)
 				&& (principal == null || StringUtils.isBlank(principal.getToken()))) {
-			userService.delete(new String(Encodes.decodeBase64(encodedRefreshToken), UTF8));
+			userService.deleteRefreshToken(new String(Encodes.decodeBase64(encodedRefreshToken), UTF8));
 		}
 
 		// 仅供测试用

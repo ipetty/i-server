@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.core.util.SaltEncoder;
 import net.ipetty.user.domain.User;
+import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.service.UserService;
 
 import org.junit.Assert;
@@ -172,6 +173,16 @@ public class UserServiceTest extends BaseTest {
 		Assert.assertEquals(0, users.size());
 		users = userService.listBiFriends(user2.getId(), 0, 20);
 		Assert.assertEquals(0, users.size());
+	}
+
+	@Test
+	public void testUpdateProfile() {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		UserProfile profile = user.getProfile();
+		profile.setNickname("luocanfeng");
+		userService.updateProfile(profile);
+		user = userService.getById(user.getId());
+		Assert.assertEquals("luocanfeng", user.getProfile().getNickname());
 	}
 
 }

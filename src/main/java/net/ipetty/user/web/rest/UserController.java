@@ -18,6 +18,7 @@ import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.service.UserService;
 import net.ipetty.vo.RegisterVO;
+import net.ipetty.vo.UserFormVO;
 import net.ipetty.vo.UserVO;
 
 import org.apache.commons.lang3.StringUtils;
@@ -371,6 +372,26 @@ public class UserController extends BaseController {
 			throw new RestException("注册用户才能更新个人空间背景图片");
 		}
 		return userService.updateBackground(imageFile, currentUser.getId(), currentUser.getUid());
+	}
+
+	/**
+	 * 修改用户个人信息
+	 */
+	@RequestMapping(value = "/user/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO update(@RequestBody UserFormVO userFormVo) {
+		Assert.notNull(userFormVo, "用户个人信息表单不能为空");
+		Assert.notNull(userFormVo.getId(), "用户ID不能为空");
+
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能修改个人信息");
+		}
+
+		Assert.isTrue(userFormVo.getId().equals(currentUser.getId()), "只能修改自己的个人信息");
+
+		userService.updateProfile(UserProfile.fromUserFormVO(userFormVo));
+		return userService.getById(userFormVo.getId()).toVO();
 	}
 
 }

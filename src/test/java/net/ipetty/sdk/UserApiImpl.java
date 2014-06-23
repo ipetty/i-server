@@ -7,6 +7,7 @@ import java.util.List;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.vo.RegisterVO;
+import net.ipetty.vo.UserFormVO;
 import net.ipetty.vo.UserVO;
 
 import org.springframework.core.io.FileSystemResource;
@@ -260,6 +261,17 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.add("imageFile", new FileSystemResource(imagePath));
 		return context.getRestTemplate().postForObject(updateBackgroundUri, request, String.class);
+	}
+
+	private static final String URI_UPDATE = "/user/update";
+
+	/**
+	 * 修改用户个人信息
+	 */
+	@Override
+	public UserVO update(UserFormVO userFormVo) {
+		super.requireAuthorization();
+		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE), userFormVo, UserVO.class);
 	}
 
 }
