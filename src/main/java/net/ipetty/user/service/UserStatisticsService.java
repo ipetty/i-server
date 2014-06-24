@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import net.ipetty.activity.domain.Activity;
 import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.service.BaseService;
+import net.ipetty.user.domain.UserStatistics;
 import net.ipetty.user.repository.UserStatisticsDao;
 
 import org.springframework.stereotype.Service;
@@ -24,6 +25,17 @@ public class UserStatisticsService extends BaseService {
 	@Resource
 	private UserStatisticsDao userStatisticsDao;
 
+	/**
+	 * 通过用户ID获取用户统计信息
+	 */
+	public UserStatistics getByUserId(Integer userId) {
+		Assert.notNull(userId, "用户ID不能为空");
+		return userStatisticsDao.get(userId);
+	}
+
+	/**
+	 * 根据事件更新用户统计信息
+	 */
 	public void updateStatisticsFromActivity(Activity activity) {
 		Assert.notNull(activity, "事件不能为空");
 		Assert.notNull(activity.getId(), "事件ID不能为空");

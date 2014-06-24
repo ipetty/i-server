@@ -1,6 +1,9 @@
 package net.ipetty.user.domain;
 
 import net.ipetty.core.domain.AbstractEntity;
+import net.ipetty.vo.UserStatisticsVO;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * 用户统计信息
@@ -44,6 +47,12 @@ public class UserStatistics extends AbstractEntity {
 		this.commentNum = commentNum;
 		this.favorNum = favorNum;
 		this.loginNum = loginNum;
+	}
+
+	public UserStatisticsVO toVO() {
+		UserStatisticsVO vo = new UserStatisticsVO();
+		BeanUtils.copyProperties(this, vo);
+		return vo;
 	}
 
 	public Integer getUserId() {

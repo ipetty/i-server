@@ -8,6 +8,7 @@ import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserFormVO;
+import net.ipetty.vo.UserStatisticsVO;
 import net.ipetty.vo.UserVO;
 
 import org.springframework.core.io.FileSystemResource;
@@ -88,6 +89,16 @@ public class UserApiImpl extends BaseApi implements UserApi {
 	@Override
 	public UserVO getById(Integer id) {
 		return context.getRestTemplate().getForObject(ApiContext.API_SERVER_BASE + URI_GET_BY_ID, UserVO.class, id);
+	}
+
+	private static final String URI_GET_USER_STATISTICS_BY_USER_ID = "/user/statistics/{userId}";
+
+	/**
+	 * 根据用户ID获取用户统计信息
+	 */
+	public UserStatisticsVO getUserStatisticsByUserId(Integer userId) {
+		return context.getRestTemplate().getForObject(ApiContext.API_SERVER_BASE + URI_GET_USER_STATISTICS_BY_USER_ID,
+				UserStatisticsVO.class, userId);
 	}
 
 	private static final String URI_GET_BY_UID = "/user/uid/{uid}";

@@ -16,9 +16,12 @@ import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.service.PetService;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
+import net.ipetty.user.domain.UserStatistics;
 import net.ipetty.user.service.UserService;
+import net.ipetty.user.service.UserStatisticsService;
 import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserFormVO;
+import net.ipetty.vo.UserStatisticsVO;
 import net.ipetty.vo.UserVO;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +46,9 @@ public class UserController extends BaseController {
 
 	@Resource
 	private UserService userService;
+
+	@Resource
+	private UserStatisticsService userStatisticsService;
 
 	@Resource
 	private PetService petService;
@@ -159,6 +165,21 @@ public class UserController extends BaseController {
 			vo.setFollowed(userService.isFollow(vo.getId(), currentUser.getId()));
 		}
 		return vo;
+	}
+
+	/**
+	 * 根据用户ID获取用户统计信息
+	 */
+	@RequestMapping(value = "/user/statistics/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserStatisticsVO getUserStatisticsByUserId(@PathVariable("userId") Integer userId) {
+		Assert.notNull(userId, "ID不能为空");
+		UserStatistics userStatistics = userStatisticsService.getByUserId(userId);
+		if (userStatistics == null) {
+			throw new RestException("用户不存在");
+		}
+		logger.debug("get statistics by id {}, result is {}", userId, userStatistics);
+		return userStatistics.toVO();
 	}
 
 	/**

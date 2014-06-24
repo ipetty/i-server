@@ -6,6 +6,7 @@ import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserFormVO;
+import net.ipetty.vo.UserStatisticsVO;
 import net.ipetty.vo.UserVO;
 
 import org.junit.Assert;
@@ -81,6 +82,16 @@ public class UserApiTest extends BaseTest {
 		user = userApi.getById(user.getId());
 		Assert.assertNotNull(user);
 		logger.debug("get by id '{}', result is {}", user.getId(), user);
+	}
+
+	@Test
+	public void testGetUserStatisticsByUserId() {
+		UserVO user = userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
+		user = userApi.getById(user.getId());
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		UserStatisticsVO userStatistics = userApi.getUserStatisticsByUserId(user.getId());
+		Assert.assertNotNull(userStatistics);
 	}
 
 	@Test
