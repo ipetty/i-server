@@ -32,23 +32,27 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	static final RowMapper<Pet> ROW_MAPPER = new RowMapper<Pet>() {
 		@Override
 		public Pet mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_on, created_by, uid, unique_name, name, gender,
-			// sort_order, version
+			// id, created_on, created_by, uid, unique_name, nickname, avatar,
+			// gender, family, birthday, signature, sort_order, version
 			Pet pet = new Pet();
 			pet.setId(rs.getInt("id"));
 			pet.setCreatedBy(rs.getInt("created_by"));
 			pet.setCreatedOn(rs.getTimestamp("created_on"));
 			pet.setUid(rs.getInt("uid"));
 			pet.setUniqueName(rs.getString("unique_name"));
-			pet.setName(rs.getString("name"));
+			pet.setNickname(rs.getString("nickname"));
+			pet.setAvatar(rs.getString("avatar"));
 			pet.setGender(rs.getString("gender"));
+			pet.setFamily(rs.getString("family"));
+			pet.setBirthday(rs.getDate("birthday"));
+			pet.setSignature(rs.getString("signature"));
 			pet.setSortOrder(rs.getInt("sort_order"));
 			pet.setVersion(rs.getInt("version"));
 			return pet;
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into pet(created_by, uid, unique_name, name, gender, sort_order, created_on, version) values(?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into pet(created_by, uid, unique_name, nickname, avatar, gender, family, birthday, signature, sort_order, created_on, version) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存宠物信息
@@ -64,11 +68,15 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 			statement.setInt(1, pet.getCreatedBy());
 			statement.setInt(2, pet.getUid());
 			statement.setString(3, pet.getUniqueName());
-			statement.setString(4, pet.getName());
-			statement.setString(5, pet.getGender());
-			statement.setInt(6, pet.getSortOrder()); // 必须设置排序，不然此处会报NullPointerException（null转int时报错）
-			statement.setTimestamp(7, new Timestamp(pet.getCreatedOn().getTime()));
-			statement.setInt(8, pet.getVersion());
+			statement.setString(4, pet.getNickname());
+			statement.setString(5, pet.getAvatar());
+			statement.setString(6, pet.getGender());
+			statement.setString(7, pet.getFamily());
+			statement.setDate(8, pet.getBirthday() == null ? null : new java.sql.Date(pet.getBirthday().getTime()));
+			statement.setString(9, pet.getSignature());
+			statement.setInt(10, pet.getSortOrder()); // 必须设置排序，不然此处会报NullPointerException（null转int时报错）
+			statement.setTimestamp(11, new Timestamp(pet.getCreatedOn().getTime()));
+			statement.setInt(12, pet.getVersion());
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {
@@ -125,7 +133,7 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 		return super.getJdbcTemplate().query(LIST_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
 
-	private static final String UPDATE_PET_SQL = "update pet set name=?, gender=?, sort_order=?, version=version+1 where id=?";
+	private static final String UPDATE_PET_SQL = "update pet set nickname=?, avatar=?, gender=?, family=?, birthday=?, signature=?, sort_order=?, version=version+1 where id=?";
 
 	/**
 	 * 更新宠物信息
@@ -133,7 +141,8 @@ public class PetDaoImpl extends BaseJdbcDaoSupport implements PetDao {
 	@Override
 	@UpdateToHazelcast(mapName = CacheConstants.CACHE_PET_ID_TO_PET, key = "${pet.id}")
 	public void update(Pet pet) {
-		super.getJdbcTemplate().update(UPDATE_PET_SQL, pet.getName(), pet.getGender(), pet.getSortOrder(), pet.getId());
+		super.getJdbcTemplate().update(UPDATE_PET_SQL, pet.getNickname(), pet.getAvatar(), pet.getGender(),
+				pet.getFamily(), pet.getBirthday(), pet.getBirthday(), pet.getSortOrder(), pet.getId());
 		logger.debug("updated {}", pet);
 	}
 

@@ -40,7 +40,7 @@ public class PetServiceTest extends BaseTest {
 
 	private Pet savePet() {
 		Pet pet = new Pet();
-		pet.setName("_testSavePet");
+		pet.setNickname("_testSavePet");
 		pet.setCreatedBy(userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME).getId());
 		petService.save(pet);
 		return pet;

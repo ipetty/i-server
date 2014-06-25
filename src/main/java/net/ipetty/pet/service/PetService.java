@@ -37,17 +37,20 @@ public class PetService extends BaseService {
 	 * 新增宠物
 	 */
 	@ProduceActivity(type = ActivityType.NEW_PET, createdBy = "${pet.createdBy}", targetId = "${pet.id}")
-	public void save(Pet pet) {
+	public Pet save(Pet pet) {
 		synchronized (uidService) {
 			Assert.notNull(pet, "宠物不能为空");
 			Assert.notNull(pet.getCreatedBy(), "宠物主人不能为空");
-			Assert.hasText(pet.getName(), "宠物名称不能为空");
+			Assert.hasText(pet.getNickname(), "宠物名称不能为空");
 
 			// check unique
 			if (StringUtils.isNotBlank(pet.getUniqueName())) {
-				Pet orignal = this.getByUniqueName(pet.getUniqueName());
-				if (orignal != null) {
-					throw new BusinessException("爱宠唯一标识已存在");
+				try {
+					Pet orignal = this.getByUniqueName(pet.getUniqueName());
+					if (orignal != null) {
+						throw new BusinessException("爱宠唯一标识已存在");
+					}
+				} catch (BusinessException e) {
 				}
 			}
 
@@ -64,6 +67,8 @@ public class PetService extends BaseService {
 
 			// mark the uid as used
 			uidService.markAsUsed(uid);
+
+			return pet;
 		}
 	}
 
@@ -115,7 +120,7 @@ public class PetService extends BaseService {
 		Assert.notNull(pet, "宠物不能为空");
 		Assert.notNull(pet.getId(), "宠物ID不能为空");
 		Assert.notNull(pet.getCreatedBy(), "宠物主人不能为空");
-		Assert.hasText(pet.getName(), "宠物名称不能为空");
+		Assert.hasText(pet.getNickname(), "宠物名称不能为空");
 		petDao.update(pet);
 	}
 
