@@ -26,6 +26,8 @@ public class DateObjectMapper extends ObjectMapper {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	public DateObjectMapper() {
+		super.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
 		CustomSerializerFactory factory = new CustomSerializerFactory();
 		factory.addGenericMapping(Date.class, new JsonSerializer<Date>() {
 			@Override
