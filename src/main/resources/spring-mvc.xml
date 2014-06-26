@@ -31,13 +31,13 @@
 
 	<mvc:annotation-driven>
 		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" />
+			</bean>
 			<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
 				<property name="objectMapper">
 					<bean class="net.ipetty.core.web.converter.DateObjectMapper" />
 				</property>
-			</bean>
-			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
-				<constructor-arg value="UTF-8" />
 			</bean>
 		</mvc:message-converters>
 	</mvc:annotation-driven>
