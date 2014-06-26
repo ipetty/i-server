@@ -27,8 +27,11 @@ import net.ipetty.feed.repository.FeedDao;
 import net.ipetty.feed.repository.FeedFavorDao;
 import net.ipetty.feed.repository.FeedStatisticsDao;
 import net.ipetty.feed.repository.ImageDao;
+import net.ipetty.vo.CachedUserVersion;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
+import net.ipetty.vo.FeedList;
+import net.ipetty.vo.FeedListItem;
 import net.ipetty.vo.FeedVO;
 
 import org.apache.commons.lang3.StringUtils;
@@ -191,6 +194,97 @@ public class FeedService extends BaseService {
 		}
 
 		return vos;
+	}
+
+	/**
+	 * 根据时间线分页获取消息（广场）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public FeedList listByTimelineForSquare(Integer userId, Date timeline, List<CachedUserVersion> cachedUserVersions,
+			int pageNumber, int pageSize) {
+		List<Feed> feeds = feedDao.listByTimelineWithPage(timeline, pageNumber, pageSize);
+		return this.feeds2FeedList(feeds, cachedUserVersions, userId);
+	}
+
+	/**
+	 * 根据时间线分页获取消息（我和我关注人的）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public FeedList listByTimelineForHomePage(Integer userId, Date timeline,
+			List<CachedUserVersion> cachedUserVersions, int pageNumber, int pageSize) {
+		List<Feed> feeds = feedDao.listByUserIdAndTimelineWithPage(userId, timeline, pageNumber, pageSize);
+		return this.feeds2FeedList(feeds, cachedUserVersions, userId);
+	}
+
+	private FeedList feeds2FeedList(List<Feed> feeds, List<CachedUserVersion> cachedUserVersions, Integer userId) {
+		FeedList feedList = new FeedList();
+		if (CollectionUtils.isEmpty(feeds)) {
+			return feedList;
+		}
+
+		Map<Long, Feed> feedMap = new LinkedHashMap<Long, Feed>();
+		for (Feed feed : feeds) {
+			feedMap.put(feed.getId(), feed);
+		}
+
+		Long[] feedIds = new Long[feeds.size()];
+		feedIds = feedMap.keySet().toArray(feedIds);
+
+		// fullfill comments
+		List<Comment> comments = commentDao.listByFeedIds(feedIds);
+		for (Comment comment : comments) {
+			feedMap.get(comment.getFeedId()).getComments().add(comment);
+		}
+
+		// fullfill favors
+		List<FeedFavor> favors = feedFavorDao.listByFeedIds(feedIds);
+		for (FeedFavor favor : favors) {
+			feedMap.get(favor.getFeedId()).getFavors().add(favor);
+		}
+
+		// fullfill statistics
+		List<FeedStatistics> statisticses = feedStatisticsDao.listStatisticsByFeedIds(feedIds);
+		for (FeedStatistics statistics : statisticses) {
+			feedMap.get(statistics.getFeedId()).setStatistics(statistics);
+		}
+
+		// favored
+		Set<Long> favoredFeedIds = new HashSet<Long>();
+		List<FeedFavor> myFavors = feedFavorDao.listByUserIdAndFeedIds(userId, feedIds);
+		for (FeedFavor favor : myFavors) {
+			favoredFeedIds.add(favor.getFeedId());
+		}
+		// images
+		List<Image> images = imageDao.listByFeedIds(feedIds);
+		Map<Long, Image> imageMap = new HashMap<Long, Image>();
+		for (Image image : images) {
+			imageMap.put(image.getId(), image);
+		}
+
+		// fullfill favored and image
+		for (Feed feed : feeds) {
+			Long imageId = feed.getImageId();
+			FeedListItem feedListItem = feed.toFeedListItem();
+			if (favoredFeedIds.contains(feedListItem.getId())) {
+				feedListItem.setFavored(true);
+			}
+			if (imageId != null) {
+				Image image = imageMap.get(imageId);
+				// if (image == null) {
+				// logger.error("Image {} not loaded from database.", imageId);
+				// } else {
+				feedListItem.setImageSmallURL(image.getSmallURL());
+				feedListItem.setImageOriginalURL(image.getOriginalURL());
+				// }
+			}
+			feedList.getFeeds().add(feedListItem);
+		}
+
+		return feedList;
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.util.List;
 import net.ipetty.core.domain.LongIdEntity;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
+import net.ipetty.vo.FeedListItem;
 import net.ipetty.vo.FeedVO;
 
 import org.springframework.beans.BeanUtils;
@@ -29,6 +30,9 @@ public class Feed extends LongIdEntity {
 	private FeedStatistics statistics; // 统计信息
 	private Long locationId; // 发表位置ID
 	private boolean deleted = false; // 删除标识
+
+	private static int displayCommentNum = 5;
+	private static int displayFavorNum = 5;
 
 	public Feed() {
 		super();
@@ -69,6 +73,33 @@ public class Feed extends LongIdEntity {
 		BeanUtils.copyProperties(vo, feed.getStatistics());
 
 		return feed;
+	}
+
+	public FeedListItem toFeedListItem() {
+		FeedListItem item = new FeedListItem();
+		BeanUtils.copyProperties(this, item, "comments", "favors");
+
+		int commentsCount = this.getComments().size();
+		for (int i = 0; i < commentsCount; i++) {
+			if (commentsCount - i > displayCommentNum) {
+				continue;
+			}
+			item.getDisplayedComments().add(this.getComments().get(i).toVO());
+		}
+
+		int favorsCount = this.getFavors().size();
+		for (int i = 0; i < favorsCount; i++) {
+			if (favorsCount - i > displayFavorNum) {
+				continue;
+			}
+			item.getDisplayedFavorUsers().add(this.getFavors().get(i).getCreatedBy());
+		}
+
+		if (this.getStatistics() != null) {
+			BeanUtils.copyProperties(this.getStatistics(), item);
+		}
+
+		return item;
 	}
 
 	public String getText() {

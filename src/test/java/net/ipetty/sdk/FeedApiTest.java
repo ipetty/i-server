@@ -1,13 +1,17 @@
 package net.ipetty.sdk;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.test.BaseTest;
 import net.ipetty.sdk.common.ApiContext;
+import net.ipetty.vo.CachedUserVersion;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedFormVO;
+import net.ipetty.vo.FeedList;
+import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.LocationFormVO;
 
@@ -135,6 +139,65 @@ public class FeedApiTest extends BaseTest {
 
 		List<FeedVO> feeds = feedApi.listByTimelineForHomePage(new Date(), 0, 5);
 		logger.debug("--testListByTimelineForHomePage {}", feeds);
+	}
+
+	@Test
+	public void testListByTimelineForSquareWithCachedUsers() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedList feeds = feedApi.listByTimelineForSquare(new FeedTimelineQueryParams(new Date(),
+				new ArrayList<CachedUserVersion>(), 0, 5));
+		logger.debug("--testListByTimelineForSquare {}", feeds);
+	}
+
+	@Test
+	public void testListByTimelineForHomePageWithCachedUsers() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedList feeds = feedApi.listByTimelineForHomePage(new FeedTimelineQueryParams(new Date(),
+				new ArrayList<CachedUserVersion>(), 0, 5));
+		logger.debug("--testListByTimelineForHomePage {}", feeds);
+	}
+
+	@Test
+	public void testListCommentsByFeedId() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		CommentVO comment = new CommentVO();
+		comment.setFeedId(feed.getId());
+		comment.setText("test comment text");
+		feed = feedApi.comment(comment);
+		feed = feedApi.comment(comment);
+		feed = feedApi.comment(comment);
+		Assert.assertEquals(3, feed.getComments().size());
+
+		List<CommentVO> comments = feedApi.listCommentsByFeedId(feed.getId());
+		Assert.assertEquals(3, comments.size());
+	}
+
+	@Test
+	public void testListFavorsByFeedId() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		FeedVO feed = feedApi.publish(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+
+		FeedFavorVO favor = new FeedFavorVO();
+		favor.setFeedId(feed.getId());
+		feed = feedApi.favor(favor);
+		Assert.assertEquals(1, feed.getFavors().size());
+
+		List<FeedFavorVO> favors = feedApi.listFavorsByFeedId(feed.getId());
+		Assert.assertEquals(1, favors.size());
 	}
 
 	@Test

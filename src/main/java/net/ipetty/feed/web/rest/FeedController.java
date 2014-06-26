@@ -21,6 +21,8 @@ import net.ipetty.feed.service.LocationService;
 import net.ipetty.user.service.UserService;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
+import net.ipetty.vo.FeedList;
+import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.ImageVO;
 
@@ -143,6 +145,7 @@ public class FeedController extends BaseController {
 	 */
 	@RequestMapping(value = "/square", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
+	@Deprecated
 	public List<FeedVO> listByTimelineForSquare(String timeline, String pageNumber, String pageSize) {
 		Assert.hasText(timeline, "时间线不能为空");
 		Assert.hasText(pageNumber, "页码不能为空");
@@ -163,6 +166,7 @@ public class FeedController extends BaseController {
 	 */
 	@RequestMapping(value = "/home", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
+	@Deprecated
 	public List<FeedVO> listByTimelineForHomePage(String timeline, String pageNumber, String pageSize) {
 		Assert.hasText(timeline, "时间线不能为空");
 		Assert.hasText(pageNumber, "页码不能为空");
@@ -176,6 +180,69 @@ public class FeedController extends BaseController {
 				currentUser.getId(), timeline, pageNumber, pageSize);
 		return feedService.listByTimelineForHomePage(currentUser.getId(), DateUtils.fromDatetimeString(timeline),
 				Integer.valueOf(pageNumber), Integer.valueOf(pageSize));
+	}
+
+	/**
+	 * 根据时间线分页获取消息（广场）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/square", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedList listByTimelineForSquare(@RequestBody FeedTimelineQueryParams queryParams) {
+		Assert.notNull(queryParams, "查询参数不能为空");
+		Assert.notNull(queryParams.getTimeline(), "时间线不能为空");
+		Assert.isTrue(queryParams.getPageSize() > 0, "每页条数不能为空");
+		UserPrincipal currentUser = UserContext.getContext();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+		logger.debug("list by timeline for square userId={}, timeline={}, pageNumber={}, pageSize={}", currentUserId,
+				queryParams.getTimeline(), queryParams.getPageNumber(), queryParams.getPageSize());
+		return feedService.listByTimelineForSquare(currentUserId, queryParams.getTimeline(),
+				queryParams.getCachedUserVersions(), queryParams.getPageNumber(), queryParams.getPageSize());
+	}
+
+	/**
+	 * 根据时间线分页获取消息（我和我关注人的）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/home", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedList listByTimelineForHomePage(@RequestBody FeedTimelineQueryParams queryParams) {
+		Assert.notNull(queryParams, "查询参数不能为空");
+		Assert.notNull(queryParams.getTimeline(), "时间线不能为空");
+		Assert.isTrue(queryParams.getPageSize() > 0, "每页条数不能为空");
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			// 用户未登录，首页不显示任何消息
+			throw new RestException("未登录的用户首页无任何消息");
+		}
+		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}",
+				currentUser.getId(), queryParams.getTimeline(), queryParams.getPageNumber(), queryParams.getPageSize());
+		return feedService.listByTimelineForHomePage(currentUser.getId(), queryParams.getTimeline(),
+				queryParams.getCachedUserVersions(), queryParams.getPageNumber(), queryParams.getPageSize());
+	}
+
+	/**
+	 * 获取指定消息的评论列表
+	 */
+	@RequestMapping(value = "/comments/{feedId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<CommentVO> listCommentsByFeedId(@PathVariable("feedId") Long feedId) {
+		Assert.notNull(feedId, "评论的消息不能为空");
+		return feedService.listCommentsByFeedId(feedId);
+	}
+
+	/**
+	 * 获取指定消息的赞列表
+	 */
+	@RequestMapping(value = "/favors/{feedId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<FeedFavorVO> listFavorsByFeedId(@PathVariable("feedId") Long feedId) {
+		Assert.notNull(feedId, "赞的消息不能为空");
+		return feedService.listFavorsByFeedId(feedId);
 	}
 
 	/**

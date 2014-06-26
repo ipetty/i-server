@@ -11,6 +11,8 @@ import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedFormVO;
+import net.ipetty.vo.FeedList;
+import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.ImageVO;
 import net.ipetty.vo.LocationFormVO;
@@ -121,6 +123,55 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 		request.add("pageSize", String.valueOf(pageSize));
 		URI uri = buildUri(URI_LIST_BY_TIMELINE_FOR_HOMEPAGE, request);
 		return Arrays.asList(context.getRestTemplate().getForObject(uri, FeedVO[].class));
+	}
+
+	// private static final String URI_LIST_BY_TIMELINE_FOR_SQUARE2 =
+	// "/feed/square2";
+
+	/**
+	 * 根据时间线分页获取消息（广场）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public FeedList listByTimelineForSquare(FeedTimelineQueryParams queryParams) {
+		return context.getRestTemplate().postForObject(buildUri(URI_LIST_BY_TIMELINE_FOR_SQUARE), queryParams,
+				FeedList.class);
+	}
+
+	// private static final String URI_LIST_BY_TIMELINE_FOR_HOMEPAGE2 =
+	// "/feed/home2";
+
+	/**
+	 * 根据时间线分页获取消息（我和我关注人的）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public FeedList listByTimelineForHomePage(FeedTimelineQueryParams queryParams) {
+		super.requireAuthorization();
+		return context.getRestTemplate().postForObject(buildUri(URI_LIST_BY_TIMELINE_FOR_HOMEPAGE), queryParams,
+				FeedList.class);
+	}
+
+	private static final String URI_LIST_COMMENTS_BY_FEED_ID = "/feed/comments/{feedId}";
+
+	/**
+	 * 获取指定消息的评论列表
+	 */
+	public List<CommentVO> listCommentsByFeedId(Long feedId) {
+		return Arrays.asList(context.getRestTemplate().getForObject(
+				ApiContext.API_SERVER_BASE + URI_LIST_COMMENTS_BY_FEED_ID, CommentVO[].class, feedId));
+	}
+
+	private static final String URI_LIST_FAVORS_BY_FEED_ID = "/feed/favors/{feedId}";
+
+	/**
+	 * 获取指定消息的赞列表
+	 */
+	public List<FeedFavorVO> listFavorsByFeedId(Long feedId) {
+		return Arrays.asList(context.getRestTemplate().getForObject(
+				ApiContext.API_SERVER_BASE + URI_LIST_FAVORS_BY_FEED_ID, FeedFavorVO[].class, feedId));
 	}
 
 	private static final String URI_COMMENT = "/feed/comment";

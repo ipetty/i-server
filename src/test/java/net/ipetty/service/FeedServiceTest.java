@@ -1,5 +1,6 @@
 package net.ipetty.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,8 +20,10 @@ import net.ipetty.feed.service.ImageService;
 import net.ipetty.feed.service.LocationService;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.service.UserService;
+import net.ipetty.vo.CachedUserVersion;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
+import net.ipetty.vo.FeedList;
 import net.ipetty.vo.FeedVO;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -152,6 +155,34 @@ public class FeedServiceTest extends BaseTest {
 		logger.debug("--testListByTimelineForHomePage {}", feeds);
 		feeds = feedService.listByTimelineForHomePage(user.getId(), timeline, 1, 5);
 		Assert.assertEquals(5, feeds.size());
+		logger.debug("--testListByTimelineForHomePage {}", feeds);
+	}
+
+	@Test
+	public void testListByTimelineForSquareWithCachedUsers() throws InterruptedException {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		this.createFeeds(10, user.getId());
+		Date timeline = new Date();
+		FeedList feeds = feedService.listByTimelineForSquare(user.getId(), timeline,
+				new ArrayList<CachedUserVersion>(), 0, 5);
+		Assert.assertEquals(5, feeds.getFeeds().size());
+		logger.debug("--testListByTimelineForSquare {}", feeds);
+		feeds = feedService.listByTimelineForSquare(user.getId(), timeline, new ArrayList<CachedUserVersion>(), 1, 5);
+		Assert.assertEquals(5, feeds.getFeeds().size());
+		logger.debug("--testListByTimelineForSquare {}", feeds);
+	}
+
+	@Test
+	public void testListByTimelineForHomePageWithCachedUsers() throws InterruptedException {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		this.createFeeds(10, user.getId());
+		Date timeline = new Date();
+		FeedList feeds = feedService.listByTimelineForHomePage(user.getId(), timeline,
+				new ArrayList<CachedUserVersion>(), 0, 5);
+		Assert.assertEquals(5, feeds.getFeeds().size());
+		logger.debug("--testListByTimelineForHomePage {}", feeds);
+		feeds = feedService.listByTimelineForHomePage(user.getId(), timeline, new ArrayList<CachedUserVersion>(), 1, 5);
+		Assert.assertEquals(5, feeds.getFeeds().size());
 		logger.debug("--testListByTimelineForHomePage {}", feeds);
 	}
 
