@@ -123,7 +123,6 @@ public class PetService extends BaseService {
 	public void update(Pet pet) {
 		Assert.notNull(pet, "宠物不能为空");
 		Assert.notNull(pet.getId(), "宠物ID不能为空");
-		Assert.notNull(pet.getCreatedBy(), "宠物主人不能为空");
 		Assert.hasText(pet.getNickname(), "宠物名称不能为空");
 		petDao.update(pet);
 	}
