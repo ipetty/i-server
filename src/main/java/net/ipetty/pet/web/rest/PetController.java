@@ -123,17 +123,31 @@ public class PetController extends BaseController {
 	}
 
 	/**
+	 * 上传宠物头像，返回头像相对地址
+	 */
+	@RequestMapping(value = "/pet/uploadAvatar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String uploadAvatar(MultipartFile imageFile) {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能更新宠物头像");
+		}
+		return petService.uploadAvatar(imageFile, currentUser.getUid());
+	}
+
+	/**
 	 * 更新宠物头像
 	 */
 	@RequestMapping(value = "/pet/updateAvatar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public String updateAvatar(String petId, MultipartFile imageFile) {
+	public String updateAvatar(String petId, String avatarUrl) {
 		Assert.hasText(petId, "宠物ID不能为空");
+		Assert.hasText(avatarUrl, "宠物头像不能为空");
 		UserPrincipal currentUser = UserContext.getContext();
 		if (currentUser == null || currentUser.getId() == null) {
-			throw new RestException("注册用户才能更新头像");
+			throw new RestException("注册用户才能更新宠物头像");
 		}
-		return petService.updateAvatar(imageFile, Integer.valueOf(petId), currentUser.getUid());
+		return petService.updateAvatar(Integer.valueOf(petId), avatarUrl);
 	}
 
 }

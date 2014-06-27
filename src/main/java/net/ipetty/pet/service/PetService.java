@@ -154,19 +154,24 @@ public class PetService extends BaseService {
 	}
 
 	/**
-	 * 更新宠物头像
+	 * 上传宠物头像，返回头像相对地址
 	 */
-	public String updateAvatar(MultipartFile imageFile, Integer petId, int userUid) {
+	public String uploadAvatar(MultipartFile imageFile, int userUid) {
 		try {
-			String avatarUrl = ImageUtils
-					.saveImageFile(imageFile, SpringContextHelper.getWebContextRealPath(), userUid);
-			Pet pet = petDao.getById(petId);
-			pet.setAvatar(avatarUrl);
-			petDao.update(pet);
-			return pet.getAvatar();
+			return ImageUtils.saveImageFile(imageFile, SpringContextHelper.getWebContextRealPath(), userUid);
 		} catch (IOException e) {
 			throw new BusinessException("保存图片时出错", e);
 		}
+	}
+
+	/**
+	 * 更新宠物头像
+	 */
+	public String updateAvatar(Integer petId, String avatarUrl) {
+		Pet pet = petDao.getById(petId);
+		pet.setAvatar(avatarUrl);
+		petDao.update(pet);
+		return pet.getAvatar();
 	}
 
 }

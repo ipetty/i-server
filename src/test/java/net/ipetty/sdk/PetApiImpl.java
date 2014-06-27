@@ -1,6 +1,5 @@
 package net.ipetty.sdk;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -82,6 +81,7 @@ public class PetApiImpl extends BaseApi implements PetApi {
 		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE), pet, PetVO.class);
 	}
 
+	private static final String URI_UPLOAD_AVATAR = "/pet/uploadAvatar";
 	private static final String URI_UPDATE_AVATAR = "/pet/updateAvatar";
 
 	/**
@@ -90,13 +90,16 @@ public class PetApiImpl extends BaseApi implements PetApi {
 	@Override
 	public String updateAvatar(String petId, String imagePath) {
 		super.requireAuthorization();
-		Assert.notNull(petId, "宠物ID不能为空");
+		Assert.hasText(petId, "宠物ID不能为空");
 
-		URI updateAvatarUri = buildUri(URI_UPDATE_AVATAR);
 		LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
-		request.add("petId", petId);
 		request.add("imageFile", new FileSystemResource(imagePath));
-		return context.getRestTemplate().postForObject(updateAvatarUri, request, String.class);
+		String avatarUrl = context.getRestTemplate().postForObject(buildUri(URI_UPLOAD_AVATAR), request, String.class);
+
+		LinkedMultiValueMap<String, Object> updateAvatarRequest = new LinkedMultiValueMap<String, Object>();
+		updateAvatarRequest.add("petId", petId);
+		updateAvatarRequest.add("avatarUrl", avatarUrl);
+		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE_AVATAR), updateAvatarRequest, String.class);
 	}
 
 }
