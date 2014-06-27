@@ -1,11 +1,16 @@
 package net.ipetty.sdk;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.vo.PetVO;
+
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
 
 /**
  * PetApiImpl
@@ -75,6 +80,23 @@ public class PetApiImpl extends BaseApi implements PetApi {
 	public PetVO update(PetVO pet) {
 		super.requireAuthorization();
 		return context.getRestTemplate().postForObject(buildUri(URI_UPDATE), pet, PetVO.class);
+	}
+
+	private static final String URI_UPDATE_AVATAR = "/pet/updateAvatar";
+
+	/**
+	 * 更新宠物头像
+	 */
+	@Override
+	public String updateAvatar(String petId, String imagePath) {
+		super.requireAuthorization();
+		Assert.notNull(petId, "宠物ID不能为空");
+
+		URI updateAvatarUri = buildUri(URI_UPDATE_AVATAR);
+		LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.add("petId", petId);
+		request.add("imageFile", new FileSystemResource(imagePath));
+		return context.getRestTemplate().postForObject(updateAvatarUri, request, String.class);
 	}
 
 }

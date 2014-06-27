@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * PetController
@@ -119,6 +120,20 @@ public class PetController extends BaseController {
 		Assert.notNull(pet.getId(), "宠物ID不能为空");
 		petService.update(Pet.fromVO(pet));
 		return petService.getById(pet.getId()).toVO();
+	}
+
+	/**
+	 * 更新宠物头像
+	 */
+	@RequestMapping(value = "/pet/updateAvatar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String updateAvatar(String petId, MultipartFile imageFile) {
+		Assert.hasText(petId, "宠物ID不能为空");
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能更新头像");
+		}
+		return petService.updateAvatar(imageFile, Integer.valueOf(petId), currentUser.getUid());
 	}
 
 }

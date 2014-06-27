@@ -1,13 +1,16 @@
 package net.ipetty.pet.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.ActivityType;
+import net.ipetty.core.context.SpringContextHelper;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
+import net.ipetty.core.util.ImageUtils;
 import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.repository.PetDao;
 import net.ipetty.user.service.UidService;
@@ -16,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * PetService
@@ -148,6 +152,22 @@ public class PetService extends BaseService {
 		petDao.updateUniqueName(id, uniqueName);
 
 		return petDao.getById(id);
+	}
+
+	/**
+	 * 更新宠物头像
+	 */
+	public String updateAvatar(MultipartFile imageFile, Integer petId, int userUid) {
+		try {
+			String avatarUrl = ImageUtils
+					.saveImageFile(imageFile, SpringContextHelper.getWebContextRealPath(), userUid);
+			Pet pet = petDao.getById(petId);
+			pet.setAvatar(avatarUrl);
+			petDao.update(pet);
+			return pet.getAvatar();
+		} catch (IOException e) {
+			throw new BusinessException("保存图片时出错", e);
+		}
 	}
 
 }

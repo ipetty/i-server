@@ -89,4 +89,17 @@ public class PetApiTest extends BaseTest {
 		Assert.assertEquals("testUpdatePet2", pet.getNickname());
 	}
 
+	@Test
+	public void testUpdateAvatar() {
+		userApi.login(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD);
+
+		PetVO pet = new PetVO();
+		pet.setNickname("testUpdatePet");
+		pet = petApi.save(pet);
+		Assert.assertNotNull(pet.getId());
+
+		String avatarUrl = petApi.updateAvatar(String.valueOf(pet.getId()), getTestPhotoPath());
+		Assert.assertNotNull(avatarUrl);
+	}
+
 }
