@@ -80,6 +80,13 @@ public class FeedService extends BaseService {
 	}
 
 	/**
+	 * 判断用户是否已赞给定消息
+	 */
+	private boolean isFavored(Long feedId, Integer userId) {
+		return feedFavorDao.getByUserIdAndFeedId(userId, feedId) != null;
+	}
+
+	/**
 	 * 根据ID获取消息
 	 */
 	public FeedVO getById(Long id) {
@@ -91,7 +98,24 @@ public class FeedService extends BaseService {
 		feed.setComments(commentDao.listByFeedId(id));
 		feed.setFavors(feedFavorDao.listByFeedId(id));
 		feed.setStatistics(feedStatisticsDao.getStatisticsByFeedId(id));
-		return feed.toVO();
+
+		FeedVO vo = feed.toVO();
+
+		UserPrincipal principal = UserContext.getContext();
+		Integer userId = principal == null ? null : principal.getId();
+		if (userId != null) {
+			vo.setFavored(this.isFavored(id, userId));
+		}
+
+		if (feed.getImageId() != null) {
+			Image image = imageDao.getById(feed.getImageId());
+			if (image != null) { // 此处不应该为空，仅为容错处理
+				vo.setImageOriginalURL(image.getOriginalURL());
+				vo.setImageSmallURL(image.getSmallURL());
+			}
+		}
+
+		return vo;
 	}
 
 	/**

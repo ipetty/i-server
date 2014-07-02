@@ -249,7 +249,9 @@ public class FeedApiTest extends BaseTest {
 		FeedFavorVO favor = new FeedFavorVO();
 		favor.setFeedId(feed.getId());
 		feed = feedApi.favor(favor);
+		feed = feedApi.getById(feed.getId());
 		Assert.assertEquals(1, feed.getFavors().size());
+		logger.debug("get favored feed by id is {}", feed);
 	}
 
 	@Test
