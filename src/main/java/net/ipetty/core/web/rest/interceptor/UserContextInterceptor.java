@@ -71,7 +71,8 @@ public class UserContextInterceptor implements HandlerInterceptor {
 		}
 
 		String userToken = new String(Encodes.decodeBase64(encodedUserToken), UTF8);
-		logger.debug("request header: {}={}", HEADER_NAME_USER_TOKEN, userToken);
+		// logger.debug("request header: {}={}", HEADER_NAME_USER_TOKEN,
+		// userToken);
 
 		// 通过user_token获取对应用户信息
 		Integer userId = BaseHazelcastCache.get(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, userToken);
@@ -94,8 +95,10 @@ public class UserContextInterceptor implements HandlerInterceptor {
 
 		String refreshToken = new String(Encodes.decodeBase64(encodedRefreshToken), UTF8);
 		String deviceUuid = new String(Encodes.decodeBase64(encodedDeviceUuid), UTF8);
-		logger.debug("request header: {}={}", HEADER_NAME_REFRESH_TOKEN, refreshToken);
-		logger.debug("request header: {}={}", HEADER_NAME_DEVICE_UUID, deviceUuid);
+		// logger.debug("request header: {}={}", HEADER_NAME_REFRESH_TOKEN,
+		// refreshToken);
+		// logger.debug("request header: {}={}", HEADER_NAME_DEVICE_UUID,
+		// deviceUuid);
 
 		UserRefreshToken userRefreshToken = userService.getRefreshToken(refreshToken);
 		if (userRefreshToken != null && StringUtils.equals(deviceUuid, userRefreshToken.getDeviceUuid())) {
@@ -121,7 +124,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 		String encodedDeviceUuid = request.getHeader(HEADER_NAME_DEVICE_UUID);
 
 		UserPrincipal principal = UserContext.getContext();
-		logger.debug("principal: {}", principal);
+		// logger.debug("principal: {}", principal);
 		if (principal != null && StringUtils.isNotBlank(principal.getToken())) {
 			// response中设置user_token
 			response.setHeader(HEADER_NAME_USER_TOKEN, Encodes.encodeBase64(principal.getToken().getBytes()));
@@ -159,7 +162,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 
 		// 仅供测试用
 		// 每次请求处理完后，清理线程安全的用户上下文。
-		// UserContext.clearContext();
+		UserContext.clearContext();
 	}
 
 	@Override
