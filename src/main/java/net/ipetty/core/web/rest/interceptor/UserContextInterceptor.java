@@ -106,6 +106,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 			User user = userService.getById(userRefreshToken.getUserId());
 			UserPrincipal principal = UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID());
 			UserContext.setContext(principal);
+			BaseHazelcastCache.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
 			logger.debug("set user context {} by refresh token {}", UserContext.getContext(), refreshToken);
 			return true;
 		}
