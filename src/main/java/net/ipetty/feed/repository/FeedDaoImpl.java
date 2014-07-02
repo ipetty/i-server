@@ -122,4 +122,17 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 				userId, pageNumber * pageSize, pageSize);
 	}
 
+	private static final String LIST_BY_AUTHOR_ID_AND_TIMELINE_WITH_PAGE_SQL = "select * from feed f where f.created_on<=? and deleted=false and f.created_by=? order by f.created_on desc limit ?,?";
+
+	/**
+	 * 根据时间线分页获取指定用户的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<Feed> listByAuthorIdAndTimelineWithPage(Integer userId, Date timeline, int pageNumber, int pageSize) {
+		return super.getJdbcTemplate().query(LIST_BY_AUTHOR_ID_AND_TIMELINE_WITH_PAGE_SQL, ROW_MAPPER, timeline,
+				userId, pageNumber * pageSize, pageSize);
+	}
+
 }

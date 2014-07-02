@@ -14,6 +14,7 @@ import net.ipetty.vo.FeedList;
 import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
 import net.ipetty.vo.LocationFormVO;
+import net.ipetty.vo.UserVO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -142,6 +143,14 @@ public class FeedApiTest extends BaseTest {
 	}
 
 	@Test
+	public void testListByTimelineForSpace() {
+		UserVO user = userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<FeedVO> feeds = feedApi.listByTimelineForSpace(user.getId(), new Date(), 0, 5);
+		logger.debug("--testListByTimelineForSpace {}", feeds);
+	}
+
+	@Test
 	public void testListByTimelineForSquareWithCachedUsers() {
 		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
@@ -157,6 +166,15 @@ public class FeedApiTest extends BaseTest {
 		FeedList feeds = feedApi.listByTimelineForHomePage(new FeedTimelineQueryParams(new Date(),
 				new ArrayList<CachedUserVersion>(), 0, 5));
 		logger.debug("--testListByTimelineForHomePage {}", feeds);
+	}
+
+	@Test
+	public void testListByTimelineForSpaceWithCachedUsers() {
+		UserVO user = userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedList feeds = feedApi.listByTimelineForSpace(new FeedTimelineQueryParams(user.getId(), new Date(),
+				new ArrayList<CachedUserVersion>(), 0, 5));
+		logger.debug("--testListByTimelineForSpace {}", feeds);
 	}
 
 	@Test

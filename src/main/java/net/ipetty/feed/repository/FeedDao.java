@@ -44,4 +44,12 @@ public interface FeedDao {
 	 */
 	public List<Feed> listByUserIdAndTimelineWithPage(Integer userId, Date timeline, int pageNumber, int pageSize);
 
+	/**
+	 * 根据时间线分页获取指定用户的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<Feed> listByAuthorIdAndTimelineWithPage(Integer userId, Date timeline, int pageNumber, int pageSize);
+
 }

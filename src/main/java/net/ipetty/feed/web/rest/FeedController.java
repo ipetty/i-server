@@ -183,6 +183,28 @@ public class FeedController extends BaseController {
 	}
 
 	/**
+	 * 根据时间线分页获取指定用户空间的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/space", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	@Deprecated
+	public List<FeedVO> listByTimelineForSpace(String userId, String timeline, String pageNumber, String pageSize) {
+		Assert.hasText(userId, "用户ID不能为空");
+		Assert.hasText(timeline, "时间线不能为空");
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
+		UserPrincipal currentUser = UserContext.getContext();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+		logger.debug("list by timeline for space userId={}, timeline={}, pageNumber={}, pageSize={}", userId, timeline,
+				pageNumber, pageSize);
+		return feedService.listByTimelineForSpace(Integer.valueOf(userId), currentUserId,
+				DateUtils.fromDatetimeString(timeline), Integer.valueOf(pageNumber), Integer.valueOf(pageSize));
+	}
+
+	/**
 	 * 根据时间线分页获取消息（广场）
 	 * 
 	 * @param pageNumber
@@ -222,6 +244,28 @@ public class FeedController extends BaseController {
 		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}",
 				currentUser.getId(), queryParams.getTimeline(), queryParams.getPageNumber(), queryParams.getPageSize());
 		return feedService.listByTimelineForHomePage(currentUser.getId(), queryParams.getTimeline(),
+				queryParams.getCachedUserVersions(), queryParams.getPageNumber(), queryParams.getPageSize());
+	}
+
+	/**
+	 * 根据时间线分页获取消息（我和我关注人的）
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@RequestMapping(value = "/space", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedList listByTimelineForSpace(@RequestBody FeedTimelineQueryParams queryParams) {
+		Assert.notNull(queryParams.getUserId(), "用户ID不能为空");
+		Assert.notNull(queryParams, "查询参数不能为空");
+		Assert.notNull(queryParams.getTimeline(), "时间线不能为空");
+		Assert.isTrue(queryParams.getPageSize() > 0, "每页条数不能为空");
+		UserPrincipal currentUser = UserContext.getContext();
+		Integer currentUserId = currentUser == null ? null : currentUser.getId();
+		logger.debug("list by timeline for homepage userId={}, timeline={}, pageNumber={}, pageSize={}",
+				queryParams.getUserId(), queryParams.getTimeline(), queryParams.getPageNumber(),
+				queryParams.getPageSize());
+		return feedService.listByTimelineForSpace(queryParams.getUserId(), currentUserId, queryParams.getTimeline(),
 				queryParams.getCachedUserVersions(), queryParams.getPageNumber(), queryParams.getPageSize());
 	}
 

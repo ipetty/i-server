@@ -125,6 +125,25 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 		return Arrays.asList(context.getRestTemplate().getForObject(uri, FeedVO[].class));
 	}
 
+	private static final String URI_LIST_BY_TIMELINE_FOR_SPACE = "/feed/space";
+
+	/**
+	 * 根据时间线分页获取指定用户空间的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	@Override
+	public List<FeedVO> listByTimelineForSpace(Integer userId, Date timeline, int pageNumber, int pageSize) {
+		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.add("userId", String.valueOf(userId));
+		request.add("timeline", DateUtils.toDatetimeString(timeline));
+		request.add("pageNumber", String.valueOf(pageNumber));
+		request.add("pageSize", String.valueOf(pageSize));
+		URI uri = buildUri(URI_LIST_BY_TIMELINE_FOR_SPACE, request);
+		return Arrays.asList(context.getRestTemplate().getForObject(uri, FeedVO[].class));
+	}
+
 	// private static final String URI_LIST_BY_TIMELINE_FOR_SQUARE2 =
 	// "/feed/square2";
 
@@ -151,6 +170,17 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 	public FeedList listByTimelineForHomePage(FeedTimelineQueryParams queryParams) {
 		super.requireAuthorization();
 		return context.getRestTemplate().postForObject(buildUri(URI_LIST_BY_TIMELINE_FOR_HOMEPAGE), queryParams,
+				FeedList.class);
+	}
+
+	/**
+	 * 根据时间线分页获取指定用户空间的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public FeedList listByTimelineForSpace(FeedTimelineQueryParams queryParams) {
+		return context.getRestTemplate().postForObject(buildUri(URI_LIST_BY_TIMELINE_FOR_SPACE), queryParams,
 				FeedList.class);
 	}
 

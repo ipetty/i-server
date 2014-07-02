@@ -153,6 +153,18 @@ public class FeedService extends BaseService {
 		return this.feeds2FeedVOs(feeds, userId);
 	}
 
+	/**
+	 * 根据时间线分页获取指定用户空间的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public List<FeedVO> listByTimelineForSpace(Integer userId, Integer currentUserId, Date timeline, int pageNumber,
+			int pageSize) {
+		List<Feed> feeds = feedDao.listByAuthorIdAndTimelineWithPage(userId, timeline, pageNumber, pageSize);
+		return this.feeds2FeedVOs(feeds, currentUserId);
+	}
+
 	private List<FeedVO> feeds2FeedVOs(List<Feed> feeds, Integer userId) {
 		List<FeedVO> vos = new ArrayList<FeedVO>();
 		if (CollectionUtils.isEmpty(feeds)) {
@@ -244,7 +256,19 @@ public class FeedService extends BaseService {
 		return this.feeds2FeedList(feeds, cachedUserVersions, userId);
 	}
 
-	private FeedList feeds2FeedList(List<Feed> feeds, List<CachedUserVersion> cachedUserVersions, Integer userId) {
+	/**
+	 * 根据时间线分页获取指定用户空间的消息
+	 * 
+	 * @param pageNumber
+	 *            分页页码，从0开始
+	 */
+	public FeedList listByTimelineForSpace(Integer userId, Integer currentUserId, Date timeline,
+			List<CachedUserVersion> cachedUserVersions, int pageNumber, int pageSize) {
+		List<Feed> feeds = feedDao.listByAuthorIdAndTimelineWithPage(userId, timeline, pageNumber, pageSize);
+		return this.feeds2FeedList(feeds, cachedUserVersions, currentUserId);
+	}
+
+	private FeedList feeds2FeedList(List<Feed> feeds, List<CachedUserVersion> cachedUserVersions, Integer currentUserId) {
 		FeedList feedList = new FeedList();
 		if (CollectionUtils.isEmpty(feeds)) {
 			return feedList;
@@ -278,9 +302,11 @@ public class FeedService extends BaseService {
 
 		// favored
 		Set<Long> favoredFeedIds = new HashSet<Long>();
-		List<FeedFavor> myFavors = feedFavorDao.listByUserIdAndFeedIds(userId, feedIds);
-		for (FeedFavor favor : myFavors) {
-			favoredFeedIds.add(favor.getFeedId());
+		if (currentUserId != null) {
+			List<FeedFavor> myFavors = feedFavorDao.listByUserIdAndFeedIds(currentUserId, feedIds);
+			for (FeedFavor favor : myFavors) {
+				favoredFeedIds.add(favor.getFeedId());
+			}
 		}
 		// images
 		List<Image> images = imageDao.listByFeedIds(feedIds);
