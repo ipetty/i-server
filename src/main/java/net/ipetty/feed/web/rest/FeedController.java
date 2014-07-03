@@ -107,7 +107,7 @@ public class FeedController extends BaseController {
 
 		// 消息
 		feedService.save(feed);
-		return feed.toVO();
+		return feedService.getById(feed.getId());
 	}
 
 	/**
