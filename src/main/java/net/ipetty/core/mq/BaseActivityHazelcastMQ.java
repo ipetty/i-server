@@ -1,7 +1,7 @@
 package net.ipetty.core.mq;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.core.Hazelcast;
+import net.ipetty.core.hazelcast.Hazelcast;
+
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ITopic;
 
@@ -13,9 +13,7 @@ import com.hazelcast.core.ITopic;
  */
 public class BaseActivityHazelcastMQ {
 
-	protected static final String hazelcastInstanceName = "ipetty_hazelcast";
-	protected static final Config hazelcastConfig = new Config(hazelcastInstanceName);
-	protected static final HazelcastInstance hazelcast = Hazelcast.getOrCreateHazelcastInstance(hazelcastConfig);
+	protected static final HazelcastInstance hazelcast = Hazelcast.getInstance();
 
 	protected static final String MQ_TOPIC = "mqTopic";
 
