@@ -16,7 +16,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ FoundationApiTest.class, UserApiTest.class, PetApiTest.class, FeedApiTest.class,
-		FeedbackApiTest.class, ActivityApiTest.class })
+		FeedbackApiTest.class, ActivityApiTest.class, AppUpdateApiTest.class })
 public class AllApiTest extends BaseTestWithDBUnit {
 
 	@BeforeClass

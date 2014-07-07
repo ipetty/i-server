@@ -87,4 +87,8 @@
 
 	<feedback />
 
+	<app_update app_name="test_latest_version_from_api" app_key="test_latest_version_from_api" app_secret="test_latest_version_from_api"
+		version_code="2" version_name="test_latest_version_from_api" version_description="test_latest_version_from_api"
+		download_url="test_latest_version_from_api" />
+
 </dataset>
