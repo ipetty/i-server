@@ -2,7 +2,7 @@ package net.ipetty.sdk;
 
 import java.util.List;
 
-import net.ipetty.core.test.BaseTest;
+import net.ipetty.core.test.BaseApiTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.RegisterVO;
 import net.ipetty.vo.UserFormVO;
@@ -18,7 +18,7 @@ import org.junit.Test;
  * @author luocanfeng
  * @date 2014年5月6日
  */
-public class UserApiTest extends BaseTest {
+public class UserApiTest extends BaseApiTest {
 
 	UserApi userApi = new UserApiImpl(ApiContext.getInstance());
 

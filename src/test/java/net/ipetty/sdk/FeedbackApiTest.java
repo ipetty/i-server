@@ -1,6 +1,6 @@
 package net.ipetty.sdk;
 
-import net.ipetty.core.test.BaseTest;
+import net.ipetty.core.test.BaseApiTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.FeedbackVO;
 
@@ -13,7 +13,7 @@ import org.junit.Test;
  * @author luocanfeng
  * @date 2014年6月5日
  */
-public class FeedbackApiTest extends BaseTest {
+public class FeedbackApiTest extends BaseApiTest {
 
 	FeedbackApi feedbackApi = new FeedbackApiImpl(ApiContext.getInstance());
 	UserApi userApi = new UserApiImpl(ApiContext.getInstance());

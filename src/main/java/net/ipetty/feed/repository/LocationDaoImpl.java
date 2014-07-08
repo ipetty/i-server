@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -72,7 +72,7 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 	 * 根据ID获取位置信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_LOCATION_ID_TO_LOCATION, key = "${id}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_LOCATION_ID_TO_LOCATION, key = "${id}")
 	public Location getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}

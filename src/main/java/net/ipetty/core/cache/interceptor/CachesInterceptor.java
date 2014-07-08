@@ -1,9 +1,9 @@
 package net.ipetty.core.cache.interceptor;
 
-import net.ipetty.core.cache.BaseHazelcastCache;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
-import net.ipetty.core.cache.annotation.UpdatesToHazelcast;
+import net.ipetty.core.cache.Caches;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
+import net.ipetty.core.cache.annotation.UpdatesToCache;
 import net.ipetty.core.util.AopUtils;
 import ognl.OgnlException;
 
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * HazelcastCacheInterceptor
+ * CachesInterceptor
  * 
  * 参考
  * "http://www.cnblogs.com/warden/p/simple_cache_solutions_base_on_springaop_and_annotation.html"
@@ -25,11 +25,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Aspect
-public class HazelcastCacheInterceptor {
+public class CachesInterceptor {
 
-	private final String GET = "@annotation(net.ipetty.core.cache.annotation.LoadFromHazelcast)";
-	private final String UPDATE = "@annotation(net.ipetty.core.cache.annotation.UpdateToHazelcast)";
-	private final String UPDATES = "@annotation(net.ipetty.core.cache.annotation.UpdatesToHazelcast)";
+	private final String LOAD_FROM_CACHE = "@annotation(net.ipetty.core.cache.annotation.LoadFromCache)";
+	private final String UPDATE_TO_CACHE = "@annotation(net.ipetty.core.cache.annotation.UpdateToCache)";
+	private final String UPDATES_TO_CACHE = "@annotation(net.ipetty.core.cache.annotation.UpdatesToCache)";
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -37,25 +37,25 @@ public class HazelcastCacheInterceptor {
 	 * 首先从缓存中加载数据，缓存命中则返回数据，未命中则从数据库查找，并加入缓存
 	 */
 	@SuppressWarnings("unchecked")
-	@Around(GET)
+	@Around(LOAD_FROM_CACHE)
 	public <K, V> V get(ProceedingJoinPoint call) throws Throwable {
-		LoadFromHazelcast annotation = AopUtils.getAnnotation(call, LoadFromHazelcast.class);
+		LoadFromCache annotation = AopUtils.getAnnotation(call, LoadFromCache.class);
 		String mapName = annotation.mapName();
 		String keyName = annotation.key();
 
 		try {
 			// get actual key
 			String key = AopUtils.executeOgnlKey(keyName, call);
-			V value = BaseHazelcastCache.get(mapName, key);
+			V value = Caches.get(mapName, key);
 			logger.debug("Hazelcast.get('{}', {}) = {}", mapName, key, value);
 
 			if (value == null) {
 				value = (V) call.proceed();
 				if (value != null) {
-					BaseHazelcastCache.set(mapName, key, value);
+					Caches.set(mapName, key, value);
 					logger.debug("Hazelcast.set('{}', {}, {});", mapName, key, value);
 				} else {
-					BaseHazelcastCache.delete(mapName, key);
+					Caches.delete(mapName, key);
 					logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 				}
 			}
@@ -71,9 +71,9 @@ public class HazelcastCacheInterceptor {
 	 * 执行方法的同时更新缓存中的数据
 	 */
 	@SuppressWarnings("unchecked")
-	@Around(UPDATE)
+	@Around(UPDATE_TO_CACHE)
 	public <K, V> V update(ProceedingJoinPoint call) throws Throwable {
-		UpdateToHazelcast annotation = AopUtils.getAnnotation(call, UpdateToHazelcast.class);
+		UpdateToCache annotation = AopUtils.getAnnotation(call, UpdateToCache.class);
 		String mapName = annotation.mapName();
 		String keyName = annotation.key();
 
@@ -81,7 +81,7 @@ public class HazelcastCacheInterceptor {
 
 		try {
 			String key = AopUtils.executeOgnlKey(keyName, call, value);
-			BaseHazelcastCache.delete(mapName, key);
+			Caches.delete(mapName, key);
 			logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 		} catch (OgnlException e) {
 			logger.error("Ognl Execute Execption: ", e);
@@ -94,18 +94,18 @@ public class HazelcastCacheInterceptor {
 	 * 执行方法的同时更新缓存中的数据
 	 */
 	@SuppressWarnings("unchecked")
-	@Around(UPDATES)
+	@Around(UPDATES_TO_CACHE)
 	public <K, V> V updates(ProceedingJoinPoint call) throws Throwable {
-		UpdatesToHazelcast annotations = AopUtils.getAnnotation(call, UpdatesToHazelcast.class);
+		UpdatesToCache annotations = AopUtils.getAnnotation(call, UpdatesToCache.class);
 		V value = (V) call.proceed();
 
-		for (UpdateToHazelcast annotation : annotations.value()) {
+		for (UpdateToCache annotation : annotations.value()) {
 			String mapName = annotation.mapName();
 			String keyName = annotation.key();
 
 			try {
 				String key = AopUtils.executeOgnlKey(keyName, call, value);
-				BaseHazelcastCache.delete(mapName, key);
+				Caches.delete(mapName, key);
 				logger.debug("Hazelcast.delete('{}', {});", mapName, key);
 			} catch (OgnlException e) {
 				logger.error("Ognl Execute Execption: ", e);

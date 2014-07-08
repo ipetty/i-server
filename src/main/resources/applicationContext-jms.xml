@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<!-- Embedded ActiveMQ Broker -->
+	<amq:broker useJmx="false" persistent="false" brokerId="ipettyBroker" brokerName="ipettyBroker" start="true">
+		<amq:transportConnectors>
+			<amq:transportConnector uri="tcp://localhost:61616" />
+		</amq:transportConnectors>
+		<!-- <amq:managementContext> <amq:managementContext connectorPath="/jmxrmi" connectorPort="2011" jmxDomainName="ipetty-broker" 
+			/> </amq:managementContext> -->
+	</amq:broker>
+
+	<!-- ActiveMQ connectionFactory -->
+	<amq:connectionFactory id="jmsConnectionFactory" brokerURL="tcp://localhost:61616" />
+
+	<amq:topic id="activityTopic" name="TOPIC" physicalName="activity_topic" />
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory">
+			<!-- lets wrap in a pool to avoid creating a connection per send -->
+			<bean class="org.springframework.jms.connection.SingleConnectionFactory">
+				<property name="targetConnectionFactory" ref="jmsConnectionFactory" />
+			</bean>
+		</property>
+		<property name="defaultDestination" ref="activityTopic" />
+		<!-- <property name="messageConverter" ref="defaultMessageConverter" /> -->
+	</bean>
+
+	<!-- Converter -->
+	<bean id="defaultMessageConverter" class="org.springframework.jms.support.converter.MappingJacksonMessageConverter">
+		<property name="objectMapper">
+			<bean class="org.codehaus.jackson.map.ObjectMapper">
+				<property name="dateFormat">
+					<bean class="java.text.SimpleDateFormat">
+						<constructor-arg value="yyyy-MM-dd HH:mm:ss" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="typeIdPropertyName" value="class_type" />
+	</bean>
+
+	<!-- Consumer -->
+	<bean id="activityMQMessageReceiver" class="net.ipetty.activity.mq.ActivityMQMessageReceiver" />
+
+	<bean id="queueListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<constructor-arg ref="activityMQMessageReceiver" />
+		<property name="defaultListenerMethod" value="receive" />
+		<!-- <property name="messageConverter" ref="defaultMessageConverter" /> -->
+	</bean>
+
+	<bean id="queueListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="activityTopic" />
+		<property name="messageListener" ref="queueListener" />
+		<!-- 控制同时启几个监听的线程 -->
+		<property name="concurrentConsumers" value="1" />
+	</bean>
+
+</beans>

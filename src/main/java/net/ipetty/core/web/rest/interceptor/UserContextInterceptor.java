@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.ipetty.core.cache.BaseHazelcastCache;
+import net.ipetty.core.cache.Caches;
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
@@ -75,7 +75,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 		// userToken);
 
 		// 通过user_token获取对应用户信息
-		Integer userId = BaseHazelcastCache.get(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, userToken);
+		Integer userId = Caches.get(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, userToken);
 		if (userId == null) {
 			return false;
 		}
@@ -106,7 +106,7 @@ public class UserContextInterceptor implements HandlerInterceptor {
 			User user = userService.getById(userRefreshToken.getUserId());
 			UserPrincipal principal = UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID());
 			UserContext.setContext(principal);
-			BaseHazelcastCache.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
+			Caches.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
 			logger.debug("set user context {} by refresh token {}", UserContext.getContext(), refreshToken);
 			return true;
 		}

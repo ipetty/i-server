@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.UserProfile;
 
@@ -59,7 +59,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 * 根据用户ID获取用户个人信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, key = "${userId}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, key = "${userId}")
 	public UserProfile getByUserId(Integer userId) {
 		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
@@ -70,7 +70,7 @@ public class UserProfileDaoImpl extends BaseJdbcDaoSupport implements UserProfil
 	 * 更新用户个人信息
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, key = "${profile.userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_PROFILE_ID_TO_PROFILE, key = "${profile.userId}")
 	public void update(UserProfile profile) {
 		super.getJdbcTemplate().update(UPDATE_USER_PROFILE_SQL, profile.getNickname(), profile.getAvatar(),
 				profile.getBackground(), profile.getGender(), profile.getStateAndRegion(), profile.getSignature(),

@@ -10,22 +10,24 @@ import net.ipetty.user.service.UserStatisticsService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
-
 /**
- * ActivityMessageListener
+ * ActivityMQMessageSender
  * 
  * @author luocanfeng
- * @date 2014年5月23日
+ * @date 2014年7月8日
  */
 @Component
 @Transactional
-public class ActivityMessageListener implements MessageListener<Activity> {
+public class ActivityMQMessageReceiver {
 
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Resource
+	private JmsTemplate jmsTemplate;
 	@Resource
 	private ActivityService activityService;
 	@Resource
@@ -35,11 +37,7 @@ public class ActivityMessageListener implements MessageListener<Activity> {
 	@Resource
 	private FeedStatisticsService feedStatisticsService;
 
-	protected Logger logger = LoggerFactory.getLogger(getClass());
-
-	@Override
-	public void onMessage(Message<Activity> message) {
-		Activity activity = message.getMessageObject();
+	public void receive(Activity activity) {
 		logger.debug("receive {}", activity);
 
 		// save activity

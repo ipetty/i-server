@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -83,7 +83,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	 * 根据ID获取图片信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
 	public Image getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
@@ -94,7 +94,7 @@ public class ImageDaoImpl extends BaseJdbcDaoSupport implements ImageDao {
 	 * 删除图片
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_IMAGE_ID_TO_IMAGE, key = "${id}")
 	public void delete(Long id) {
 		super.getJdbcTemplate().update(DELETE_SQL, id);
 	}

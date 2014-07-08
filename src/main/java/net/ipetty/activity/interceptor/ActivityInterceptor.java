@@ -1,8 +1,10 @@
 package net.ipetty.activity.interceptor;
 
+import javax.annotation.Resource;
+
 import net.ipetty.activity.annotation.ProduceActivity;
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.mq.ActivityHazelcastMQ;
+import net.ipetty.activity.mq.ActivityMQMessageSender;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.util.AopUtils;
@@ -30,6 +32,9 @@ public class ActivityInterceptor {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Resource
+	private ActivityMQMessageSender activityMQMessageSender;
+
 	/**
 	 * 获取ActivityRecord，并进行相应业务处理
 	 */
@@ -54,7 +59,7 @@ public class ActivityInterceptor {
 				createdBy = principal == null ? null : principal.getId();
 			}
 			Activity activity = new Activity(activityAnnotation.type(), targetId, createdBy);
-			ActivityHazelcastMQ.publish(activity);
+			activityMQMessageSender.publish(activity);
 			logger.debug("published {}", activity);
 		} catch (OgnlException e) {
 			logger.error("Ognl Execute Execption: ", e);

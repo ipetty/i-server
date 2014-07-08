@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.ipetty.core.test.BaseTest;
+import net.ipetty.core.test.BaseApiTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.CachedUserVersion;
 import net.ipetty.vo.CommentVO;
@@ -25,7 +25,7 @@ import org.junit.Test;
  * @author luocanfeng
  * @date 2014年5月12日
  */
-public class FeedApiTest extends BaseTest {
+public class FeedApiTest extends BaseApiTest {
 
 	FeedApi feedApi = new FeedApiImpl(ApiContext.getInstance());
 	UserApi userApi = new UserApiImpl(ApiContext.getInstance());

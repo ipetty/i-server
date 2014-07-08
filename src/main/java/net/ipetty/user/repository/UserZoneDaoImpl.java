@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.UserZone;
 
@@ -47,7 +47,7 @@ public class UserZoneDaoImpl extends BaseJdbcDaoSupport implements UserZoneDao {
 	 * 根据用户ID获取用户空间
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_ZONE_ID_TO_ZONE, key = "${userId}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_USER_ZONE_ID_TO_ZONE, key = "${userId}")
 	public UserZone getByUserId(Integer userId) {
 		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}

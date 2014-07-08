@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -80,7 +80,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 	 * 根据ID获取消息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_FEED_ID_TO_FEED, key = "${id}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_FEED_ID_TO_FEED, key = "${id}")
 	public Feed getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
@@ -91,7 +91,7 @@ public class FeedDaoImpl extends BaseJdbcDaoSupport implements FeedDao {
 	 * 删除消息
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_ID_TO_FEED, key = "${id}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_FEED_ID_TO_FEED, key = "${id}")
 	public void delete(Long id) {
 		super.getJdbcTemplate().update(DELETE_SQL, id);
 	}

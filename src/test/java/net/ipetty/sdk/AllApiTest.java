@@ -7,6 +7,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * AllApiTest
@@ -17,6 +18,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ FoundationApiTest.class, UserApiTest.class, PetApiTest.class, FeedApiTest.class,
 		FeedbackApiTest.class, ActivityApiTest.class, AppUpdateApiTest.class })
+@ContextConfiguration("classpath:applicationContext-api-test.xml")
 public class AllApiTest extends BaseTestWithDBUnit {
 
 	@BeforeClass

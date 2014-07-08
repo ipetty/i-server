@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -79,7 +79,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 	 * 根据ID获取评论信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_COMMENT_ID_TO_COMMENT, key = "${id}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_COMMENT_ID_TO_COMMENT, key = "${id}")
 	public Comment getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
@@ -90,7 +90,7 @@ public class CommentDaoImpl extends BaseJdbcDaoSupport implements CommentDao {
 	 * 删除评论
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_COMMENT_ID_TO_COMMENT, key = "${id}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_COMMENT_ID_TO_COMMENT, key = "${id}")
 	public void delete(Long id) {
 		super.getJdbcTemplate().update(DELETE_SQL, id);
 	}

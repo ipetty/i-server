@@ -13,6 +13,7 @@
 	<import resource="classpath:/applicationContext-datasource.xml" />
 	<import resource="classpath:/applicationContext-flyway.xml" />
 	<import resource="classpath:/applicationContext-persistent.xml" />
+	<import resource="classpath:/applicationContext-jms.xml" />
 
 	<context:annotation-config />
 

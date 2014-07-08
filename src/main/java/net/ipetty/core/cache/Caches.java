@@ -1,23 +1,26 @@
 package net.ipetty.core.cache;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import net.ipetty.core.hazelcast.Hazelcast;
-
-import com.hazelcast.core.HazelcastInstance;
-
 /**
- * BaseHazelcastCache
+ * Caches
  * 
  * @author luocanfeng
  * @date 2014年5月15日
  */
-public class BaseHazelcastCache {
+public class Caches {
 
-	protected static final HazelcastInstance hazelcast = Hazelcast.getInstance();
+	private static Map<String, Map<?, ?>> MAPS = new HashMap<String, Map<?, ?>>();
 
+	@SuppressWarnings("unchecked")
 	public static <K extends Object, V extends Object> Map<K, V> getMap(String mapName) {
-		return hazelcast.getMap(mapName);
+		Map<K, V> map = (Map<K, V>) MAPS.get(mapName);
+		if (map == null) {
+			map = new HashMap<K, V>();
+			MAPS.put(mapName, map);
+		}
+		return map;
 	}
 
 	@SuppressWarnings("unchecked")

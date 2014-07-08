@@ -2,7 +2,7 @@ package net.ipetty.sdk;
 
 import java.util.List;
 
-import net.ipetty.core.test.BaseTest;
+import net.ipetty.core.test.BaseApiTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.Option;
 import net.ipetty.vo.OptionGroup;
@@ -16,7 +16,7 @@ import org.junit.Test;
  * @author luocanfeng
  * @date 2014年6月13日
  */
-public class FoundationApiTest extends BaseTest {
+public class FoundationApiTest extends BaseApiTest {
 
 	FoundationApi foundationApi = new FoundationApiImpl(ApiContext.getInstance());
 

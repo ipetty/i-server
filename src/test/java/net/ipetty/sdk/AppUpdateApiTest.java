@@ -1,6 +1,6 @@
 package net.ipetty.sdk;
 
-import net.ipetty.core.test.BaseTest;
+import net.ipetty.core.test.BaseApiTest;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.vo.AppUpdateVO;
 
@@ -13,7 +13,7 @@ import org.junit.Test;
  * @author luocanfeng
  * @date 2014年7月7日
  */
-public class AppUpdateApiTest extends BaseTest {
+public class AppUpdateApiTest extends BaseApiTest {
 
 	AppUpdateApi appUpdateApi = new AppUpdateApiImpl(ApiContext.getInstance());
 

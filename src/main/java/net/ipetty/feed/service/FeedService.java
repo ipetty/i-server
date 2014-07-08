@@ -34,8 +34,8 @@ import net.ipetty.vo.FeedList;
 import net.ipetty.vo.FeedListItem;
 import net.ipetty.vo.FeedVO;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;

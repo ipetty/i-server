@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.UserStatistics;
 
@@ -58,7 +58,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 获取用户统计信息
 	 */
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public UserStatistics get(Integer userId) {
 		return super.queryUniqueEntity(GET_SQL, ROW_MAPPER, userId);
 	}
@@ -68,7 +68,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 更新用户统计信息
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${statistics.userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${statistics.userId}")
 	public void update(UserStatistics statistics) {
 		super.getJdbcTemplate().update(UPDATE_SQL, statistics.getBonusOfHistory(), statistics.getBonusCurrent(),
 				statistics.getFriendsNum(), statistics.getFollowerNum(), statistics.getFeedNum(),
@@ -81,7 +81,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 更新指定用户的关注数、粉丝数
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public void recountRelationshipNum(Integer userId) {
 		super.getJdbcTemplate().update(RECOUNT_RELATIONSHIP_NUM_SQL, userId, userId, userId);
 	}
@@ -91,7 +91,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 更新指定用户的发布消息数目
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public void recountFeedNum(Integer userId) {
 		super.getJdbcTemplate().update(RECOUNT_FEED_NUM_SQL, userId, userId);
 	}
@@ -101,7 +101,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 更新指定用户的发布评论数目
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public void recountCommentNum(Integer userId) {
 		super.getJdbcTemplate().update(RECOUNT_COMMENT_NUM_SQL, userId, userId);
 	}
@@ -111,7 +111,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 更新指定用户发出赞的数目
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public void recountFeedFavorNum(Integer userId) {
 		super.getJdbcTemplate().update(RECOUNT_FEED_FAVORS_NUM_SQL, userId, userId);
 	}
@@ -121,7 +121,7 @@ public class UserStatisticsDaoImpl extends BaseJdbcDaoSupport implements UserSta
 	/**
 	 * 更新指定用户登录次数
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_STATISTICS, key = "${userId}")
 	public void recountLoginNum(Integer userId) {
 		super.getJdbcTemplate().update(RECOUNT_LOGIN_NUM_SQL, userId, ActivityType.LOGIN, userId);
 	}

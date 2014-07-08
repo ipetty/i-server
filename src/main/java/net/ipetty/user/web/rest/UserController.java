@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import net.ipetty.core.cache.BaseHazelcastCache;
+import net.ipetty.core.cache.Caches;
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
@@ -70,7 +70,7 @@ public class UserController extends BaseController {
 		logger.debug("generate user token {}", principal.getToken());
 
 		// 将用户token写入缓存
-		BaseHazelcastCache.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
+		Caches.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
 
 		return user.toVO();
 	}
@@ -90,7 +90,7 @@ public class UserController extends BaseController {
 			UserContext.clearContext();
 			return true;
 		}
-		BaseHazelcastCache.delete(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken());
+		Caches.delete(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken());
 		UserContext.clearContext();
 
 		return true;

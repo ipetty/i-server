@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
 import net.ipetty.feed.domain.FeedStatistics;
@@ -53,7 +53,7 @@ public class FeedStatisticsDaoImpl extends BaseJdbcDaoSupport implements FeedSta
 	 * 更新消息统计信息
 	 */
 	@Override
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedStatistics.feedId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedStatistics.feedId}")
 	public void update(FeedStatistics feedStatistics) {
 		super.getJdbcTemplate().update(UPDATE_SQL, feedStatistics.getCommentCount(), feedStatistics.getFavorCount(),
 				feedStatistics.getFeedId());
@@ -65,7 +65,7 @@ public class FeedStatisticsDaoImpl extends BaseJdbcDaoSupport implements FeedSta
 	 * 根据消息ID获取消息统计信息
 	 */
 	@Override
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
 	public FeedStatistics getStatisticsByFeedId(Long feedId) {
 		return super.queryUniqueEntity(GET_STATISTICS_BY_FEED_ID_SQL, ROW_MAPPER, feedId);
 	}
@@ -86,7 +86,7 @@ public class FeedStatisticsDaoImpl extends BaseJdbcDaoSupport implements FeedSta
 	/**
 	 * 重新统计评论数
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
 	public void recountCommentCount(Long feedId) {
 		super.getJdbcTemplate().update(RECOUNT_COMMENT_COUNT_SQL, feedId, feedId);
 	}
@@ -96,7 +96,7 @@ public class FeedStatisticsDaoImpl extends BaseJdbcDaoSupport implements FeedSta
 	/**
 	 * 重新统计赞的数目
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_FEED_STATISTICS, key = "${feedId}")
 	public void recountFavorCount(Long feedId) {
 		super.getJdbcTemplate().update(RECOUNT_FAVOR_COUNT_SQL, feedId, feedId);
 	}

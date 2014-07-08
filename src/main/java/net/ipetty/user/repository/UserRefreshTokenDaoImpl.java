@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import net.ipetty.core.cache.CacheConstants;
-import net.ipetty.core.cache.annotation.LoadFromHazelcast;
-import net.ipetty.core.cache.annotation.UpdateToHazelcast;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.UserRefreshToken;
 
@@ -56,7 +56,7 @@ public class UserRefreshTokenDaoImpl extends BaseJdbcDaoSupport implements UserR
 	/**
 	 * 获取RefreshToken
 	 */
-	@LoadFromHazelcast(mapName = CacheConstants.CACHE_USER_REFRESH_TOKEN, key = "${refreshToken}")
+	@LoadFromCache(mapName = CacheConstants.CACHE_USER_REFRESH_TOKEN, key = "${refreshToken}")
 	public UserRefreshToken get(String refreshToken) {
 		return super.queryUniqueEntity(GET_BY_REFRESH_TOKEN_SQL, ROW_MAPPER, refreshToken);
 	}
@@ -75,7 +75,7 @@ public class UserRefreshTokenDaoImpl extends BaseJdbcDaoSupport implements UserR
 	/**
 	 * 删除RefreshToken
 	 */
-	@UpdateToHazelcast(mapName = CacheConstants.CACHE_USER_REFRESH_TOKEN, key = "${refreshToken}")
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_REFRESH_TOKEN, key = "${refreshToken}")
 	public void delete(String refreshToken) {
 		super.getJdbcTemplate().update(DELETE_SQL, refreshToken);
 	}

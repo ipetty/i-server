@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.ipetty.core.cache.BaseHazelcastCache;
+import net.ipetty.core.cache.Caches;
 
 /**
  * 通过读取Class文件,获得方法形参名称列表
@@ -81,14 +81,14 @@ public class MethodParamNamesScaner {
 	 */
 	public static Map<String, List<String>> getParamNames(Class<?> clazz) throws IOException {
 		String className = clazz.getName();
-		Map<String, List<String>> paramNames = BaseHazelcastCache.get(MAP_NAME_CLASS_NAME_TO_PARAM_NAMES, className);
+		Map<String, List<String>> paramNames = Caches.get(MAP_NAME_CLASS_NAME_TO_PARAM_NAMES, className);
 		if (paramNames != null) {
 			return paramNames;
 		}
 
 		InputStream in = clazz.getResourceAsStream("/" + clazz.getName().replace('.', '/') + ".class");
 		paramNames = getParamNames(in);
-		BaseHazelcastCache.set(MAP_NAME_CLASS_NAME_TO_PARAM_NAMES, className, paramNames);
+		Caches.set(MAP_NAME_CLASS_NAME_TO_PARAM_NAMES, className, paramNames);
 		return paramNames;
 	}
 
