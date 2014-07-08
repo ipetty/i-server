@@ -17,17 +17,6 @@ create table options (
 ) engine=innodb default charset=utf8;
 create index idx_group on options(option_group);
 
-insert into options(option_group,value,label,idx) 
-values('human_gender','female','妹妹',0),
-('human_gender','male','哥哥',1),
-('human_gender','other','其他',2),
-('pet_gender','female','雌',0),
-('pet_gender','male','雄',1),
-('pet_gender','other','其他',2),
-('pet_family','dog','汪星人',0),
-('pet_family','cat','喵星人',1),
-('pet_family','other','异星人',2);
-
 -- users
 create table users (
 	id int primary key auto_increment,
@@ -53,9 +42,6 @@ create index idx_qq on users(qq);
 create index idx_qzone_uid on users(qzone_uid);
 create index idx_weibo_account on users(weibo_account);
 create index idx_weibo_uid on users(weibo_uid);
--- 插入一条初始值，密码888888
-insert into sys_uid_pool(uid,enable) values(10000,0);
-insert into users(id,uid,unique_name,email,password,salt) values(1,10000,'admin','service@ipetty.net','be8d68e706c7067deb0a1c150965ad6cabf50610','4f49f396ae6d9dc3');
 
 -- user_refresh_token
 create table user_refresh_token (
@@ -80,6 +66,7 @@ create table user_profile (
 	gender varchar(10),
 	state_and_region varchar(100),
 	signature varchar(255),
+	birthday date,
 	foreign key(user_id) references users(id)
 ) engine=innodb default charset=utf8;
 create index idx_nickname on user_profile(nickname);
@@ -123,8 +110,12 @@ create table pet (
 	created_on timestamp default current_timestamp,
 	uid int not null unique,
 	unique_name varchar(50),
-	name varchar(50),
+	nickname varchar(50),
+	avatar varchar(100),
 	gender varchar(10),
+	family varchar(50),
+	birthday date,
+	signature varchar(255),
 	sort_order tinyint,
 	version int not null default 1,
 	foreign key(created_by) references users(id),
@@ -132,6 +123,7 @@ create table pet (
 ) engine=innodb default charset=utf8;
 create index idx_unique_name on pet(unique_name);
 create index idx_gender on pet(gender);
+create index idx_family on pet(family);
 
 
 
@@ -297,3 +289,17 @@ create table feedback (
 	foreign key(created_by) references users(id)
 ) engine=innodb default charset=utf8;
 create index idx_created_on on feedback(created_on desc);
+
+
+
+-- app_update
+create table app_update (
+	app_name varchar(50),
+	app_key varchar(50) not null,
+	app_secret varchar(50),
+	version_code int not null,
+	version_name varchar(50),
+	version_description text,
+	download_url varchar(255)
+) engine=innodb default charset=utf8;
+
