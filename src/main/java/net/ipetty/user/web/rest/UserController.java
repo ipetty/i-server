@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import net.ipetty.core.cache.Caches;
 import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.Caches;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.util.UUIDUtils;
@@ -121,8 +121,9 @@ public class UserController extends BaseController {
 		if (StringUtils.isNotBlank(register.getPetName())) {
 			Pet pet = new Pet();
 			pet.setCreatedBy(user.getId());
-			pet.setGender(register.getPetGender());
 			pet.setNickname(register.getPetName());
+			pet.setGender(register.getPetGender());
+			pet.setFamily(register.getPetFamily());
 			petService.save(pet);
 		}
 
