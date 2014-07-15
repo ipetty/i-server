@@ -42,6 +42,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class UserService extends BaseService {
 
+	private static final String SECRETARY_ACCOUNT_EMAIL = "service@ipetty.net";
+
 	@Resource
 	private UserDao userDao;
 
@@ -146,6 +148,17 @@ public class UserService extends BaseService {
 			userStatisticsDao.save(user.getStatistics());
 
 			// TODO persist user roles
+
+			// 关注小秘书
+			Integer secretaryId = userDao.getUserIdByLoginName(SECRETARY_ACCOUNT_EMAIL);
+			if (secretaryId == null) {
+				logger.error("小秘书帐号{}不存在！", SECRETARY_ACCOUNT_EMAIL);
+			} else {
+				relationshipDao.follow(secretaryId, user.getId());
+				userStatisticsDao.recountRelationshipNum(secretaryId);
+				userStatisticsDao.recountRelationshipNum(user.getId());
+				logger.debug("{} follow {}", user.getId(), secretaryId);
+			}
 		}
 	}
 
