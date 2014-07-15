@@ -9,8 +9,27 @@
 		<amq:transportConnectors>
 			<amq:transportConnector uri="tcp://localhost:61616" />
 		</amq:transportConnectors>
-		<!-- <amq:managementContext> <amq:managementContext connectorPath="/jmxrmi" connectorPort="2011" jmxDomainName="ipetty-broker" 
-			/> </amq:managementContext> -->
+		<amq:systemUsage>
+			<amq:systemUsage>
+				<amq:memoryUsage>
+					<amq:memoryUsage limit="32 mb" />
+				</amq:memoryUsage>
+			</amq:systemUsage>
+		</amq:systemUsage>
+		<amq:consumerSystemUsage>
+			<amq:systemUsage>
+				<amq:memoryUsage>
+					<amq:memoryUsage limit="16 mb" />
+				</amq:memoryUsage>
+			</amq:systemUsage>
+		</amq:consumerSystemUsage>
+		<amq:producerSystemUsage>
+			<amq:systemUsage>
+				<amq:memoryUsage>
+					<amq:memoryUsage limit="16 mb" />
+				</amq:memoryUsage>
+			</amq:systemUsage>
+		</amq:producerSystemUsage>
 	</amq:broker>
 
 	<!-- ActiveMQ connectionFactory -->
