@@ -47,9 +47,12 @@ html, body {
 }
 
 #header{
-	height:80px;
+	
 }
 
+#main{
+	margin:80px 0;
+}
 
 .container {
     margin-left: auto;
@@ -131,33 +134,53 @@ p{
 		width:548px;
   }
 }
+
+#footer {
+    border-top: 1px solid #f2f2f2;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+#footer a{
+    color: #5e5c59;
+    text-decoration: none;
+}
+
+#footer .container{
+	text-align:center;
+}
 </style>
 <body>
 
 <div id="wrap-all" class="wrap-all">
 	<div id="header"></div>
 	<div id="main">
-	<div class="container clearfix">
-		<div class="desc-img clearfix">
-			<img class="desc-img" src="static/images/pic.png">
-		</div>
-		<div class="desc-text clearfix">
-			<div class="title-container clearfix">
-				<h1 class="title">爱宠</h1>
-				<h2 class="slogan">与宠物朋友一起分享快乐</h2>
-				<div class="download-button">
-					<a class="btn" alt="口袋遥控Android版" title="口袋遥控Android版" target="_blank" href="#">Android内测版</a>
-					<a class="btn" alt="口袋遥控iOS版" title="口袋遥控iOS版" target="_blank" href="#">iOS版(敬请期待)</a>
-				</div>
-				<div class="qrcode">
-					<img class="qrcode" src="static/images/qrcode.png">
-					<p>扫描安装手机版</p>
-				</div>
+		<div class="container clearfix">
+			<div class="desc-img clearfix">
+				<img class="desc-img" src="static/images/pic.png">
 			</div>
-			
+			<div class="desc-text clearfix">
+				<div class="title-container clearfix">
+					<h1 class="title">爱宠</h1>
+					<h2 class="slogan">与宠物朋友一起分享快乐</h2>
+					<div class="download-button">
+						<a class="btn" alt="口袋遥控Android版" title="口袋遥控Android版" target="_blank" href="http://ipetty.net/files/ipetty.apk">Android内测版</a>
+						<a class="btn" alt="口袋遥控iOS版" title="口袋遥控iOS版" target="_blank" href="javascript:">iOS版(敬请期待)</a>
+					</div>
+					<div class="qrcode">
+						<img class="qrcode" src="static/images/qrcode.png">
+						<p>扫描安装手机版</p>
+					</div>
+				</div>
+				
+			</div>
 		</div>
-	</div>
 	
+	</div>
+
+	<div id="footer">
+		<div class="container"><p>©爱宠&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" rel="nofollow" title="苏ICP备14030752号-1">苏ICP备14030752号-1</a></p></div>
 	</div>
 
 </div>
