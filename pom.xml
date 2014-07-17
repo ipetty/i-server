@@ -30,8 +30,6 @@
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<slf4j.version>1.7.1</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
-		<guava.version>13.0.1</guava.version>
-		<joda-time.version>2.1</joda-time.version>
 		<junit.version>4.10</junit.version>
 		<jersey.version>1.17</jersey.version>
 		<thumbnailator.version>0.4.7</thumbnailator.version>
