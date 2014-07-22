@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 /**
  * 捕获并处理所有Controller异常
@@ -18,6 +19,14 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 public class CaughtExceptionHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(CaughtExceptionHandler.class);
+
+	@ExceptionHandler(MultipartException.class)
+	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseBody
+	public String handleMultipartExceptionError(RuntimeException e) {
+		logger.error(e.getLocalizedMessage());
+		return "上传文件失败";
+	}
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)

@@ -102,6 +102,26 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
 	}
 
+	private static final String GET_ID_BY_QZONE_USER_ID_SQL = "select id from users where qzone_uid=?";
+
+	/**
+	 * 根据QZone userId获取用户ID
+	 */
+	@Override
+	public Integer getUserIdByQZoneUserId(String qzoneUserId) {
+		return super.queryUniqueEntity(GET_ID_BY_QZONE_USER_ID_SQL, INTEGER_ROW_MAPPER, qzoneUserId);
+	}
+
+	private static final String GET_ID_BY_SINA_WEIBO_USER_ID_SQL = "select id from users where weibo_uid=?";
+
+	/**
+	 * 根据新浪微博userId获取用户ID
+	 */
+	@Override
+	public Integer getUserIdBySinaWeiboUserId(String sinaWeiboUserId) {
+		return super.queryUniqueEntity(GET_ID_BY_SINA_WEIBO_USER_ID_SQL, INTEGER_ROW_MAPPER, sinaWeiboUserId);
+	}
+
 	private static final String GET_BY_UID_SQL = "select id from users where uid=?";
 
 	/**
@@ -142,8 +162,7 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 	 * 更新用户帐号信息
 	 */
 	@Override
-	@UpdatesToCache({
-			@UpdateToCache(mapName = CacheConstants.CACHE_USER_ID_TO_USER, key = "${user.id}"),
+	@UpdatesToCache({ @UpdateToCache(mapName = CacheConstants.CACHE_USER_ID_TO_USER, key = "${user.id}"),
 			@UpdateToCache(mapName = CacheConstants.CACHE_USER_UID_TO_USER_ID, key = "${user.uid}"),
 			@UpdateToCache(mapName = CacheConstants.CACHE_USER_UNIQUE_NAME_TO_USER_ID, key = "${user.uniqueName}"),
 			@UpdateToCache(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, key = "${user.phoneNumber}"),

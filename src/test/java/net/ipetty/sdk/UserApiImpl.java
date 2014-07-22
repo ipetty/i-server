@@ -43,6 +43,21 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		return user;
 	}
 
+	private static final String URI_LOGIN3RD = "/login3rd";
+
+	/**
+	 * 使用第三方帐号登陆
+	 */
+	public UserVO login3rd(String platform, String userId) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("platform", platform);
+		request.set("userId", userId);
+		UserVO user = context.getRestTemplate().postForObject(buildUri(URI_LOGIN3RD), request, UserVO.class);
+		context.setAuthorized(true);
+		context.setCurrUserId(user.getId());
+		return user;
+	}
+
 	private static final String URI_LOGOUT = "/logout";
 
 	/**

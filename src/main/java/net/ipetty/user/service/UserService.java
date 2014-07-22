@@ -43,6 +43,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService extends BaseService {
 
 	private static final String SECRETARY_ACCOUNT_EMAIL = "service@ipetty.net";
+	private static final String PLATFORM_SINA_WEIBO = "SinaWeibo";
+	private static final String PLATFORM_QZONE = "QZone";
+	private static final String PLATFORM_WECHAT = "Wechat";
 
 	@Resource
 	private UserDao userDao;
@@ -82,6 +85,52 @@ public class UserService extends BaseService {
 		if (!StringUtils.equals(user.getEncodedPassword(), encodedPassword)) {
 			throw new BusinessException("密码错误");
 		}
+
+		return user;
+	}
+
+	/**
+	 * 使用第三方帐号登陆
+	 */
+	public User login3rd(String platform, String platformUserId) {
+		// 如果帐号已存在则登录成功
+		Integer userId = null;
+		User user = null;
+		if (PLATFORM_QZONE.equals(platform)) {
+			userId = userDao.getUserIdByQZoneUserId(platformUserId);
+		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
+			userId = userDao.getUserIdBySinaWeiboUserId(platformUserId);
+		}
+		if (userId != null) {
+			user = userDao.getById(userId);
+			return user;
+		}
+
+		// 如果没有帐号则创建帐号
+		return this.create3rdAccount(platform, platformUserId);
+	}
+
+	public User create3rdAccount(String platform, String platformUserId) {
+		User user = new User();
+
+		// retreive an available uid
+		int uid = uidService.getUid();
+		user.setUid(uid);
+
+		if (PLATFORM_QZONE.equals(platform)) {
+			user.setQzoneUid(platformUserId);
+		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
+			user.setWeiboUid(platformUserId);
+		}
+
+		// persist user
+		userDao.save(user);
+
+		// mark the uid as used
+		uidService.markAsUsed(uid);
+
+		// persist other info of user
+		this.persistOtherInfoOfUser(user);
 
 		return user;
 	}
@@ -128,37 +177,42 @@ public class UserService extends BaseService {
 			// mark the uid as used
 			uidService.markAsUsed(uid);
 
-			// persist user profile
-			if (user.getProfile() == null) {
-				user.setProfile(new UserProfile());
-			}
-			user.getProfile().setUserId(user.getId());
-			userProfileDao.save(user.getProfile());
+			// persist other info of user
+			this.persistOtherInfoOfUser(user);
+		}
+	}
 
-			// persist user zone
-			user.setZone(new UserZone(user.getId()));
-			userZoneDao.save(user.getZone());
+	private void persistOtherInfoOfUser(User user) {
+		// persist user profile
+		if (user.getProfile() == null) {
+			user.setProfile(new UserProfile());
+		}
+		user.getProfile().setUserId(user.getId());
+		userProfileDao.save(user.getProfile());
 
-			// TODO persist user zone statistics
+		// persist user zone
+		user.setZone(new UserZone(user.getId()));
+		userZoneDao.save(user.getZone());
 
-			// TODO persist user preferences
+		// TODO persist user zone statistics
 
-			// persist user statistics
-			user.setStatistics(new UserStatistics(user.getId()));
-			userStatisticsDao.save(user.getStatistics());
+		// TODO persist user preferences
 
-			// TODO persist user roles
+		// persist user statistics
+		user.setStatistics(new UserStatistics(user.getId()));
+		userStatisticsDao.save(user.getStatistics());
 
-			// 关注小秘书
-			Integer secretaryId = userDao.getUserIdByLoginName(SECRETARY_ACCOUNT_EMAIL);
-			if (secretaryId == null) {
-				logger.error("小秘书帐号{}不存在！", SECRETARY_ACCOUNT_EMAIL);
-			} else {
-				relationshipDao.follow(secretaryId, user.getId());
-				userStatisticsDao.recountRelationshipNum(secretaryId);
-				userStatisticsDao.recountRelationshipNum(user.getId());
-				logger.debug("{} follow {}", user.getId(), secretaryId);
-			}
+		// TODO persist user roles
+
+		// 关注小秘书
+		Integer secretaryId = userDao.getUserIdByLoginName(SECRETARY_ACCOUNT_EMAIL);
+		if (secretaryId == null) {
+			logger.error("小秘书帐号{}不存在！", SECRETARY_ACCOUNT_EMAIL);
+		} else {
+			relationshipDao.follow(secretaryId, user.getId());
+			userStatisticsDao.recountRelationshipNum(secretaryId);
+			userStatisticsDao.recountRelationshipNum(user.getId());
+			logger.debug("{} follow {}", user.getId(), secretaryId);
 		}
 	}
 

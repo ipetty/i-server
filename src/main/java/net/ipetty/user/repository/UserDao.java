@@ -21,6 +21,16 @@ public interface UserDao {
 	public User getById(Integer id);
 
 	/**
+	 * 根据QZone userId获取用户ID
+	 */
+	public Integer getUserIdByQZoneUserId(String qzoneUserId);
+
+	/**
+	 * 根据新浪微博userId获取用户ID
+	 */
+	public Integer getUserIdBySinaWeiboUserId(String sinaWeiboUserId);
+
+	/**
 	 * 根据uid获取用户ID
 	 */
 	public Integer getUserIdByUid(int uid);

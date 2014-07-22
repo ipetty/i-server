@@ -76,6 +76,16 @@ public class UserController extends BaseController {
 	}
 
 	/**
+	 * 使用第三方帐号登陆
+	 */
+	@RequestMapping(value = "/login3rd", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO login3rd(String platform, String userId) {
+		logger.debug("login {} with userId={}", platform, userId);
+		return userService.login3rd(platform, userId).toVO();
+	}
+
+	/**
 	 * 登出
 	 */
 	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

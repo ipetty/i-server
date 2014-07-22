@@ -44,6 +44,21 @@ public class UserApiTest extends BaseApiTest {
 		logger.debug("login success {}", user);
 	}
 
+	@Test
+	public void testLogin3rd() {
+		UserVO user = userApi.login3rd("SinaWeibo", "54321");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		logger.debug("login3rd success {}", user);
+		Integer userId = user.getId();
+
+		user = userApi.login3rd("SinaWeibo", "54321");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		Assert.assertEquals(userId, user.getId());
+		logger.debug("login3rd success {}", user);
+	}
+
 	// @Test
 	public void testLoginWithWrongPassword() {
 		try {

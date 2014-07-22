@@ -52,6 +52,19 @@ public class UserServiceTest extends BaseTest {
 	}
 
 	@Test
+	public void testLogin3rd() {
+		User user = userService.login3rd("SinaWeibo", "12345");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		Integer userId = user.getId();
+
+		user = userService.login3rd("SinaWeibo", "12345");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		Assert.assertEquals(userId, user.getId());
+	}
+
+	@Test
 	public void testGetByUid() {
 		User user = userService.getByUid(TEST_ACCOUNT_UID);
 		Assert.assertNotNull(user);
@@ -145,9 +158,9 @@ public class UserServiceTest extends BaseTest {
 		Assert.assertTrue(userService.isFollow(user1.getId(), user2.getId()));
 
 		List<User> users = userService.listFriends(user1.getId(), 0, 20);
-		Assert.assertEquals(1, users.size());
+		Assert.assertEquals(2, users.size());
 		users = userService.listFriends(user2.getId(), 0, 20);
-		Assert.assertEquals(1, users.size());
+		Assert.assertEquals(2, users.size());
 		users = userService.listFollowers(user1.getId(), 0, 20);
 		Assert.assertEquals(1, users.size());
 		users = userService.listFollowers(user2.getId(), 0, 20);
@@ -162,9 +175,9 @@ public class UserServiceTest extends BaseTest {
 		Assert.assertTrue(userService.isFollow(user1.getId(), user2.getId()));
 
 		users = userService.listFriends(user1.getId(), 0, 20);
-		Assert.assertEquals(0, users.size());
-		users = userService.listFriends(user2.getId(), 0, 20);
 		Assert.assertEquals(1, users.size());
+		users = userService.listFriends(user2.getId(), 0, 20);
+		Assert.assertEquals(2, users.size());
 		users = userService.listFollowers(user1.getId(), 0, 20);
 		Assert.assertEquals(1, users.size());
 		users = userService.listFollowers(user2.getId(), 0, 20);
