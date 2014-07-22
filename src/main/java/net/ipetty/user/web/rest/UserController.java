@@ -82,7 +82,17 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public UserVO login3rd(String platform, String userId) {
 		logger.debug("login {} with userId={}", platform, userId);
-		return userService.login3rd(platform, userId).toVO();
+		User user = userService.login3rd(platform, userId);
+
+		// 设置用户上下文
+		UserPrincipal principal = UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID());
+		UserContext.setContext(principal);
+		logger.debug("generate user token {}", principal.getToken());
+
+		// 将用户token写入缓存
+		Caches.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
+
+		return user.toVO();
 	}
 
 	/**
