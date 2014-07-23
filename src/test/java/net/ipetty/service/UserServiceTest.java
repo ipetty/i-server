@@ -52,11 +52,16 @@ public class UserServiceTest extends BaseTest {
 	}
 
 	@Test
-	public void testLogin3rd() {
-		User user = userService.login3rd("SinaWeibo", "12345");
+	public void testLoginOrRegister3rd() {
+		User user = userService.loginOrRegister3rd("SinaWeibo", "12345", "12345@gmail.com", "test");
 		Assert.assertNotNull(user);
 		Assert.assertNotNull(user.getId());
 		Integer userId = user.getId();
+
+		user = userService.loginOrRegister3rd("SinaWeibo", "12345", "12345@gmail.com", "test");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		Assert.assertEquals(userId, user.getId());
 
 		user = userService.login3rd("SinaWeibo", "12345");
 		Assert.assertNotNull(user);

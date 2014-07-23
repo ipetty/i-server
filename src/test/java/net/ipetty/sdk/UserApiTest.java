@@ -45,12 +45,18 @@ public class UserApiTest extends BaseApiTest {
 	}
 
 	@Test
-	public void testLogin3rd() {
-		UserVO user = userApi.login3rd("SinaWeibo", "54321");
+	public void testLoginOrRegister3rd() {
+		UserVO user = userApi.loginOrRegister3rd("SinaWeibo", "54321", "54321@gmail.com", "test");
 		Assert.assertNotNull(user);
 		Assert.assertNotNull(user.getId());
-		logger.debug("login3rd success {}", user);
+		logger.debug("loginOrRegister3rd success {}", user);
 		Integer userId = user.getId();
+
+		user = userApi.loginOrRegister3rd("SinaWeibo", "54321", "54321@gmail.com", "test");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		Assert.assertEquals(userId, user.getId());
+		logger.debug("loginOrRegister3rd success {}", user);
 
 		user = userApi.login3rd("SinaWeibo", "54321");
 		Assert.assertNotNull(user);

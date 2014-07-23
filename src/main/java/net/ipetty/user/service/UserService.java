@@ -13,6 +13,8 @@ import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.core.util.ImageUtils;
 import net.ipetty.core.util.SaltEncoder;
+import net.ipetty.pet.domain.Pet;
+import net.ipetty.pet.service.PetService;
 import net.ipetty.user.domain.User;
 import net.ipetty.user.domain.UserProfile;
 import net.ipetty.user.domain.UserRefreshToken;
@@ -68,6 +70,9 @@ public class UserService extends BaseService {
 	@Resource
 	private UidService uidService;
 
+	@Resource
+	private PetService petService;
+
 	/**
 	 * 登录验证
 	 */
@@ -95,23 +100,41 @@ public class UserService extends BaseService {
 	public User login3rd(String platform, String platformUserId) {
 		// 如果帐号已存在则登录成功
 		Integer userId = null;
-		User user = null;
 		if (PLATFORM_QZONE.equals(platform)) {
 			userId = userDao.getUserIdByQZoneUserId(platformUserId);
 		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
 			userId = userDao.getUserIdBySinaWeiboUserId(platformUserId);
 		}
-		if (userId != null) {
-			user = userDao.getById(userId);
-			return user;
-		}
 
-		// 如果没有帐号则创建帐号
-		return this.create3rdAccount(platform, platformUserId);
+		if (userId != null) {
+			return userDao.getById(userId);
+		} else {
+			throw new BusinessException("用户不存在");
+		}
 	}
 
-	public User create3rdAccount(String platform, String platformUserId) {
+	/**
+	 * 使用第三方帐号登陆或注册后登登陆返回
+	 */
+	public User loginOrRegister3rd(String platform, String platformUserId, String email, String userName) {
+		// 如果帐号已存在则登录成功
+		Integer userId = null;
+		if (PLATFORM_QZONE.equals(platform)) {
+			userId = userDao.getUserIdByQZoneUserId(platformUserId);
+		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
+			userId = userDao.getUserIdBySinaWeiboUserId(platformUserId);
+		}
+
+		if (userId != null) {
+			return userDao.getById(userId);
+		} else { // 如果没有帐号则创建帐号
+			return this.create3rdAccount(platform, platformUserId, email, userName);
+		}
+	}
+
+	public User create3rdAccount(String platform, String platformUserId, String email, String userName) {
 		User user = new User();
+		user.setEmail(email);
 
 		// retreive an available uid
 		int uid = uidService.getUid();
@@ -123,6 +146,10 @@ public class UserService extends BaseService {
 			user.setWeiboUid(platformUserId);
 		}
 
+		UserProfile userProfile = new UserProfile();
+		userProfile.setNickname(userName);
+		user.setProfile(userProfile);
+
 		// persist user
 		userDao.save(user);
 
@@ -131,6 +158,11 @@ public class UserService extends BaseService {
 
 		// persist other info of user
 		this.persistOtherInfoOfUser(user);
+
+		Pet pet = new Pet();
+		pet.setCreatedBy(user.getId());
+		pet.setNickname(userName + "的爱宠");
+		petService.save(pet);
 
 		return user;
 	}

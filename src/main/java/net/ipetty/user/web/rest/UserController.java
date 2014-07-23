@@ -96,6 +96,26 @@ public class UserController extends BaseController {
 	}
 
 	/**
+	 * 使用第三方帐号登陆或注册后登登陆返回
+	 */
+	@RequestMapping(value = "/loginOrRegister3rd", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO loginOrRegister3rd(String platform, String userId, String email, String userName) {
+		logger.debug("loginOrRegister3rd {} with userId={}", platform, userId);
+		User user = userService.loginOrRegister3rd(platform, userId, email, userName);
+
+		// 设置用户上下文
+		UserPrincipal principal = UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID());
+		UserContext.setContext(principal);
+		logger.debug("generate user token {}", principal.getToken());
+
+		// 将用户token写入缓存
+		Caches.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
+
+		return user.toVO();
+	}
+
+	/**
 	 * 登出
 	 */
 	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

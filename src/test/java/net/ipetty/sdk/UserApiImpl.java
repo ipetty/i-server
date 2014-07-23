@@ -43,7 +43,7 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		return user;
 	}
 
-	private static final String URI_LOGIN3RD = "/login3rd";
+	private static final String URI_LOGIN_3RD = "/login3rd";
 
 	/**
 	 * 使用第三方帐号登陆
@@ -52,7 +52,25 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("platform", platform);
 		request.set("userId", userId);
-		UserVO user = context.getRestTemplate().postForObject(buildUri(URI_LOGIN3RD), request, UserVO.class);
+		UserVO user = context.getRestTemplate().postForObject(buildUri(URI_LOGIN_3RD), request, UserVO.class);
+		context.setAuthorized(true);
+		context.setCurrUserId(user.getId());
+		return user;
+	}
+
+	private static final String URI_LOGIN_OR_REGISTER_3RD = "/loginOrRegister3rd";
+
+	/**
+	 * 使用第三方帐号登陆或注册后登登陆返回
+	 */
+	public UserVO loginOrRegister3rd(String platform, String userId, String email, String userName) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("platform", platform);
+		request.set("userId", userId);
+		request.set("email", email);
+		request.set("userName", userName);
+		UserVO user = context.getRestTemplate().postForObject(buildUri(URI_LOGIN_OR_REGISTER_3RD), request,
+				UserVO.class);
 		context.setAuthorized(true);
 		context.setCurrUserId(user.getId());
 		return user;
