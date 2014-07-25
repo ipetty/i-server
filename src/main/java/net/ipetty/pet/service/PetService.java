@@ -124,6 +124,14 @@ public class PetService extends BaseService {
 		Assert.notNull(pet, "宠物不能为空");
 		Assert.notNull(pet.getId(), "宠物ID不能为空");
 		Assert.hasText(pet.getNickname(), "宠物名称不能为空");
+
+		Pet orignal = petDao.getById(pet.getId());
+		if (StringUtils.isBlank(pet.getAvatar()) && StringUtils.isNotBlank(orignal.getAvatar())) {
+			pet.setAvatar(orignal.getAvatar());
+		}
+		if (StringUtils.isBlank(pet.getUniqueName()) && StringUtils.isNotBlank(orignal.getUniqueName())) {
+			pet.setUniqueName(orignal.getUniqueName());
+		}
 		petDao.update(pet);
 	}
 
