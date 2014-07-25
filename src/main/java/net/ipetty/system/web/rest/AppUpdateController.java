@@ -44,7 +44,7 @@ public class AppUpdateController extends BaseController {
 		appUpdateService.save(AppUpdate.fromVO(appUpdate));
 	}
 
-	@RequestMapping(value = "checkUpdate", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "checkUpdate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public AppUpdateVO checkUpdate(String appKey) throws IOException {
 		Assert.hasText(appKey, "AppKey不能为空");

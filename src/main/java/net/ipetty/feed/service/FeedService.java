@@ -27,6 +27,7 @@ import net.ipetty.feed.repository.FeedDao;
 import net.ipetty.feed.repository.FeedFavorDao;
 import net.ipetty.feed.repository.FeedStatisticsDao;
 import net.ipetty.feed.repository.ImageDao;
+import net.ipetty.user.repository.UserStatisticsDao;
 import net.ipetty.vo.CachedUserVersion;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;
@@ -57,6 +58,9 @@ public class FeedService extends BaseService {
 	private FeedStatisticsDao feedStatisticsDao;
 
 	@Resource
+	private UserStatisticsDao userStatisticsDao;
+
+	@Resource
 	private CommentDao commentDao;
 
 	@Resource
@@ -76,6 +80,8 @@ public class FeedService extends BaseService {
 		}
 		feedDao.save(feed);
 		feedStatisticsDao.save(new FeedStatistics(feed.getId(), 0, 0));
+		// 重新统计发布消息数
+		userStatisticsDao.recountFeedNum(feed.getCreatedBy());
 		return this.getById(feed.getId());
 	}
 
@@ -129,6 +135,8 @@ public class FeedService extends BaseService {
 			throw new BusinessException("只能删除自己的消息");
 		}
 		feedDao.delete(feed.getId());
+		// 重新统计发布消息数
+		userStatisticsDao.recountFeedNum(feed.getCreatedBy());
 	}
 
 	/**
@@ -347,6 +355,9 @@ public class FeedService extends BaseService {
 		Assert.hasText(comment.getText(), "评论内容不能为空");
 		Assert.notNull(comment.getCreatedBy(), "评论人不能为空");
 		commentDao.save(comment);
+		// 重新统计评论数
+		feedStatisticsDao.recountCommentCount(comment.getFeedId());
+		userStatisticsDao.recountCommentNum(comment.getCreatedBy());
 		return this.getById(comment.getFeedId());
 	}
 
@@ -373,6 +384,9 @@ public class FeedService extends BaseService {
 			throw new BusinessException("只能删除自己的评论");
 		}
 		commentDao.delete(comment.getId());
+		// 重新统计评论数
+		feedStatisticsDao.recountCommentCount(comment.getFeedId());
+		userStatisticsDao.recountCommentNum(comment.getCreatedBy());
 	}
 
 	/**
@@ -402,6 +416,9 @@ public class FeedService extends BaseService {
 		FeedFavor f = feedFavorDao.getByUserIdAndFeedId(favor.getCreatedBy(), favor.getFeedId());
 		Assert.isNull(f, "已经赞过该消息");
 		feedFavorDao.save(favor);
+		// 重新统计赞的数目
+		feedStatisticsDao.recountFavorCount(favor.getFeedId());
+		userStatisticsDao.recountFeedFavorNum(favor.getCreatedBy());
 		return this.getById(favor.getFeedId());
 	}
 
@@ -416,6 +433,9 @@ public class FeedService extends BaseService {
 		FeedFavor f = feedFavorDao.getByUserIdAndFeedId(favor.getCreatedBy(), favor.getFeedId());
 		Assert.notNull(f, "您还未赞过该消息");
 		feedFavorDao.delete(f.getId());
+		// 重新统计赞的数目
+		feedStatisticsDao.recountFavorCount(favor.getFeedId());
+		userStatisticsDao.recountFeedFavorNum(favor.getCreatedBy());
 		return this.getById(favor.getFeedId());
 	}
 

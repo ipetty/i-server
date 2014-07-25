@@ -32,7 +32,7 @@ public class FoundationApiImpl extends BaseApi implements FoundationApi {
 	public List<Option> listOptionsByGroup(String group) {
 		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.add("group", group);
-		return Arrays.asList(context.getRestTemplate().postForObject(buildUri(URI_OPTIONS), request, Option[].class));
+		return Arrays.asList(context.getRestTemplate().getForObject(buildUri(URI_OPTIONS, request), Option[].class));
 	}
 
 	/**

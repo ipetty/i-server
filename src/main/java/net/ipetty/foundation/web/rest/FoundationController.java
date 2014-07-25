@@ -31,7 +31,7 @@ public class FoundationController extends BaseController {
 	/**
 	 * 获取指定选项组的所有选项
 	 */
-	@RequestMapping(value = "/options", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/options", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<Option> listOptionsByGroup(String group) {
 		Assert.hasText(group, "选项组不能为空");

@@ -27,7 +27,7 @@ public class AppUpdateApiImpl extends BaseApi implements AppUpdateApi {
 	public AppUpdateVO latestVersion(String appKey) {
 		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.add("appKey", appKey);
-		return context.getRestTemplate().postForObject(buildUri(URI_GET_LATEST_VERSION), request, AppUpdateVO.class);
+		return context.getRestTemplate().getForObject(buildUri(URI_GET_LATEST_VERSION, request), AppUpdateVO.class);
 	}
 
 }

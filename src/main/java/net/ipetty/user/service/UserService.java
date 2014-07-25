@@ -91,6 +91,8 @@ public class UserService extends BaseService {
 			throw new BusinessException("密码错误");
 		}
 
+		// 重新统计登录次数
+		userStatisticsDao.recountLoginNum(user.getId());
 		return user;
 	}
 
@@ -367,6 +369,9 @@ public class UserService extends BaseService {
 			throw new BusinessException("您已关注该用户");
 		}
 		relationshipDao.follow(friendId, followerId);
+		// 重新统计关注数、粉丝数
+		userStatisticsDao.recountRelationshipNum(friendId);
+		userStatisticsDao.recountRelationshipNum(followerId);
 	}
 
 	/**
@@ -391,6 +396,9 @@ public class UserService extends BaseService {
 			throw new BusinessException("您尚未关注该用户");
 		}
 		relationshipDao.unfollow(friendId, followerId);
+		// 重新统计关注数、粉丝数
+		userStatisticsDao.recountRelationshipNum(friendId);
+		userStatisticsDao.recountRelationshipNum(followerId);
 	}
 
 	/**

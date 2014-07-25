@@ -47,10 +47,10 @@ public class ActivityMQMessageReceiver {
 		bonusPointService.gain(activity);
 
 		// user statistics
-		userStatisticsService.updateStatisticsFromActivity(activity);
+		// userStatisticsService.updateStatisticsFromActivity(activity);
 
 		// feed statistics
-		feedStatisticsService.updateStatisticsFromActivity(activity);
+		// feedStatisticsService.updateStatisticsFromActivity(activity);
 	}
 
 }
