@@ -304,7 +304,7 @@ public class UserController extends BaseController {
 	/**
 	 * 是否已关注，true为已关注，false为未关注
 	 */
-	@RequestMapping(value = "/user/isfollow", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/user/isfollow", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public boolean isFollow(String friendId) {
 		UserPrincipal currentUser = UserContext.getContext();

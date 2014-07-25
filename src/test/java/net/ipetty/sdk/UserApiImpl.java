@@ -209,7 +209,7 @@ public class UserApiImpl extends BaseApi implements UserApi {
 
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("friendId", String.valueOf(friendId));
-		return context.getRestTemplate().postForObject(buildUri(URI_IS_FOLLOW), request, Boolean.class);
+		return context.getRestTemplate().getForObject(buildUri(URI_IS_FOLLOW, request), Boolean.class);
 	}
 
 	private static final String URI_IS_UNFOLLOW = "/user/unfollow";
