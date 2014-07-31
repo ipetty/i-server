@@ -1,5 +1,6 @@
 package net.ipetty.activity.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import net.ipetty.activity.domain.Activity;
@@ -26,5 +27,11 @@ public interface ActivityDao {
 	 * 获取某人相关的事件流
 	 */
 	public List<Activity> listRelatedActivities(Integer userId, int pageNumber, int pageSize);
+
+	/**
+	 * 获取用户新事件
+	 */
+	public List<Activity> listInboxActivities(Integer userId, String activityType, Date lastCheckoutTime,
+			Date currentTime);
 
 }

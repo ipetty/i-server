@@ -215,6 +215,28 @@ public class FeedServiceTest extends BaseTest {
 	}
 
 	@Test
+	public void testReplyToReply() {
+		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
+		Feed feed = new Feed();
+		feed.setCreatedBy(user.getId());
+		feed.setText("test feed text");
+		feedService.save(feed);
+
+		Comment comment = new Comment(feed.getId(), "test reply text", user.getId());
+		feedService.comment(comment);
+		Long commentId = comment.getId();
+		Assert.assertNotNull(comment.getId());
+		Assert.assertNotNull(comment.getCreatedOn());
+
+		comment = new Comment(feed.getId(), commentId, null, "test reply to reply text", user.getId());
+		feedService.comment(comment);
+		Assert.assertNotNull(comment.getId());
+		Assert.assertNotNull(comment.getReplyToCommentId());
+		Assert.assertNotNull(comment.getReplyToUserId());
+		Assert.assertNotNull(comment.getCreatedOn());
+	}
+
+	@Test
 	public void testDeleteComment() {
 		User user = userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME);
 		UserContext.setContext(UserPrincipal.fromUser(user, UUIDUtils.generateShortUUID()));

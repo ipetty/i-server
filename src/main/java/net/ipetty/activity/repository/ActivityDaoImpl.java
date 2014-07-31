@@ -29,18 +29,19 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 	static final RowMapper<Activity> ROW_MAPPER = new RowMapper<Activity>() {
 		@Override
 		public Activity mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, type, created_by, target_id, created_on
+			// id, type, created_by, target_id, content, created_on
 			Activity activity = new Activity();
 			activity.setId(rs.getLong("id"));
 			activity.setType(rs.getString("type"));
 			activity.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
 			activity.setTargetId(JdbcDaoUtils.getLong(rs, "target_id"));
+			activity.setContent(rs.getString("content"));
 			activity.setCreatedOn(rs.getTimestamp("created_on"));
 			return activity;
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into activity(type, created_by, target_id, created_on) values(?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into activity(type, created_by, target_id, content, created_on) values(?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存事件
@@ -54,7 +55,8 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 			statement.setString(1, activity.getType());
 			JdbcDaoUtils.setInteger(statement, 2, activity.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 3, activity.getTargetId());
-			statement.setTimestamp(4, new Timestamp(activity.getCreatedOn().getTime()));
+			statement.setString(4, activity.getContent());
+			statement.setTimestamp(5, new Timestamp(activity.getCreatedOn().getTime()));
 
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
@@ -88,6 +90,18 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 	public List<Activity> listRelatedActivities(Integer userId, int pageNumber, int pageSize) {
 		return super.getJdbcTemplate().query(LIST_RELATED_ACTIVITIES_SQL, ROW_MAPPER, userId, userId,
 				pageNumber * pageSize, pageSize);
+	}
+
+	private static final String LIST_INBOX_ACTIVITIES_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and a.type=? and created_on>? and created_on<?";
+
+	/**
+	 * 获取用户新事件
+	 */
+	@Override
+	public List<Activity> listInboxActivities(Integer userId, String activityType, Date lastCheckoutTime,
+			Date currentTime) {
+		return super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_SQL, ROW_MAPPER, userId, activityType,
+				lastCheckoutTime, currentTime);
 	}
 
 }

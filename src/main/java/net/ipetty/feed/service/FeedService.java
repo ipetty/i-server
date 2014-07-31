@@ -348,12 +348,18 @@ public class FeedService extends BaseService {
 	/**
 	 * 发表评论
 	 */
-	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.feedId}")
+	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.feedId}", content = "${comment.text}")
 	public FeedVO comment(Comment comment) {
 		Assert.notNull(comment, "评论不能为空");
 		Assert.notNull(comment.getFeedId(), "评论的消息不能为空");
 		Assert.hasText(comment.getText(), "评论内容不能为空");
 		Assert.notNull(comment.getCreatedBy(), "评论人不能为空");
+
+		if (comment.getReplyToCommentId() != null && comment.getReplyToUserId() == null) {
+			Comment replyTo = commentDao.getById(comment.getReplyToCommentId());
+			comment.setReplyToUserId(replyTo.getCreatedBy());
+		}
+
 		commentDao.save(comment);
 		// 重新统计评论数
 		feedStatisticsDao.recountCommentCount(comment.getFeedId());

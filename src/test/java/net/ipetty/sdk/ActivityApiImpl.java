@@ -52,4 +52,40 @@ public class ActivityApiImpl extends BaseApi implements ActivityApi {
 		return Arrays.asList(context.getRestTemplate().getForObject(uri, ActivityVO[].class));
 	}
 
+	private static final String URI_LIST_NEW_FANS_ACTIVITIES = "/activity/newfans";
+
+	/**
+	 * 获取新粉丝事件列表
+	 */
+	public List<ActivityVO> listNewFansActivities() {
+		super.requireAuthorization();
+
+		return Arrays.asList(context.getRestTemplate().getForObject(
+				ApiContext.API_SERVER_BASE + URI_LIST_NEW_FANS_ACTIVITIES, ActivityVO[].class));
+	}
+
+	private static final String URI_LIST_NEW_REPLIES_ACTIVITIES = "/activity/newreplies";
+
+	/**
+	 * 获取新回复事件列表
+	 */
+	public List<ActivityVO> listNewRepliesActivities() {
+		super.requireAuthorization();
+
+		return Arrays.asList(context.getRestTemplate().getForObject(
+				ApiContext.API_SERVER_BASE + URI_LIST_NEW_REPLIES_ACTIVITIES, ActivityVO[].class));
+	}
+
+	private static final String URI_LIST_NEW_FAVORS_ACTIVITIES = "/activity/newfavors";
+
+	/**
+	 * 获取新赞事件列表
+	 */
+	public List<ActivityVO> listNewFavorsActivities() {
+		super.requireAuthorization();
+
+		return Arrays.asList(context.getRestTemplate().getForObject(
+				ApiContext.API_SERVER_BASE + URI_LIST_NEW_FAVORS_ACTIVITIES, ActivityVO[].class));
+	}
+
 }

@@ -20,6 +20,7 @@ public class Activity extends LongIdEntity {
 
 	private String type; // ActivityType
 	private Long targetId; // 目标ID
+	private String content; // 内容，目前仅在回复事件时才有内容值
 
 	public Activity() {
 		super();
@@ -67,6 +68,24 @@ public class Activity extends LongIdEntity {
 		setCreatedOn(new Date());
 	}
 
+	public Activity(String type, Long targetId, String content, Integer createdBy, Date createdOn) {
+		super();
+		this.type = type;
+		this.targetId = targetId;
+		this.content = content;
+		setCreatedBy(createdBy);
+		setCreatedOn(createdOn);
+	}
+
+	public Activity(String type, Long targetId, String content, Integer createdBy) {
+		super();
+		this.type = type;
+		this.targetId = targetId;
+		this.content = content;
+		setCreatedBy(createdBy);
+		setCreatedOn(new Date());
+	}
+
 	public ActivityVO toVO() {
 		ActivityVO vo = new ActivityVO();
 		BeanUtils.copyProperties(this, vo);
@@ -87,6 +106,14 @@ public class Activity extends LongIdEntity {
 
 	public void setTargetId(Long targetId) {
 		this.targetId = targetId;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 }

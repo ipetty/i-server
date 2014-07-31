@@ -1,6 +1,7 @@
 package net.ipetty.feed.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -71,6 +72,13 @@ public class ImageService extends BaseService {
 			throw new BusinessException("只能删除自己的图片");
 		}
 		imageDao.delete(image.getId());
+	}
+
+	/**
+	 * 获取指定主题消息列表的所有图片信息
+	 */
+	public List<Image> listByFeedIds(Long... feedIds) {
+		return imageDao.listByFeedIds(feedIds);
 	}
 
 }

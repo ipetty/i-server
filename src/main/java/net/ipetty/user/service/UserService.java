@@ -13,6 +13,8 @@ import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.core.util.ImageUtils;
 import net.ipetty.core.util.SaltEncoder;
+import net.ipetty.notify.domain.Notification;
+import net.ipetty.notify.service.NotificationService;
 import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.service.PetService;
 import net.ipetty.user.domain.User;
@@ -72,6 +74,9 @@ public class UserService extends BaseService {
 
 	@Resource
 	private PetService petService;
+
+	@Resource
+	private NotificationService notificationService;
 
 	/**
 	 * 登录验证
@@ -235,6 +240,11 @@ public class UserService extends BaseService {
 		// persist user statistics
 		user.setStatistics(new UserStatistics(user.getId()));
 		userStatisticsDao.save(user.getStatistics());
+
+		// persist user notification
+		Notification notification = new Notification();
+		notification.setUserId(user.getId());
+		notificationService.save(notification);
 
 		// TODO persist user roles
 

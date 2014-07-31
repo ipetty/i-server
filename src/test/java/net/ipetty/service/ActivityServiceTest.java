@@ -41,4 +41,25 @@ public class ActivityServiceTest extends BaseTest {
 		logger.debug("User {} has {} related activities.", TEST_ACCOUNT_UNIQUE_NAME, activities.size());
 	}
 
+	@Test
+	public void testListNewFansActivities() {
+		List<ActivityVO> activities = activityService.listNewFansActivities(userService.getByUniqueName(
+				TEST_ACCOUNT_UNIQUE_NAME).getId());
+		logger.debug("User {} has {} new fans activities.", TEST_ACCOUNT_UNIQUE_NAME, activities.size());
+	}
+
+	@Test
+	public void testListNewRepliesActivities() {
+		List<ActivityVO> activities = activityService.listNewRepliesActivities(userService.getByUniqueName(
+				TEST_ACCOUNT_UNIQUE_NAME).getId());
+		logger.debug("User {} has {} new replies activities.", TEST_ACCOUNT_UNIQUE_NAME, activities.size());
+	}
+
+	@Test
+	public void testListNewFavorsActivities() {
+		List<ActivityVO> activities = activityService.listNewFavorsActivities(userService.getByUniqueName(
+				TEST_ACCOUNT_UNIQUE_NAME).getId());
+		logger.debug("User {} has {} new favors activities.", TEST_ACCOUNT_UNIQUE_NAME, activities.size());
+	}
+
 }
