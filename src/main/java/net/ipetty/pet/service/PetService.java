@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.annotation.ProduceActivity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.context.SpringContextHelper;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.service.BaseService;
@@ -14,6 +13,7 @@ import net.ipetty.core.util.ImageUtils;
 import net.ipetty.pet.domain.Pet;
 import net.ipetty.pet.repository.PetDao;
 import net.ipetty.user.service.UidService;
+import net.ipetty.vo.ActivityType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

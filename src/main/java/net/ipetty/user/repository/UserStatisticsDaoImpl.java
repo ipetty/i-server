@@ -3,12 +3,12 @@ package net.ipetty.user.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromCache;
 import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.user.domain.UserStatistics;
+import net.ipetty.vo.ActivityType;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

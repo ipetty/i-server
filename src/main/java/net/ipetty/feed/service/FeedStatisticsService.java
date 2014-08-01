@@ -3,9 +3,9 @@ package net.ipetty.feed.service;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.feed.repository.FeedStatisticsDao;
+import net.ipetty.vo.ActivityType;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

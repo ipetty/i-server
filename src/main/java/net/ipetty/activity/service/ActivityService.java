@@ -7,7 +7,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.activity.repository.ActivityDao;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.feed.domain.Feed;
@@ -16,6 +15,7 @@ import net.ipetty.feed.service.FeedService;
 import net.ipetty.feed.service.ImageService;
 import net.ipetty.notify.domain.Notification;
 import net.ipetty.notify.service.NotificationService;
+import net.ipetty.vo.ActivityType;
 import net.ipetty.vo.ActivityVO;
 
 import org.springframework.stereotype.Service;

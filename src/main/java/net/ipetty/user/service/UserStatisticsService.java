@@ -3,10 +3,10 @@ package net.ipetty.user.service;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.user.domain.UserStatistics;
 import net.ipetty.user.repository.UserStatisticsDao;
+import net.ipetty.vo.ActivityType;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

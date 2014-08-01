@@ -12,7 +12,6 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.annotation.ProduceActivity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.context.UserContext;
 import net.ipetty.core.context.UserPrincipal;
 import net.ipetty.core.exception.BusinessException;
@@ -28,6 +27,7 @@ import net.ipetty.feed.repository.FeedFavorDao;
 import net.ipetty.feed.repository.FeedStatisticsDao;
 import net.ipetty.feed.repository.ImageDao;
 import net.ipetty.user.repository.UserStatisticsDao;
+import net.ipetty.vo.ActivityType;
 import net.ipetty.vo.CachedUserVersion;
 import net.ipetty.vo.CommentVO;
 import net.ipetty.vo.FeedFavorVO;

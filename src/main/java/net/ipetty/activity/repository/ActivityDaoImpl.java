@@ -10,10 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
+import net.ipetty.vo.ActivityType;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

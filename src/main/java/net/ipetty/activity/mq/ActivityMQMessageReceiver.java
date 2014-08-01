@@ -3,7 +3,6 @@ package net.ipetty.activity.mq;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.activity.service.ActivityService;
 import net.ipetty.bonuspoint.service.BonusPointService;
 import net.ipetty.feed.domain.Feed;
@@ -12,6 +11,7 @@ import net.ipetty.feed.service.FeedStatisticsService;
 import net.ipetty.notify.domain.Notification;
 import net.ipetty.notify.service.NotificationService;
 import net.ipetty.user.service.UserStatisticsService;
+import net.ipetty.vo.ActivityType;
 import net.ipetty.vo.CommentVO;
 
 import org.slf4j.Logger;

@@ -5,11 +5,11 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.domain.Activity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.bonuspoint.domain.BonusPoint;
 import net.ipetty.bonuspoint.repository.BonusPointConsumptionDao;
 import net.ipetty.bonuspoint.repository.BonusPointDao;
 import net.ipetty.core.service.BaseService;
+import net.ipetty.vo.ActivityType;
 import net.ipetty.vo.BonusPointVO;
 
 import org.springframework.stereotype.Service;

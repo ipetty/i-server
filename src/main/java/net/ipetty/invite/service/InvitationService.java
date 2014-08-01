@@ -5,11 +5,11 @@ import java.util.Date;
 import javax.annotation.Resource;
 
 import net.ipetty.activity.annotation.ProduceActivity;
-import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.service.BaseService;
 import net.ipetty.core.util.UUIDUtils;
 import net.ipetty.invite.domain.Invitation;
 import net.ipetty.invite.repository.InvitationDao;
+import net.ipetty.vo.ActivityType;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
