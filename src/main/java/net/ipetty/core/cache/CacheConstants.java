@@ -62,4 +62,7 @@ public interface CacheConstants {
 	/* location */
 	public static final String CACHE_LOCATION_ID_TO_LOCATION = "mapLocationId2Location";
 
+	/* notification */
+	public static final String CACHE_NOTIFICATION = "mapNotification";
+
 }

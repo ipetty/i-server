@@ -38,4 +38,36 @@ public class ActivityApiTest extends BaseApiTest {
 		logger.debug("testListRelatedActivities, size is {}", feeds.size());
 	}
 
+	@Test
+	public void testListNewFansActivities() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<ActivityVO> feeds = activityApi.listNewFansActivities();
+		logger.debug("testListNewFansActivities, size is {}", feeds.size());
+	}
+
+	@Test
+	public void testListNewRepliesActivities() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<ActivityVO> feeds = activityApi.listNewRepliesActivities();
+		logger.debug("testListNewRepliesActivities, size is {}", feeds.size());
+	}
+
+	@Test
+	public void testListNewFavorsActivities() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<ActivityVO> feeds = activityApi.listNewFavorsActivities();
+		logger.debug("testListNewFavorsActivities, size is {}", feeds.size());
+	}
+
+	@Test
+	public void testListNewActivities() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<ActivityVO> feeds = activityApi.listNewActivities();
+		logger.debug("testListNewActivities, size is {}", feeds.size());
+	}
+
 }

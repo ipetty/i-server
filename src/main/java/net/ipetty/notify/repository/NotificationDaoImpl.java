@@ -3,6 +3,9 @@ package net.ipetty.notify.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import net.ipetty.core.cache.CacheConstants;
+import net.ipetty.core.cache.annotation.LoadFromCache;
+import net.ipetty.core.cache.annotation.UpdateToCache;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.notify.domain.Notification;
 
@@ -55,6 +58,7 @@ public class NotificationDaoImpl extends BaseJdbcDaoSupport implements Notificat
 	 * 获取某用户的通知对象
 	 */
 	@Override
+	@LoadFromCache(mapName = CacheConstants.CACHE_NOTIFICATION, key = "${userId}")
 	public Notification getNotification(Integer userId) {
 		return super.queryUniqueEntity(GET_BY_USER_ID_SQL, ROW_MAPPER, userId);
 	}
@@ -65,6 +69,7 @@ public class NotificationDaoImpl extends BaseJdbcDaoSupport implements Notificat
 	 * 更新用户通知对象
 	 */
 	@Override
+	@UpdateToCache(mapName = CacheConstants.CACHE_NOTIFICATION, key = "${notification.userId}")
 	public void update(Notification notification) {
 		super.getJdbcTemplate().update(UPDATE_SQL, notification.getNewFansNum(),
 				notification.getNewFansLastCheckDatetime(), notification.getNewRepliesNum(),

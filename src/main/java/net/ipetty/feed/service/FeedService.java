@@ -95,6 +95,14 @@ public class FeedService extends BaseService {
 	/**
 	 * 根据ID获取消息
 	 */
+	public Feed getFeedById(Long id) {
+		Assert.notNull(id, "ID不能为空");
+		return feedDao.getById(id);
+	}
+
+	/**
+	 * 根据ID获取消息
+	 */
 	public FeedVO getById(Long id) {
 		Assert.notNull(id, "ID不能为空");
 		Feed feed = feedDao.getById(id);
@@ -348,7 +356,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 发表评论
 	 */
-	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.feedId}", content = "${comment.text}")
+	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.id}", content = "${comment.text}")
 	public FeedVO comment(Comment comment) {
 		Assert.notNull(comment, "评论不能为空");
 		Assert.notNull(comment.getFeedId(), "评论的消息不能为空");

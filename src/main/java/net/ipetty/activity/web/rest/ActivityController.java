@@ -62,4 +62,56 @@ public class ActivityController extends BaseController {
 				Integer.valueOf(pageSize));
 	}
 
+	/**
+	 * 获取新粉丝事件列表
+	 */
+	@RequestMapping(value = "/activity/newfans", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<ActivityVO> listNewFansActivities() {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能查看事件流");
+		}
+		return activityService.listNewFansActivities(currentUser.getId());
+	}
+
+	/**
+	 * 获取新回复事件列表
+	 */
+	@RequestMapping(value = "/activity/newreplies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<ActivityVO> listNewRepliesActivities() {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能查看事件流");
+		}
+		return activityService.listNewRepliesActivities(currentUser.getId());
+	}
+
+	/**
+	 * 获取新赞事件列表
+	 */
+	@RequestMapping(value = "/activity/newfavors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<ActivityVO> listNewFavorsActivities() {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能查看事件流");
+		}
+		return activityService.listNewFavorsActivities(currentUser.getId());
+	}
+
+	/**
+	 * 获取用户的新粉丝、新回复、新赞事件列表
+	 */
+	@RequestMapping(value = "/activity/new", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<ActivityVO> listNewActivities() {
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能查看事件流");
+		}
+		return activityService.listNewActivities(currentUser.getId());
+	}
+
 }

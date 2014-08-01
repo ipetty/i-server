@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.ipetty.activity.domain.Activity;
+import net.ipetty.activity.domain.ActivityType;
 import net.ipetty.core.exception.BusinessException;
 import net.ipetty.core.repository.BaseJdbcDaoSupport;
 import net.ipetty.core.util.JdbcDaoUtils;
@@ -71,6 +72,16 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 		}
 	}
 
+	private static final String SAVE_INBOX_SQL = "insert into activity_inbox(activity_id, receiver_id) values(?, ?)";
+
+	/**
+	 * 保存事件的inbox通知
+	 */
+	@Override
+	public void saveActivityInbox(Long activityId, Integer receiverId) {
+		super.getJdbcTemplate().update(SAVE_INBOX_SQL, activityId, receiverId);
+	}
+
 	private static final String LIST_ACTIVITIES_SQL = "select * from activity where created_by=? order by created_on desc limit ?,?";
 
 	/**
@@ -92,7 +103,8 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 				pageNumber * pageSize, pageSize);
 	}
 
-	private static final String LIST_INBOX_ACTIVITIES_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and a.type=? and created_on>? and created_on<?";
+	private static final String LIST_INBOX_ACTIVITIES_BY_TYPE_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and a.type=? and created_on>? and created_on<?";
+	private static final String LIST_INBOX_ACTIVITIES_BY_TYPE_WITH_NONE_LAST_CHECKOUT_TIME_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and a.type=? and created_on<?";
 
 	/**
 	 * 获取用户新事件
@@ -100,8 +112,24 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 	@Override
 	public List<Activity> listInboxActivities(Integer userId, String activityType, Date lastCheckoutTime,
 			Date currentTime) {
-		return super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_SQL, ROW_MAPPER, userId, activityType,
-				lastCheckoutTime, currentTime);
+		return lastCheckoutTime != null ? super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_BY_TYPE_SQL, ROW_MAPPER,
+				userId, activityType, lastCheckoutTime, currentTime) : super.getJdbcTemplate().query(
+				LIST_INBOX_ACTIVITIES_BY_TYPE_WITH_NONE_LAST_CHECKOUT_TIME_SQL, ROW_MAPPER, userId, activityType,
+				currentTime);
+	}
+
+	private static final String LIST_INBOX_ACTIVITIES_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and (a.type=? or a.type=? or a.type=?) and created_on>? and created_on<?";
+	private static final String LIST_INBOX_ACTIVITIES_WITH_NONE_LAST_CHECKOUT_TIME_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and (a.type=? or a.type=? or a.type=?) and created_on<?";
+
+	/**
+	 * 获取用户新事件
+	 */
+	@Override
+	public List<Activity> listInboxActivities(Integer userId, Date lastCheckoutTime, Date currentTime) {
+		return lastCheckoutTime != null ? super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_SQL, ROW_MAPPER, userId,
+				ActivityType.FOLLOW, ActivityType.COMMENT, ActivityType.FEED_FAVOR, lastCheckoutTime, currentTime)
+				: super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_WITH_NONE_LAST_CHECKOUT_TIME_SQL, ROW_MAPPER,
+						userId, ActivityType.FOLLOW, ActivityType.COMMENT, ActivityType.FEED_FAVOR, currentTime);
 	}
 
 }
