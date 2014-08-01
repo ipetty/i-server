@@ -100,4 +100,19 @@ public class ActivityApiImpl extends BaseApi implements ActivityApi {
 				ApiContext.API_SERVER_BASE + URI_LIST_NEW_ACTIVITIES, ActivityVO[].class));
 	}
 
+	private static final String URI_LIST_NEW_ACTIVITIES_PAGING = "/activity/activities";
+
+	/**
+	 * 分页（包括历史时间列表）获取用户的新粉丝、新回复、新赞事件列表
+	 */
+	public List<ActivityVO> listNewActivities(int pageNumber, int pageSize) {
+		super.requireAuthorization();
+
+		LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.add("pageNumber", String.valueOf(pageNumber));
+		request.add("pageSize", String.valueOf(pageSize));
+		URI uri = buildUri(URI_LIST_NEW_ACTIVITIES_PAGING, request);
+		return Arrays.asList(context.getRestTemplate().getForObject(uri, ActivityVO[].class));
+	}
+
 }

@@ -92,7 +92,7 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 		return super.getJdbcTemplate().query(LIST_ACTIVITIES_SQL, ROW_MAPPER, userId, pageNumber * pageSize, pageSize);
 	}
 
-	private static final String LIST_RELATED_ACTIVITIES_SQL = "select a.* from activity a right join (select friend_id,follower_id from user_relationship where follower_id=?) ur on a.created_by=ur.friend_id union select * from activity where created_by=? order by created_on desc limit ?,?";
+	private static final String LIST_RELATED_ACTIVITIES_SQL = "select a.* from activity a left join (select friend_id,follower_id from user_relationship where follower_id=?) ur on a.created_by=ur.friend_id union select * from activity where created_by=? order by created_on desc limit ?,?";
 
 	/**
 	 * 获取某人相关的事件流
@@ -130,6 +130,16 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 				ActivityType.FOLLOW, ActivityType.COMMENT, ActivityType.FEED_FAVOR, lastCheckoutTime, currentTime)
 				: super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_WITH_NONE_LAST_CHECKOUT_TIME_SQL, ROW_MAPPER,
 						userId, ActivityType.FOLLOW, ActivityType.COMMENT, ActivityType.FEED_FAVOR, currentTime);
+	}
+
+	private static final String LIST_INBOX_ACTIVITIES_PAGING_SQL = "select a.* from activity a left join activity_inbox ai on a.id=ai.activity_id where ai.receiver_id=? and (a.type=? or a.type=? or a.type=?) and a.created_on<? order by a.created_on desc limit ?,?";
+
+	/**
+	 * 分页（包括历史时间列表）获取用户的新粉丝、新回复、新赞事件列表
+	 */
+	public List<Activity> listNewActivities(Integer userId, Date currentTime, int pageNumber, int pageSize) {
+		return super.getJdbcTemplate().query(LIST_INBOX_ACTIVITIES_PAGING_SQL, ROW_MAPPER, userId, ActivityType.FOLLOW,
+				ActivityType.COMMENT, ActivityType.FEED_FAVOR, currentTime, pageNumber * pageSize, pageSize);
 	}
 
 }

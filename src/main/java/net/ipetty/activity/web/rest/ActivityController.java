@@ -114,4 +114,20 @@ public class ActivityController extends BaseController {
 		return activityService.listNewActivities(currentUser.getId());
 	}
 
+	/**
+	 * 分页（包括历史时间列表）获取用户的新粉丝、新回复、新赞事件列表
+	 */
+	@RequestMapping(value = "/activity/activities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<ActivityVO> listNewActivities(String pageNumber, String pageSize) {
+		Assert.hasText(pageNumber, "页码不能为空");
+		Assert.hasText(pageSize, "每页条数不能为空");
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能查看事件流");
+		}
+		return activityService.listNewActivities(currentUser.getId(), Integer.valueOf(pageNumber),
+				Integer.valueOf(pageSize));
+	}
+
 }

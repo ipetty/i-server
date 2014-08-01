@@ -70,4 +70,12 @@ public class ActivityApiTest extends BaseApiTest {
 		logger.debug("testListNewActivities, size is {}", feeds.size());
 	}
 
+	@Test
+	public void testListNewActivitiesPaging() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		List<ActivityVO> feeds = activityApi.listNewActivities(0, 20);
+		logger.debug("testListNewActivitiesPaging, size is {}", feeds.size());
+	}
+
 }

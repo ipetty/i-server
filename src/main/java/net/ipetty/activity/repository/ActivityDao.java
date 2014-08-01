@@ -44,4 +44,9 @@ public interface ActivityDao {
 	 */
 	public List<Activity> listInboxActivities(Integer userId, Date lastCheckoutTime, Date currentTime);
 
+	/**
+	 * 分页（包括历史时间列表）获取用户的新粉丝、新回复、新赞事件列表
+	 */
+	public List<Activity> listNewActivities(Integer userId, Date currentTime, int pageNumber, int pageSize);
+
 }

@@ -66,11 +66,7 @@ public class ActivityService extends BaseService {
 	 */
 	public List<ActivityVO> listActivities(Integer userId, int pageNumber, int pageSize) {
 		List<Activity> activities = activityDao.listActivities(userId, pageNumber, pageSize);
-		List<ActivityVO> vos = new ArrayList<ActivityVO>();
-		for (Activity activity : activities) {
-			vos.add(activity.toVO());
-		}
-		return vos;
+		return activities2vo(activities, new Date());
 	}
 
 	/**
@@ -78,11 +74,7 @@ public class ActivityService extends BaseService {
 	 */
 	public List<ActivityVO> listRelatedActivities(Integer userId, int pageNumber, int pageSize) {
 		List<Activity> activities = activityDao.listRelatedActivities(userId, pageNumber, pageSize);
-		List<ActivityVO> vos = new ArrayList<ActivityVO>();
-		for (Activity activity : activities) {
-			vos.add(activity.toVO());
-		}
-		return vos;
+		return activities2vo(activities, new Date());
 	}
 
 	/**
@@ -129,7 +121,7 @@ public class ActivityService extends BaseService {
 		}
 
 		List<Activity> activities = activityDao.listInboxActivities(userId, activityType, lastCheckoutTime, now);
-		List<ActivityVO> vos = activities2vo(activities);
+		List<ActivityVO> vos = activities2vo(activities, lastCheckoutTime);
 
 		notificationService.update(notification);
 
@@ -137,7 +129,7 @@ public class ActivityService extends BaseService {
 		return vos;
 	}
 
-	private List<ActivityVO> activities2vo(List<Activity> activities) {
+	private List<ActivityVO> activities2vo(List<Activity> activities, Date lastCheckoutTime) {
 		List<ActivityVO> vos = new ArrayList<ActivityVO>(activities.size());
 		for (Activity activity : activities) {
 			ActivityVO vo = activity.toVO();
@@ -148,6 +140,9 @@ public class ActivityService extends BaseService {
 					Image image = imageService.getById(feed.getImageId());
 					vo.setFeedImageUrl(image.getSmallURL());
 				}
+			}
+			if (lastCheckoutTime != null && lastCheckoutTime.after(activity.getCreatedOn())) {
+				vo.setRead(true);
 			}
 			vos.add(vo);
 		}
@@ -163,7 +158,30 @@ public class ActivityService extends BaseService {
 
 		Date now = new Date();
 		List<Activity> activities = activityDao.listInboxActivities(userId, lastCheckoutTime, now);
-		List<ActivityVO> vos = activities2vo(activities);
+		List<ActivityVO> vos = activities2vo(activities, lastCheckoutTime);
+
+		notification.setNewFansNum(0);
+		notification.setNewFansLastCheckDatetime(now);
+		notification.setNewRepliesNum(0);
+		notification.setNewRepliesLastCheckDatetime(now);
+		notification.setNewFavorsNum(0);
+		notification.setNewFavorsLastCheckDatetime(now);
+		notificationService.update(notification);
+
+		logger.debug("notification={}", notification);
+		return vos;
+	}
+
+	/**
+	 * 分页（包括历史时间列表）获取用户的新粉丝、新回复、新赞事件列表
+	 */
+	public List<ActivityVO> listNewActivities(Integer userId, int pageNumber, int pageSize) {
+		Notification notification = notificationService.getNotification(userId);
+		Date lastCheckoutTime = notification.getNewRepliesLastCheckDatetime();
+
+		Date now = new Date();
+		List<Activity> activities = activityDao.listNewActivities(userId, now, pageNumber, pageSize);
+		List<ActivityVO> vos = activities2vo(activities, lastCheckoutTime);
 
 		notification.setNewFansNum(0);
 		notification.setNewFansLastCheckDatetime(now);
