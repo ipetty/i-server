@@ -61,7 +61,7 @@ public class ActivityMQMessageReceiver {
 			notification.setNewFansNum(notification.getNewFansNum() + 1);
 			notificationService.update(notification);
 		} else if (ActivityType.COMMENT.equals(activity.getType())) {
-			Long commentId = activity.getTargetId();
+			Long commentId = activity.getThisId();
 			CommentVO comment = feedService.getCommentById(commentId);
 			if (comment.getReplyToUserId() != null) {
 				Integer receiverId = comment.getReplyToUserId();
@@ -71,7 +71,7 @@ public class ActivityMQMessageReceiver {
 				notificationService.update(notification);
 			}
 
-			Long feedId = comment.getFeedId();
+			Long feedId = activity.getTargetId();
 			Feed feed = feedService.getFeedById(feedId);
 			if (!feed.getCreatedBy().equals(comment.getReplyToUserId())) { // 如果与被回复人是同一人则不发通知
 				Integer receiverId = feed.getCreatedBy();

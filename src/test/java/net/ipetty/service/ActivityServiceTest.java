@@ -74,6 +74,9 @@ public class ActivityServiceTest extends BaseTest {
 		List<ActivityVO> activities = activityService.listNewActivities(
 				userService.getByUniqueName(TEST_ACCOUNT_UNIQUE_NAME).getId(), 0, 20);
 		logger.debug("User {} has {} new activities.", TEST_ACCOUNT_UNIQUE_NAME, activities.size());
+		for (ActivityVO activity : activities) {
+			logger.debug("activityVO={}", activity);
+		}
 	}
 
 }

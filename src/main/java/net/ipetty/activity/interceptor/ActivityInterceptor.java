@@ -48,6 +48,9 @@ public class ActivityInterceptor {
 			String targetIdKey = activityAnnotation.targetId();
 			String targetIdStr = AopUtils.executeOgnlKey(targetIdKey, call, result);
 			Long targetId = StringUtils.isNotBlank(targetIdStr) ? Long.valueOf(targetIdStr) : null;
+			String thisIdKey = activityAnnotation.thisId();
+			String thisIdStr = AopUtils.executeOgnlKey(thisIdKey, call, result);
+			Long thisId = StringUtils.isNotBlank(thisIdStr) ? Long.valueOf(thisIdStr) : null;
 			String contentKey = activityAnnotation.content();
 			String createdByKey = activityAnnotation.createdBy();
 			String createdByStr = AopUtils.executeOgnlKey(createdByKey, call, result);
@@ -64,6 +67,7 @@ public class ActivityInterceptor {
 				String content = AopUtils.executeOgnlKey(contentKey, call, result);
 				activity.setContent(content);
 			}
+			activity.setThisId(thisId);
 			activityMQMessageSender.publish(activity);
 			logger.debug("published {}", activity);
 		} catch (OgnlException e) {

@@ -356,7 +356,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 发表评论
 	 */
-	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.id}", content = "${comment.text}")
+	@ProduceActivity(type = ActivityType.COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.feedId}", thisId = "${comment.id}", content = "${comment.text}")
 	public FeedVO comment(Comment comment) {
 		Assert.notNull(comment, "评论不能为空");
 		Assert.notNull(comment.getFeedId(), "评论的消息不能为空");
@@ -390,7 +390,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 删除评论
 	 */
-	@ProduceActivity(type = ActivityType.DELETE_COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.id}")
+	@ProduceActivity(type = ActivityType.DELETE_COMMENT, createdBy = "${comment.createdBy}", targetId = "${comment.feedId}", thisId = "${comment.id}")
 	public void delete(Comment comment) {
 		Assert.notNull(comment, "评论不存在");
 		UserPrincipal principal = UserContext.getContext();
@@ -422,7 +422,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 赞
 	 */
-	@ProduceActivity(type = ActivityType.FEED_FAVOR, createdBy = "${favor.createdBy}", targetId = "${favor.feedId}")
+	@ProduceActivity(type = ActivityType.FEED_FAVOR, createdBy = "${favor.createdBy}", targetId = "${favor.feedId}", thisId = "${favor.id}")
 	public FeedVO favor(FeedFavor favor) {
 		Assert.notNull(favor, "赞不能为空");
 		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");
@@ -439,7 +439,7 @@ public class FeedService extends BaseService {
 	/**
 	 * 取消赞
 	 */
-	@ProduceActivity(type = ActivityType.FEED_UNFAVOR, createdBy = "${favor.createdBy}", targetId = "${favor.feedId}")
+	@ProduceActivity(type = ActivityType.FEED_UNFAVOR, createdBy = "${favor.createdBy}", targetId = "${favor.feedId}", thisId = "${favor.id}")
 	public FeedVO unfavor(FeedFavor favor) {
 		Assert.notNull(favor, "赞不能为空");
 		Assert.notNull(favor.getFeedId(), "赞的消息不能为空");

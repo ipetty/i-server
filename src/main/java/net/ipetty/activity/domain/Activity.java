@@ -19,7 +19,8 @@ public class Activity extends LongIdEntity {
 	private static final long serialVersionUID = -3528508014802614988L;
 
 	private String type; // ActivityType
-	private Long targetId; // 目标ID
+	private Long targetId; // 受影响的目标ID
+	private Long thisId; // 当前操作的实体ID
 	private String content; // 内容，目前仅在回复事件时才有内容值
 
 	public Activity() {
@@ -106,6 +107,14 @@ public class Activity extends LongIdEntity {
 
 	public void setTargetId(Long targetId) {
 		this.targetId = targetId;
+	}
+
+	public Long getThisId() {
+		return thisId;
+	}
+
+	public void setThisId(Long thisId) {
+		this.thisId = thisId;
 	}
 
 	public String getContent() {

@@ -30,19 +30,20 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 	static final RowMapper<Activity> ROW_MAPPER = new RowMapper<Activity>() {
 		@Override
 		public Activity mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, type, created_by, target_id, content, created_on
+			// id, type, created_by, target_id, this_id, content, created_on
 			Activity activity = new Activity();
 			activity.setId(rs.getLong("id"));
 			activity.setType(rs.getString("type"));
 			activity.setCreatedBy(JdbcDaoUtils.getInteger(rs, "created_by"));
 			activity.setTargetId(JdbcDaoUtils.getLong(rs, "target_id"));
+			activity.setThisId(JdbcDaoUtils.getLong(rs, "this_id"));
 			activity.setContent(rs.getString("content"));
 			activity.setCreatedOn(rs.getTimestamp("created_on"));
 			return activity;
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into activity(type, created_by, target_id, content, created_on) values(?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into activity(type, created_by, target_id, this_id, content, created_on) values(?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存事件
@@ -56,8 +57,9 @@ public class ActivityDaoImpl extends BaseJdbcDaoSupport implements ActivityDao {
 			statement.setString(1, activity.getType());
 			JdbcDaoUtils.setInteger(statement, 2, activity.getCreatedBy());
 			JdbcDaoUtils.setLong(statement, 3, activity.getTargetId());
-			statement.setString(4, activity.getContent());
-			statement.setTimestamp(5, new Timestamp(activity.getCreatedOn().getTime()));
+			JdbcDaoUtils.setLong(statement, 4, activity.getThisId());
+			statement.setString(5, activity.getContent());
+			statement.setTimestamp(6, new Timestamp(activity.getCreatedOn().getTime()));
 
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
