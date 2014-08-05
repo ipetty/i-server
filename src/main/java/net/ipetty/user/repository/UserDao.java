@@ -51,6 +51,11 @@ public interface UserDao {
 	public void update(User user);
 
 	/**
+	 * 更新邮箱
+	 */
+	public void updateEmail(Integer id, String email);
+
+	/**
 	 * 更新爱宠号
 	 */
 	public void updateUniqueName(Integer id, String uniqueName);

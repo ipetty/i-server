@@ -318,6 +318,23 @@ public class UserService extends BaseService {
 	}
 
 	/**
+	 * 更新邮箱
+	 */
+	@ProduceActivity(type = ActivityType.UPDATE_EMAIL, createdBy = "${id}")
+	public void updateEmail(Integer id, String email) {
+		Assert.notNull(id, "用户ID不能为空");
+		Assert.hasText(email, "邮箱不能为空");
+		if (StringUtils.isNotBlank(email)) { // 校验唯一性
+			User orignal = this.getByLoginName(email);
+			if (orignal != null && !orignal.getId().equals(id)) {
+				throw new BusinessException("该邮箱已被使用");
+			}
+		}
+
+		userDao.updateEmail(id, email);
+	}
+
+	/**
 	 * 设置爱宠号，只能设置一次，一经设置不能变更
 	 */
 	@ProduceActivity(type = ActivityType.UPDATE_UNIQUE_NAME, createdBy = "${id}")

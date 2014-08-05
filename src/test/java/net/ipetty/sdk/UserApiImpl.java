@@ -7,6 +7,7 @@ import java.util.List;
 import net.ipetty.sdk.common.ApiContext;
 import net.ipetty.sdk.common.BaseApi;
 import net.ipetty.vo.RegisterVO;
+import net.ipetty.vo.UserForm43rdVO;
 import net.ipetty.vo.UserFormVO;
 import net.ipetty.vo.UserStatisticsVO;
 import net.ipetty.vo.UserVO;
@@ -74,6 +75,15 @@ public class UserApiImpl extends BaseApi implements UserApi {
 		context.setAuthorized(true);
 		context.setCurrUserId(user.getId());
 		return user;
+	}
+
+	private static final String URI_IMPROVE_USERINFO_4_3RD = "/improveUserInfo43rd";
+
+	/**
+	 * 使用第三方帐号注册后完善用户信息
+	 */
+	public UserVO improveUserInfo43rd(UserForm43rdVO userForm) {
+		return context.getRestTemplate().postForObject(buildUri(URI_IMPROVE_USERINFO_4_3RD), userForm, UserVO.class);
 	}
 
 	private static final String URI_LOGOUT = "/logout";

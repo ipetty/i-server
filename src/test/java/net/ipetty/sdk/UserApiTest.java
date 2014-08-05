@@ -4,7 +4,9 @@ import java.util.List;
 
 import net.ipetty.core.test.BaseApiTest;
 import net.ipetty.sdk.common.ApiContext;
+import net.ipetty.vo.PetVO;
 import net.ipetty.vo.RegisterVO;
+import net.ipetty.vo.UserForm43rdVO;
 import net.ipetty.vo.UserFormVO;
 import net.ipetty.vo.UserStatisticsVO;
 import net.ipetty.vo.UserVO;
@@ -21,6 +23,7 @@ import org.junit.Test;
 public class UserApiTest extends BaseApiTest {
 
 	UserApi userApi = new UserApiImpl(ApiContext.getInstance());
+	PetApi petApi = new PetApiImpl(ApiContext.getInstance());
 
 	private static final String TEST_ACCOUNT_EMAIL = "luocanfeng@ipetty.net";
 	private static final String TEST_ACCOUNT_PASSWORD = "888888";
@@ -63,6 +66,21 @@ public class UserApiTest extends BaseApiTest {
 		Assert.assertNotNull(user.getId());
 		Assert.assertEquals(userId, user.getId());
 		logger.debug("login3rd success {}", user);
+	}
+
+	@Test
+	public void testImproveUserInfo43rd() {
+		UserVO user = userApi.loginOrRegister3rd("SinaWeibo", "123456789", null, "testImproveUserInfo43rd");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		logger.debug("loginOrRegister3rd success {}", user);
+		Integer userId = user.getId();
+
+		List<PetVO> pets = petApi.listByUserId(userId);
+		PetVO pet = pets.get(0);
+		UserForm43rdVO userForm = new UserForm43rdVO(userId, "testImproveUserInfo43rd@gmail.com", "nickname",
+				pet.getId(), "petName", "male", "dog");
+		userApi.improveUserInfo43rd(userForm);
 	}
 
 	// @Test

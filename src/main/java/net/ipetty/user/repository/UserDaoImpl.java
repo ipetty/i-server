@@ -177,6 +177,19 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		logger.debug("updated {}", user);
 	}
 
+	private static final String UPDATE_EMAIL_SQL = "update users set email=?, version=version+1 where id=?";
+
+	/**
+	 * 更新邮箱
+	 */
+	@Override
+	@UpdatesToCache({ @UpdateToCache(mapName = CacheConstants.CACHE_USER_ID_TO_USER, key = "${id}"),
+			@UpdateToCache(mapName = CacheConstants.CACHE_USER_LOGIN_NAME_TO_USER_ID, key = "${email}") })
+	public void updateEmail(Integer id, String email) {
+		super.getJdbcTemplate().update(UPDATE_EMAIL_SQL, email, id);
+		logger.debug("updated email for user({}), email is {}", id, email);
+	}
+
 	private static final String UPDATE_UNIQUE_NAME_SQL = "update users set unique_name=?, version=version+1 where id=?";
 
 	/**

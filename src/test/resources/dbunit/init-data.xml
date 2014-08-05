@@ -100,4 +100,6 @@
 
 	<notification />
 
+	<crush_log />
+
 </dataset>

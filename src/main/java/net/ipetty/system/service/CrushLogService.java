@@ -6,6 +6,7 @@ import net.ipetty.core.service.BaseService;
 import net.ipetty.system.repository.CrushLogDao;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * CrushLogService
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @date 2014年8月4日
  */
 @Service
+@Transactional
 public class CrushLogService extends BaseService {
 
 	@Resource

@@ -20,6 +20,7 @@ import net.ipetty.user.domain.UserStatistics;
 import net.ipetty.user.service.UserService;
 import net.ipetty.user.service.UserStatisticsService;
 import net.ipetty.vo.RegisterVO;
+import net.ipetty.vo.UserForm43rdVO;
 import net.ipetty.vo.UserFormVO;
 import net.ipetty.vo.UserStatisticsVO;
 import net.ipetty.vo.UserVO;
@@ -112,6 +113,48 @@ public class UserController extends BaseController {
 		// 将用户token写入缓存
 		Caches.set(CacheConstants.CACHE_USER_TOKEN_TO_USER_ID, principal.getToken(), principal.getId());
 
+		return user.toVO();
+	}
+
+	/**
+	 * 使用第三方帐号注册后完善用户信息
+	 */
+	@RequestMapping(value = "/improveUserInfo43rd", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserVO improveUserInfo43rd(@RequestBody UserForm43rdVO userForm) {
+		Assert.notNull(userForm, "用户表单不能为空");
+		Assert.notNull(userForm.getId(), "用户ID不能为空");
+		Assert.hasText(userForm.getEmail(), "用户邮箱不能为空");
+
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能修改个人信息");
+		}
+
+		Assert.isTrue(userForm.getId().equals(currentUser.getId()), "只能修改自己的个人信息");
+
+		User user = userService.getById(userForm.getId());
+		user.setEmail(userForm.getEmail());
+		userService.updateEmail(user.getId(), user.getEmail());
+		user.getProfile().setNickname(userForm.getNickname());
+		userService.updateProfile(user.getProfile());
+
+		if (userForm.getPetId() != null) {
+			Pet pet = petService.getById(userForm.getPetId());
+			pet.setNickname(userForm.getPetName());
+			pet.setGender(userForm.getPetGender());
+			pet.setFamily(userForm.getPetFamily());
+			petService.update(pet);
+		} else if (StringUtils.isNotBlank(userForm.getPetName())) {
+			Pet pet = new Pet();
+			pet.setCreatedBy(user.getId());
+			pet.setNickname(userForm.getPetName());
+			pet.setGender(userForm.getPetGender());
+			pet.setFamily(userForm.getPetFamily());
+			petService.save(pet);
+		}
+
+		user = userService.getById(user.getId());
 		return user.toVO();
 	}
 
