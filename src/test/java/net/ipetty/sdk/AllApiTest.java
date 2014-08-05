@@ -17,7 +17,8 @@ import org.springframework.test.context.ContextConfiguration;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ FoundationApiTest.class, UserApiTest.class, PetApiTest.class, FeedApiTest.class,
-		FeedbackApiTest.class, ActivityApiTest.class, AppUpdateApiTest.class, NotificationApiTest.class })
+		FeedbackApiTest.class, ActivityApiTest.class, AppUpdateApiTest.class, NotificationApiTest.class,
+		CrushLogApiTest.class })
 @ContextConfiguration("classpath:applicationContext-api-test.xml")
 public class AllApiTest extends BaseTestWithDBUnit {
 
