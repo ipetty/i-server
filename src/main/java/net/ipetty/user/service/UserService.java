@@ -366,7 +366,6 @@ public class UserService extends BaseService {
 	@ProduceActivity(type = ActivityType.CHANGE_PASSWORD, createdBy = "${id}")
 	public void changePassword(Integer id, String oldPassword, String newPassword) {
 		Assert.notNull(id, "用户ID不能为空");
-		Assert.hasText(oldPassword, "旧密码不能为空");
 		Assert.hasText(newPassword, "新密码不能为空");
 
 		User user = userDao.getById(id);
@@ -374,13 +373,22 @@ public class UserService extends BaseService {
 			throw new BusinessException("指定ID（" + id + "）的用户不存在");
 		}
 
-		String oldEncodedPassword = SaltEncoder.encode(oldPassword, user.getSalt());
-		if (!StringUtils.equals(oldEncodedPassword, user.getEncodedPassword())) {
-			throw new BusinessException("原密码不匹配");
+		if (StringUtils.isNotBlank(user.getPassword())) { // 用户已设置密码，则需要校验原密码
+			Assert.hasText(oldPassword, "旧密码不能为空");
+			String oldEncodedPassword = SaltEncoder.encode(oldPassword, user.getSalt());
+			if (!StringUtils.equals(oldEncodedPassword, user.getEncodedPassword())) {
+				throw new BusinessException("原密码不匹配");
+			}
 		}
 
-		String newEncodedPassword = SaltEncoder.encode(newPassword, user.getSalt());
-		userDao.changePassword(id, newEncodedPassword);
+		if (StringUtils.isBlank(user.getSalt())) {
+			user.setSalt(SaltEncoder.generateSalt());
+			String newEncodedPassword = SaltEncoder.encode(newPassword, user.getSalt());
+			userDao.changePasswordWithSalt(id, newEncodedPassword, user.getSalt());
+		} else {
+			String newEncodedPassword = SaltEncoder.encode(newPassword, user.getSalt());
+			userDao.changePassword(id, newEncodedPassword);
+		}
 	}
 
 	/**

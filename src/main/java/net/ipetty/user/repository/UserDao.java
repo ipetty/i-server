@@ -65,4 +65,9 @@ public interface UserDao {
 	 */
 	public void changePassword(Integer id, String newEncodedPassword);
 
+	/**
+	 * 修改密码与盐值
+	 */
+	public void changePasswordWithSalt(Integer id, String newEncodedPassword, String salt);
+
 }

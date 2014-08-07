@@ -112,6 +112,22 @@ public class UserServiceTest extends BaseTest {
 	}
 
 	@Test
+	public void testChangePasswordWithSalt() {
+		User user = userService.loginOrRegister3rd("SinaWeibo", "2345", "2345@gmail.com", "test");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+
+		user = userService.getById(user.getId());
+		Assert.assertNull(user.getPassword());
+		Assert.assertNull(user.getSalt());
+
+		userService.changePassword(user.getId(), null, "888");
+		user = userService.getById(user.getId());
+		Assert.assertNotNull(user.getPassword());
+		Assert.assertNotNull(user.getSalt());
+	}
+
+	@Test
 	public void testFollowAndIsFollowAndUnfollow() {
 		User user1 = new User();
 		user1.setEmail("testFollowAndIsFollowAndUnfollow1@ipetty.net");

@@ -214,4 +214,16 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		logger.debug("changed password for user({})", id);
 	}
 
+	private static final String CHANGE_PASSWORD_WITH_SALT_SQL = "update users set password=?, salt=? where id=?";
+
+	/**
+	 * 修改密码与盐值
+	 */
+	@Override
+	@UpdateToCache(mapName = CacheConstants.CACHE_USER_ID_TO_USER, key = "${id}")
+	public void changePasswordWithSalt(Integer id, String newEncodedPassword, String salt) {
+		super.getJdbcTemplate().update(CHANGE_PASSWORD_WITH_SALT_SQL, newEncodedPassword, salt, id);
+		logger.debug("changed password and salt for user({})", id);
+	}
+
 }

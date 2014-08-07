@@ -323,7 +323,7 @@ public class UserController extends BaseController {
 		if (currentUser == null || currentUser.getId() == null) {
 			throw new RestException("注册用户才能修改密码");
 		}
-		Assert.hasText(oldPassword, "旧密码不能为空");
+		// Assert.hasText(oldPassword, "旧密码不能为空");
 		Assert.hasText(newPassword, "新密码不能为空");
 		userService.changePassword(currentUser.getId(), oldPassword, newPassword);
 		return true;
