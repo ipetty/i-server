@@ -17,7 +17,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({ OptionServiceTest.class, UserServiceTest.class, UserStatisticsServiceTest.class,
 		PetServiceTest.class, LocationServiceTest.class, ImageServiceTest.class, FeedServiceTest.class,
 		InvitationServiceTest.class, FeedbackServiceTest.class, BonusPointServiceTest.class, ActivityServiceTest.class,
-		NotificationServiceTest.class, AppUpdateServiceTest.class, CrushLogServiceTest.class })
+		NotificationServiceTest.class, AppUpdateServiceTest.class, CrashLogServiceTest.class })
 public class AllServiceTest extends BaseTestWithDBUnit {
 
 	@BeforeClass

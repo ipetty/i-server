@@ -1,16 +1,18 @@
 package net.ipetty.system.repository;
 
+import net.ipetty.system.domain.CrashLog;
+
 /**
- * CrushLogDao
+ * CrashLogDao
  * 
  * @author luocanfeng
  * @date 2014年8月4日
  */
-public interface CrushLogDao {
+public interface CrashLogDao {
 
 	/**
 	 * 保存崩溃日志
 	 */
-	public void save(String crushLog);
+	public void save(CrashLog crashLog);
 
 }
