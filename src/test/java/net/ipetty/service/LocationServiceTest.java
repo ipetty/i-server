@@ -22,14 +22,14 @@ public class LocationServiceTest extends BaseTest {
 
 	@Test
 	public void testSave() {
-		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
+		Location location = new Location(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true);
 		locationService.save(location);
 		Assert.assertNotNull(location.getId());
 	}
 
 	@Test
 	public void testGetById() {
-		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
+		Location location = new Location(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true);
 		locationService.save(location);
 		Assert.assertNotNull(location.getId());
 		location = locationService.getById(location.getId());

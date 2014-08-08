@@ -28,18 +28,27 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 	static final RowMapper<Location> ROW_MAPPER = new RowMapper<Location>() {
 		@Override
 		public Location mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, longitude, latitude, geoHash, address
+			// id, longitude, latitude, geo_hash, coor_type, radius, province,
+			// city, district, street, street_number, address, silent
 			Location location = new Location();
 			location.setId(rs.getLong("id"));
-			location.setLongitude(JdbcDaoUtils.getLong(rs, "longitude"));
-			location.setLatitude(JdbcDaoUtils.getLong(rs, "latitude"));
-			location.setGeoHash(rs.getString("geoHash"));
+			location.setLongitude(JdbcDaoUtils.getDouble(rs, "longitude"));
+			location.setLatitude(JdbcDaoUtils.getDouble(rs, "latitude"));
+			location.setGeoHash(rs.getString("geo_hash"));
+			location.setCoorType(rs.getString("coor_type"));
+			location.setRadius(JdbcDaoUtils.getFloat(rs, "radius"));
+			location.setProvince(rs.getString("province"));
+			location.setCity(rs.getString("city"));
+			location.setDistrict(rs.getString("district"));
+			location.setStreet(rs.getString("street"));
+			location.setStreetNumber(rs.getString("street_number"));
 			location.setAddress(rs.getString("address"));
+			location.setSilent(rs.getBoolean("silent"));
 			return location;
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into location(longitude, latitude, geoHash, address) values(?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into location(longitude, latitude, geo_hash, coor_type, radius, province, city, district, street, street_number, address, silent) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存位置信息
@@ -49,10 +58,18 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 		try {
 			Connection connection = super.getConnection();
 			PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
-			JdbcDaoUtils.setLong(statement, 1, location.getLongitude());
-			JdbcDaoUtils.setLong(statement, 2, location.getLatitude());
+			JdbcDaoUtils.setDouble(statement, 1, location.getLongitude());
+			JdbcDaoUtils.setDouble(statement, 2, location.getLatitude());
 			statement.setString(3, location.getGeoHash());
-			statement.setString(4, location.getAddress());
+			statement.setString(4, location.getCoorType());
+			JdbcDaoUtils.setFloat(statement, 5, location.getRadius());
+			statement.setString(6, location.getProvince());
+			statement.setString(7, location.getCity());
+			statement.setString(8, location.getDistrict());
+			statement.setString(9, location.getStreet());
+			statement.setString(10, location.getStreetNumber());
+			statement.setString(11, location.getAddress());
+			statement.setBoolean(12, location.isSilent());
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			while (rs.next()) {

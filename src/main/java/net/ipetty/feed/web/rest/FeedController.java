@@ -24,7 +24,9 @@ import net.ipetty.vo.FeedFavorVO;
 import net.ipetty.vo.FeedList;
 import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
+import net.ipetty.vo.FeedWithLocationVO;
 import net.ipetty.vo.ImageVO;
+import net.ipetty.vo.LocationVO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -98,9 +100,52 @@ public class FeedController extends BaseController {
 		feed.setImageId(StringUtils.isBlank(imageId) ? null : Long.valueOf(imageId));
 
 		// 位置
-		if (longitude != null && latitude != null && address != null) {
+		if (longitude != null && latitude != null) {
 			// TODO generate geohash
-			Location location = new Location(Long.valueOf(longitude), Long.valueOf(latitude), null, address);
+			// Location location = new Location(Long.valueOf(longitude),
+			// Long.valueOf(latitude), null, address);
+			// locationService.save(location);
+			// feed.setLocationId(location.getId());
+		}
+
+		// 消息
+		feedService.save(feed);
+		return feedService.getById(feed.getId());
+	}
+
+	/**
+	 * 发布消息（带位置信息）
+	 */
+	@RequestMapping(value = "/publishText2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public FeedVO publishTextWithLocation(@RequestBody FeedWithLocationVO feedWithLocationVO) {
+		if (feedWithLocationVO == null) {
+			throw new RestException("发布消息不能为空");
+		}
+		String text = feedWithLocationVO.getText();
+		Long imageId = feedWithLocationVO.getImageId();
+		LocationVO locationVO = feedWithLocationVO.getLocation();
+		if (imageId == null && StringUtils.isBlank(text)) {
+			throw new RestException("图片与内容不能为空");
+		}
+		logger.debug("publish text={}, image.id={}", text, imageId);
+
+		// 当前用户
+		UserPrincipal currentUser = UserContext.getContext();
+		if (currentUser == null || currentUser.getId() == null) {
+			throw new RestException("注册用户才能发布消息");
+		}
+
+		// Feed
+		Feed feed = new Feed();
+		feed.setCreatedBy(currentUser.getId());
+		feed.setText(StringUtils.isBlank(text) ? null : text);
+		feed.setImageId(imageId);
+
+		// 位置
+		if (locationVO != null) {
+			// TODO generate geohash
+			Location location = Location.fromVO(locationVO);
 			locationService.save(location);
 			feed.setLocationId(location.getId());
 		}

@@ -14,8 +14,9 @@ import net.ipetty.vo.FeedFormVO;
 import net.ipetty.vo.FeedList;
 import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
+import net.ipetty.vo.FeedWithLocationVO;
 import net.ipetty.vo.ImageVO;
-import net.ipetty.vo.LocationFormVO;
+import net.ipetty.vo.LocationVO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
@@ -56,13 +57,31 @@ public class FeedApiImpl extends BaseApi implements FeedApi {
 		LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.add("text", feed.getText());
 		request.add("imageId", imageId == null ? null : String.valueOf(imageId));
-		LocationFormVO location = feed.getLocation();
-		if (location != null) {
-			request.add("longitude", location.getLongitude() == null ? null : String.valueOf(location.getLongitude()));
-			request.add("latitude", location.getLatitude() == null ? null : String.valueOf(location.getLatitude()));
-			request.add("address", location.getAddress());
-		}
 		return context.getRestTemplate().postForObject(publishTextUri, request, FeedVO.class);
+	}
+
+	private static final String URI_PUBLISH_TEXT2 = "/feed/publishText2";
+
+	/**
+	 * 发布消息（带地理位置信息）
+	 */
+	@Override
+	public FeedVO publishWithLocation(FeedFormVO feed) {
+		super.requireAuthorization();
+
+		Long imageId = null;
+		if (StringUtils.isNotBlank(feed.getImagePath())) { // 发布图片
+			URI publishImageUri = buildUri(URI_PUBLISH_IMAGE);
+			LinkedMultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+			request.add("imageFile", new FileSystemResource(feed.getImagePath()));
+			ImageVO image = context.getRestTemplate().postForObject(publishImageUri, request, ImageVO.class);
+			imageId = image.getId();
+		}
+
+		URI publishTextUri = buildUri(URI_PUBLISH_TEXT2);
+		LocationVO location = feed.getLocation();
+		FeedWithLocationVO feedWithLocationVO = new FeedWithLocationVO(feed.getText(), imageId, location);
+		return context.getRestTemplate().postForObject(publishTextUri, feedWithLocationVO, FeedVO.class);
 	}
 
 	private static final String URI_GET_BY_ID = "/feed/{id}";

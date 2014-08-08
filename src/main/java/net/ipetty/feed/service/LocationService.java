@@ -30,7 +30,6 @@ public class LocationService extends BaseService {
 		Assert.notNull(location, "位置不能为空");
 		Assert.notNull(location.getLongitude(), "位置经度不能为空");
 		Assert.notNull(location.getLatitude(), "位置纬度不能为空");
-		Assert.hasText(location.getAddress(), "位置描述不能为空");
 		locationDao.save(location);
 	}
 

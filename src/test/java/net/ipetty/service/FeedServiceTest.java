@@ -61,7 +61,7 @@ public class FeedServiceTest extends BaseTest {
 		Assert.assertNotNull(image.getId());
 		Assert.assertNotNull(image.getCreatedOn());
 
-		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
+		Location location = new Location(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true);
 		locationService.save(location);
 		Assert.assertNotNull(location.getId());
 
@@ -83,7 +83,7 @@ public class FeedServiceTest extends BaseTest {
 		imageService.save(image);
 		Assert.assertNotNull(image.getId());
 
-		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
+		Location location = new Location(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true);
 		locationService.save(location);
 		Assert.assertNotNull(location.getId());
 
@@ -109,7 +109,7 @@ public class FeedServiceTest extends BaseTest {
 		imageService.save(image);
 		Assert.assertNotNull(image.getId());
 
-		Location location = new Location(31171999l, 121396314l, "", "虹梅路2007号");
+		Location location = new Location(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true);
 		locationService.save(location);
 		Assert.assertNotNull(location.getId());
 

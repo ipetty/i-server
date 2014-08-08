@@ -13,7 +13,7 @@ import net.ipetty.vo.FeedFormVO;
 import net.ipetty.vo.FeedList;
 import net.ipetty.vo.FeedTimelineQueryParams;
 import net.ipetty.vo.FeedVO;
-import net.ipetty.vo.LocationFormVO;
+import net.ipetty.vo.LocationVO;
 import net.ipetty.vo.UserVO;
 
 import org.junit.Assert;
@@ -40,7 +40,7 @@ public class FeedApiTest extends BaseApiTest {
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
 		feedForm.setImagePath(super.getTestPhotoPath());
-		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
+		feedForm.setLocation(new LocationVO(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true));
 		FeedVO feed = feedApi.publish(feedForm);
 		Assert.assertNotNull(feed);
 		Assert.assertNotNull(feed.getId());
@@ -63,8 +63,8 @@ public class FeedApiTest extends BaseApiTest {
 
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("test feed text");
-		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
-		FeedVO feed = feedApi.publish(feedForm);
+		feedForm.setLocation(new LocationVO(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true));
+		FeedVO feed = feedApi.publishWithLocation(feedForm);
 		Assert.assertNotNull(feed);
 		Assert.assertNotNull(feed.getId());
 	}
@@ -74,9 +74,9 @@ public class FeedApiTest extends BaseApiTest {
 		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
 		FeedFormVO feedForm = new FeedFormVO();
-		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
+		feedForm.setLocation(new LocationVO(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true));
 		try {
-			feedApi.publish(feedForm);
+			feedApi.publishWithLocation(feedForm);
 		} catch (Exception e) {
 			Assert.assertTrue(true);
 		}
@@ -119,7 +119,7 @@ public class FeedApiTest extends BaseApiTest {
 		FeedFormVO feedForm = new FeedFormVO();
 		feedForm.setText("中文内容");
 		feedForm.setImagePath(super.getTestPhotoPath());
-		feedForm.setLocation(new LocationFormVO(123l, 456l, "test location"));
+		feedForm.setLocation(new LocationVO(31.1790070000, 121.4023470000, "bd09ll", 9f, "上海", "上海", "徐汇", "", true));
 		FeedVO feed = feedApi.publish(feedForm);
 		Assert.assertNotNull(feed);
 		Assert.assertNotNull(feed.getId());
