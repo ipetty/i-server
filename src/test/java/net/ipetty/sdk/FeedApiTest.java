@@ -70,6 +70,19 @@ public class FeedApiTest extends BaseApiTest {
 	}
 
 	@Test
+	public void testPublishTextAndLocation2() {
+		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
+
+		FeedFormVO feedForm = new FeedFormVO();
+		feedForm.setText("test feed text");
+		// feedForm.setLocation(new LocationVO(31.1790070000, 121.4023470000,
+		// "bd09ll", 9f, "上海", "上海", "徐汇", "", true));
+		FeedVO feed = feedApi.publishWithLocation(feedForm);
+		Assert.assertNotNull(feed);
+		Assert.assertNotNull(feed.getId());
+	}
+
+	@Test
 	public void testPublishLocationOnly() {
 		userApi.login(TEST_ACCOUNT_UNIQUE_NAME, TEST_ACCOUNT_PASSWORD);
 
