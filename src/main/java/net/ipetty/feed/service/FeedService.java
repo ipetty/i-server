@@ -21,11 +21,13 @@ import net.ipetty.feed.domain.Feed;
 import net.ipetty.feed.domain.FeedFavor;
 import net.ipetty.feed.domain.FeedStatistics;
 import net.ipetty.feed.domain.Image;
+import net.ipetty.feed.domain.Location;
 import net.ipetty.feed.repository.CommentDao;
 import net.ipetty.feed.repository.FeedDao;
 import net.ipetty.feed.repository.FeedFavorDao;
 import net.ipetty.feed.repository.FeedStatisticsDao;
 import net.ipetty.feed.repository.ImageDao;
+import net.ipetty.feed.repository.LocationDao;
 import net.ipetty.user.repository.UserStatisticsDao;
 import net.ipetty.vo.ActivityType;
 import net.ipetty.vo.CachedUserVersion;
@@ -68,6 +70,9 @@ public class FeedService extends BaseService {
 
 	@Resource
 	private ImageDao imageDao;
+
+	@Resource
+	private LocationDao locationDao;
 
 	/**
 	 * 保存消息
@@ -126,6 +131,13 @@ public class FeedService extends BaseService {
 			if (image != null) { // 此处不应该为空，仅为容错处理
 				vo.setImageOriginalURL(image.getOriginalURL());
 				vo.setImageSmallURL(image.getSmallURL());
+			}
+		}
+
+		if (feed.getLocationId() != null) { // 此处不应该为空，仅为容错处理
+			Location location = locationDao.getById(feed.getLocationId());
+			if (location != null) {
+				vo.setLocation(location.toVO());
 			}
 		}
 
@@ -219,6 +231,7 @@ public class FeedService extends BaseService {
 		for (FeedFavor favor : myFavors) {
 			favoredFeedIds.add(favor.getFeedId());
 		}
+
 		// images
 		List<Image> images = imageDao.listByFeedIds(feedIds);
 		Map<Long, Image> imageMap = new HashMap<Long, Image>();
@@ -226,21 +239,29 @@ public class FeedService extends BaseService {
 			imageMap.put(image.getId(), image);
 		}
 
-		// fullfill favored and image
+		// locations
+		List<Location> locations = locationDao.listByFeedIds(feedIds);
+		Map<Long, Location> locationMap = new HashMap<Long, Location>();
+		for (Location location : locations) {
+			locationMap.put(location.getId(), location);
+		}
+
+		// fullfill favored and image and location
 		for (Feed feed : feeds) {
 			Long imageId = feed.getImageId();
+			Long locationId = feed.getLocationId();
 			FeedVO vo = feed.toVO();
 			if (favoredFeedIds.contains(vo.getId())) {
 				vo.setFavored(true);
 			}
 			if (imageId != null) {
 				Image image = imageMap.get(imageId);
-				// if (image == null) {
-				// logger.error("Image {} not loaded from database.", imageId);
-				// } else {
 				vo.setImageSmallURL(image.getSmallURL());
 				vo.setImageOriginalURL(image.getOriginalURL());
-				// }
+			}
+			if (locationId != null) {
+				Location location = locationMap.get(locationId);
+				vo.setLocation(location.toVO());
 			}
 			vos.add(vo);
 		}
@@ -324,6 +345,7 @@ public class FeedService extends BaseService {
 				favoredFeedIds.add(favor.getFeedId());
 			}
 		}
+
 		// images
 		List<Image> images = imageDao.listByFeedIds(feedIds);
 		Map<Long, Image> imageMap = new HashMap<Long, Image>();
@@ -331,21 +353,29 @@ public class FeedService extends BaseService {
 			imageMap.put(image.getId(), image);
 		}
 
-		// fullfill favored and image
+		// locations
+		List<Location> locations = locationDao.listByFeedIds(feedIds);
+		Map<Long, Location> locationMap = new HashMap<Long, Location>();
+		for (Location location : locations) {
+			locationMap.put(location.getId(), location);
+		}
+
+		// fullfill favored and image and location
 		for (Feed feed : feeds) {
 			Long imageId = feed.getImageId();
+			Long locationId = feed.getLocationId();
 			FeedListItem feedListItem = feed.toFeedListItem();
 			if (favoredFeedIds.contains(feedListItem.getId())) {
 				feedListItem.setFavored(true);
 			}
 			if (imageId != null) {
 				Image image = imageMap.get(imageId);
-				// if (image == null) {
-				// logger.error("Image {} not loaded from database.", imageId);
-				// } else {
 				feedListItem.setImageSmallURL(image.getSmallURL());
 				feedListItem.setImageOriginalURL(image.getOriginalURL());
-				// }
+			}
+			if (locationId != null) {
+				Location location = locationMap.get(locationId);
+				feedListItem.setLocation(location.toVO());
 			}
 			feedList.getFeeds().add(feedListItem);
 		}

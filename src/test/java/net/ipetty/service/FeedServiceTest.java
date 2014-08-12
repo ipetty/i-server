@@ -96,6 +96,7 @@ public class FeedServiceTest extends BaseTest {
 		Assert.assertNotNull(feed.getId());
 
 		FeedVO feedVO = feedService.getById(feed.getId());
+		logger.debug("--testGetById {}", feedVO);
 		Assert.assertNotNull(feedVO);
 		Assert.assertNotNull(feedVO.getId());
 	}

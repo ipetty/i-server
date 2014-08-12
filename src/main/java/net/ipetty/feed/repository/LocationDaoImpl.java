@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import net.ipetty.core.cache.CacheConstants;
 import net.ipetty.core.cache.annotation.LoadFromCache;
@@ -15,6 +16,7 @@ import net.ipetty.feed.domain.Location;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 /**
  * LocationDaoImpl
@@ -92,6 +94,17 @@ public class LocationDaoImpl extends BaseJdbcDaoSupport implements LocationDao {
 	@LoadFromCache(mapName = CacheConstants.CACHE_LOCATION_ID_TO_LOCATION, key = "${id}")
 	public Location getById(Long id) {
 		return super.queryUniqueEntity(GET_BY_ID_SQL, ROW_MAPPER, id);
+	}
+
+	private static final String LIST_BY_FEED_IDS_SQL = "select l.* from location l inner join (select location_id from feed where id in (?)) lid on l.id=lid.location_id";
+
+	/**
+	 * 获取指定主题消息列表的位置信息列表
+	 */
+	@Override
+	public List<Location> listByFeedIds(Long... feedIds) {
+		String inStatement = feedIds.length > 0 ? StringUtils.arrayToCommaDelimitedString(feedIds) : "null";
+		return super.getJdbcTemplate().query(LIST_BY_FEED_IDS_SQL.replace("?", inStatement), ROW_MAPPER);
 	}
 
 }
