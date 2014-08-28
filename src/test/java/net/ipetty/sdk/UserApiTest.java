@@ -69,6 +69,14 @@ public class UserApiTest extends BaseApiTest {
 	}
 
 	@Test
+	public void testLoginOrRegister3rdWithoutEmail() {
+		UserVO user = userApi.loginOrRegister3rd("SinaWeibo", "noemail54321", null, "test");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		logger.debug("loginOrRegister3rd success {}", user);
+	}
+
+	@Test
 	public void testImproveUserInfo43rd() {
 		UserVO user = userApi.loginOrRegister3rd("SinaWeibo", "123456789", null, "testImproveUserInfo43rd");
 		Assert.assertNotNull(user);
@@ -80,6 +88,21 @@ public class UserApiTest extends BaseApiTest {
 		PetVO pet = pets.get(0);
 		UserForm43rdVO userForm = new UserForm43rdVO(userId, "testImproveUserInfo43rd@gmail.com", "nickname",
 				pet.getId(), "petName", "male", "dog");
+		userApi.improveUserInfo43rd(userForm);
+	}
+
+	@Test
+	public void testImproveUserInfo43rdWithoutEmail() {
+		UserVO user = userApi.loginOrRegister3rd("SinaWeibo", "12345678911", null,
+				"testImproveUserInfo43rdWithoutEmail");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		logger.debug("loginOrRegister3rd success {}", user);
+		Integer userId = user.getId();
+
+		List<PetVO> pets = petApi.listByUserId(userId);
+		PetVO pet = pets.get(0);
+		UserForm43rdVO userForm = new UserForm43rdVO(userId, null, "nickname", pet.getId(), "petName", "male", "dog");
 		userApi.improveUserInfo43rd(userForm);
 	}
 

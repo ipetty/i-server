@@ -124,7 +124,7 @@ public class UserController extends BaseController {
 	public UserVO improveUserInfo43rd(@RequestBody UserForm43rdVO userForm) {
 		Assert.notNull(userForm, "用户表单不能为空");
 		Assert.notNull(userForm.getId(), "用户ID不能为空");
-		Assert.hasText(userForm.getEmail(), "用户邮箱不能为空");
+		// Assert.hasText(userForm.getEmail(), "用户邮箱不能为空");
 
 		UserPrincipal currentUser = UserContext.getContext();
 		if (currentUser == null || currentUser.getId() == null) {
@@ -134,8 +134,10 @@ public class UserController extends BaseController {
 		Assert.isTrue(userForm.getId().equals(currentUser.getId()), "只能修改自己的个人信息");
 
 		User user = userService.getById(userForm.getId());
-		user.setEmail(userForm.getEmail());
-		userService.updateEmail(user.getId(), user.getEmail());
+		if (StringUtils.isNotBlank(userForm.getEmail())) {
+			user.setEmail(userForm.getEmail());
+			userService.updateEmail(user.getId(), user.getEmail());
+		}
 		user.getProfile().setNickname(userForm.getNickname());
 		userService.updateProfile(user.getProfile());
 
