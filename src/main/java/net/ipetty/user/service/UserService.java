@@ -49,7 +49,7 @@ public class UserService extends BaseService {
 	private static final String SECRETARY_ACCOUNT_EMAIL = "service@ipetty.net";
 	private static final String PLATFORM_SINA_WEIBO = "SinaWeibo";
 	private static final String PLATFORM_QZONE = "QZone";
-	private static final String PLATFORM_WECHAT = "Wechat";
+	// private static final String PLATFORM_WECHAT = "Wechat";
 
 	@Resource
 	private UserDao userDao;
