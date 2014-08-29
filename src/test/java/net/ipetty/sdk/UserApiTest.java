@@ -268,6 +268,20 @@ public class UserApiTest extends BaseApiTest {
 	}
 
 	@Test
+	public void testUpdateWithEmail() {
+		UserVO user = userApi.loginOrRegister3rd("SinaWeibo", "12345678922", null, "testUpdateWithEmail");
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
+		logger.debug("loginOrRegister3rd success {}", user);
+
+		UserFormVO userFormVo = new UserFormVO();
+		userFormVo.setId(user.getId());
+		userFormVo.setNickname("testUpdateWithEmail");
+		userFormVo.setEmail("testUpdateWithEmail@ipetty.net");
+		userApi.update(userFormVo);
+	}
+
+	@Test
 	public void testDoSomethingWithRefreshToken() {
 		// do not login
 		String backgroundUrl = userApi.updateBackground(getTestPhotoPath());

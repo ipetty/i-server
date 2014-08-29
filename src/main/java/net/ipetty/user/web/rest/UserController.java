@@ -496,9 +496,12 @@ public class UserController extends BaseController {
 		}
 
 		Assert.isTrue(userFormVo.getId().equals(currentUser.getId()), "只能修改自己的个人信息");
+		User user = userService.getById(currentUser.getId());
 
+		logger.debug("email={}, originalEmail={}", userFormVo.getEmail(), user.getEmail());
 		if (StringUtils.isNotBlank(userFormVo.getEmail())
-				&& !StringUtils.equalsIgnoreCase(userFormVo.getEmail(), userFormVo.getEmail())) {
+				&& !StringUtils.equalsIgnoreCase(userFormVo.getEmail(), user.getEmail())) {
+			logger.debug("updating email");
 			userService.updateEmail(userFormVo.getId(), userFormVo.getEmail());
 		}
 
