@@ -38,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * UserService
- * 
  * @author luocanfeng
  * @date 2014年5月4日
  */
@@ -49,7 +48,7 @@ public class UserService extends BaseService {
 	private static final String SECRETARY_ACCOUNT_EMAIL = "service@ipetty.net";
 	private static final String PLATFORM_SINA_WEIBO = "SinaWeibo";
 	private static final String PLATFORM_QZONE = "QZone";
-	// private static final String PLATFORM_WECHAT = "Wechat";
+	private static final String PLATFORM_WECHAT = "Wechat";
 
 	@Resource
 	private UserDao userDao;
@@ -107,7 +106,9 @@ public class UserService extends BaseService {
 	public User login3rd(String platform, String platformUserId) {
 		// 如果帐号已存在则登录成功
 		Integer userId = null;
-		if (PLATFORM_QZONE.equals(platform)) {
+		if (PLATFORM_WECHAT.equals(platform)) {
+			userId = userDao.getUserIdByWechatUserId(platformUserId);
+		} else if (PLATFORM_QZONE.equals(platform)) {
 			userId = userDao.getUserIdByQZoneUserId(platformUserId);
 		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
 			userId = userDao.getUserIdBySinaWeiboUserId(platformUserId);
@@ -126,7 +127,9 @@ public class UserService extends BaseService {
 	public User loginOrRegister3rd(String platform, String platformUserId, String email, String userName) {
 		// 如果帐号已存在则登录成功
 		Integer userId = null;
-		if (PLATFORM_QZONE.equals(platform)) {
+		if (PLATFORM_WECHAT.equals(platform)) {
+			userId = userDao.getUserIdByWechatUserId(platformUserId);
+		} else if (PLATFORM_QZONE.equals(platform)) {
 			userId = userDao.getUserIdByQZoneUserId(platformUserId);
 		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
 			userId = userDao.getUserIdBySinaWeiboUserId(platformUserId);
@@ -147,7 +150,9 @@ public class UserService extends BaseService {
 		int uid = uidService.getUid();
 		user.setUid(uid);
 
-		if (PLATFORM_QZONE.equals(platform)) {
+		if (PLATFORM_WECHAT.equals(platform)) {
+			user.setWechatUid(platformUserId);
+		} else if (PLATFORM_QZONE.equals(platform)) {
 			user.setQzoneUid(platformUserId);
 		} else if (PLATFORM_SINA_WEIBO.equals(platform)) {
 			user.setWeiboUid(platformUserId);
@@ -438,9 +443,7 @@ public class UserService extends BaseService {
 
 	/**
 	 * 分页获取关注列表
-	 * 
-	 * @param pageNumber
-	 *            分页页码，从0开始
+	 * @param pageNumber 分页页码，从0开始
 	 */
 	public List<User> listFriends(Integer userId, int pageNumber, int pageSize) {
 		Assert.notNull(userId, "用户ID不能为空");
@@ -457,9 +460,7 @@ public class UserService extends BaseService {
 
 	/**
 	 * 获取粉丝列表
-	 * 
-	 * @param pageNumber
-	 *            分页页码，从0开始
+	 * @param pageNumber 分页页码，从0开始
 	 */
 	public List<User> listFollowers(Integer userId, int pageNumber, int pageSize) {
 		Assert.notNull(userId, "用户ID不能为空");
@@ -476,9 +477,7 @@ public class UserService extends BaseService {
 
 	/**
 	 * 获取好友列表（双向关注）
-	 * 
-	 * @param pageNumber
-	 *            分页页码，从0开始
+	 * @param pageNumber 分页页码，从0开始
 	 */
 	public List<User> listBiFriends(Integer userId, int pageNumber, int pageSize) {
 		Assert.notNull(userId, "用户ID不能为空");

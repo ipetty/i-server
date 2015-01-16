@@ -12,7 +12,6 @@ import org.springframework.beans.BeanUtils;
 
 /**
  * 用户
- * 
  * @author luocanfeng
  * @date 2014年4月29日
  */
@@ -28,6 +27,8 @@ public class User extends AbstractEntity {
 	private String uniqueName; // 爱宠号，用户在爱宠的唯一标识，一经设定不能更改，可作登录帐号
 	private String phoneNumber; // 手机号，绑定手机号需短信验证，可作登录帐号
 	private String email; // 邮箱地址，绑定邮箱需邮件验证，可作登录帐号
+	private String wechatAccount; // 微信号
+	private String wechatUid; // 通过微信号登录的用户的uid
 	private String qq; // QQ号，通过第三方帐号登录后自动绑定，可作登录帐号
 	private String qzoneUid; // 通过QQ空间（第三方帐号）登录的用户的uid
 	private String weiboAccount; // 新浪微博帐号，通过第三方帐号登录后自动绑定，可作登录帐号
@@ -100,6 +101,22 @@ public class User extends AbstractEntity {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getWechatAccount() {
+		return wechatAccount;
+	}
+
+	public void setWechatAccount(String wechatAccount) {
+		this.wechatAccount = wechatAccount;
+	}
+
+	public String getWechatUid() {
+		return wechatUid;
+	}
+
+	public void setWechatUid(String wechatUid) {
+		this.wechatUid = wechatUid;
 	}
 
 	public String getQq() {

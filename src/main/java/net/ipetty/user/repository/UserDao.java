@@ -4,7 +4,6 @@ import net.ipetty.user.domain.User;
 
 /**
  * UserDao
- * 
  * @author luocanfeng
  * @date 2014年5月4日
  */
@@ -19,6 +18,11 @@ public interface UserDao {
 	 * 根据ID获取用户帐号
 	 */
 	public User getById(Integer id);
+
+	/**
+	 * 根据微信 userId获取用户ID
+	 */
+	public Integer getUserIdByWechatUserId(String wechatUserId);
 
 	/**
 	 * 根据QZone userId获取用户ID
