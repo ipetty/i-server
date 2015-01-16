@@ -31,8 +31,9 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-			// id, created_on, uid, unique_name, phone_number, email, qq,
-			// qzone_uid, weibo_account, weibo_uid, password, salt, version
+			// id, created_on, uid, unique_name, phone_number, email,
+			// wechat_account, wechat_uid, qq, qzone_uid, weibo_account,
+			// weibo_uid, password, salt, version
 			User user = new User();
 			user.setId(rs.getInt("id"));
 			user.setCreatedOn(rs.getTimestamp("created_on"));
@@ -40,6 +41,8 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			user.setUniqueName(rs.getString("unique_name"));
 			user.setPhoneNumber(rs.getString("phone_number"));
 			user.setEmail(rs.getString("email"));
+			user.setWechatAccount(rs.getString("wechat_account"));
+			user.setWechatUid(rs.getString("wechat_uid"));
 			user.setQq(rs.getString("qq"));
 			user.setQzoneUid(rs.getString("qzone_uid"));
 			user.setWeiboAccount(rs.getString("weibo_account"));
@@ -52,8 +55,8 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 		}
 	};
 
-	private static final String SAVE_SQL = "insert into users(uid, unique_name, phone_number, email, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on, version)"
-			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SAVE_SQL = "insert into users(uid, unique_name, phone_number, email, wechat_account, wechat_uid, qq, qzone_uid, weibo_account, weibo_uid, password, salt, created_on, version)"
+			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * 保存用户帐号
@@ -69,14 +72,16 @@ public class UserDaoImpl extends BaseJdbcDaoSupport implements UserDao {
 			statement.setString(2, user.getUniqueName());
 			statement.setString(3, user.getPhoneNumber());
 			statement.setString(4, user.getEmail());
-			statement.setString(5, user.getQq());
-			statement.setString(6, user.getQzoneUid());
-			statement.setString(7, user.getWeiboAccount());
-			statement.setString(8, user.getWeiboUid());
-			statement.setString(9, user.getEncodedPassword());
-			statement.setString(10, user.getSalt());
-			statement.setTimestamp(11, new Timestamp(user.getCreatedOn().getTime()));
-			statement.setInt(12, user.getVersion());
+			statement.setString(5, user.getWechatAccount());
+			statement.setString(6, user.getWechatUid());
+			statement.setString(7, user.getQq());
+			statement.setString(8, user.getQzoneUid());
+			statement.setString(9, user.getWeiboAccount());
+			statement.setString(10, user.getWeiboUid());
+			statement.setString(11, user.getEncodedPassword());
+			statement.setString(12, user.getSalt());
+			statement.setTimestamp(13, new Timestamp(user.getCreatedOn().getTime()));
+			statement.setInt(14, user.getVersion());
 
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
